@@ -527,7 +527,9 @@ function App() {
               <div className="empty">
                 <div className="empty-icon">🕊️</div>
                 <div className="empty-text">
-                  {data.pigeons.length === 0 ? 'Ainda não tens pombos.\nToca em + para adicionar o primeiro.' : 'Nenhum pombo encontrado.'}
+                  {data.pigeons.length === 0
+                    ? <>Ainda não tens pombos.<br/>Toca em + para adicionar o primeiro.</>
+                    : 'Nenhum pombo encontrado.'}
                 </div>
               </div>
             )}
@@ -686,27 +688,59 @@ function App() {
           />
         )}
 
-        {/* PRÉMIOS equipa */}
-        {tab === 'premios' && view === 'prizes' && (
-          <>
-            {data.teamPrizes.length === 0 && (
+        {/* PRÉMIOS equipa + individuais agregados */}
+        {tab === 'premios' && view === 'prizes' && (() => {
+          const teamItems = (data.teamPrizes || []).map(pr => ({
+            key: 'team-' + pr.id,
+            kind: 'team',
+            position: pr.position,
+            title: pr.title,
+            date: pr.date,
+            meta: pr.description || '',
+            onClick: () => { setEditingPrize(pr); setView('prize-form'); },
+          }));
+          const pigeonItems = (data.pigeons || []).flatMap(pg =>
+            (pg.palmares || []).map((pr, i) => ({
+              key: 'pig-' + pg.ring + '-' + i,
+              kind: 'pigeon',
+              position: pr.position,
+              title: pr.competition,
+              date: pr.date,
+              meta: [pr.distance, pg.name ? pg.name + ' · ' + pg.ring : pg.ring].filter(Boolean).join(' · '),
+              onClick: () => { setSelected(pg); setDetailTab('palmares'); setTab('pombos'); setView('detail'); },
+            }))
+          );
+          const all = [...teamItems, ...pigeonItems].sort(
+            (a, b) => (b.date || '').localeCompare(a.date || '')
+          );
+          if (all.length === 0) {
+            return (
               <div className="empty">
                 <div className="empty-icon">🏆</div>
-                <div className="empty-text">Sem prémios registados.\nToca em + para adicionar.</div>
+                <div className="empty-text">Sem prémios registados.<br/>Toca em + para adicionar.</div>
               </div>
-            )}
-            {[...data.teamPrizes].sort((a,b) => (b.date||'').localeCompare(a.date||'')).map(pr => (
-              <button key={pr.id} className="card trophy-item" onClick={() => { setEditingPrize(pr); setView('prize-form'); }}>
-                <div className="trophy-main">
-                  <div className="trophy-pos">{pr.position}</div>
-                  <div className="trophy-name serif">{pr.title}</div>
-                  <div className="trophy-meta">{pr.date}</div>
-                  {pr.description && <div style={{fontSize: 13, color: 'var(--gray)', marginTop: 6, lineHeight: 1.5}}>{pr.description}</div>}
-                </div>
-              </button>
-            ))}
-          </>
-        )}
+            );
+          }
+          return (
+            <>
+              {all.map(it => (
+                <button key={it.key} className="card trophy-item" onClick={it.onClick}>
+                  <div className="trophy-main">
+                    <div className="trophy-pos">
+                      {it.position}
+                      <span style={{marginLeft: 8, fontSize: 9, color: 'var(--gray)', fontWeight: 500}}>
+                        {it.kind === 'team' ? '· EQUIPA' : '· 🕊'}
+                      </span>
+                    </div>
+                    <div className="trophy-name serif">{it.title}</div>
+                    <div className="trophy-meta">{it.date}</div>
+                    {it.meta && <div style={{fontSize: 13, color: 'var(--gray)', marginTop: 6, lineHeight: 1.5}}>{it.meta}</div>}
+                  </div>
+                </button>
+              ))}
+            </>
+          );
+        })()}
 
         {/* FORM PRÉMIO */}
         {tab === 'premios' && view === 'prize-form' && editingPrize && (
@@ -732,6 +766,7 @@ function App() {
             <div className="detail-row"><div className="detail-label">Machos</div><div className="detail-value">{data.pigeons.filter(p => p.sex === 'M').length}</div></div>
             <div className="detail-row"><div className="detail-label">Fêmeas</div><div className="detail-value">{data.pigeons.filter(p => p.sex === 'F').length}</div></div>
             <div className="detail-row"><div className="detail-label">Prémios equipa</div><div className="detail-value">{data.teamPrizes.length}</div></div>
+            <div className="detail-row"><div className="detail-label">Prémios individuais</div><div className="detail-value">{data.pigeons.reduce((s,p) => s + (p.palmares?.length || 0), 0)}</div></div>
 
             <div style={{padding: '20px 4px 12px'}}>
               <div className="detail-label" style={{marginBottom: 4}}>Pombal</div>
@@ -759,7 +794,7 @@ function App() {
 
             <div style={{padding: '24px 4px 8px', textAlign: 'center'}}>
               <div style={{fontSize: 11, color: 'var(--gray)', lineHeight: 1.6}}>
-                MGSad Pombal · v1.1<br/>
+                MGSad Pombal · v1.2<br/>
                 Todos os dados ficam guardados apenas neste dispositivo.
               </div>
             </div>
