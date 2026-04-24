@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pombal">
+<meta name="theme-color" content="#1a1a1a">
+<title>MGSad · Pombal</title>
+
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%231a1a1a'/><text x='90' y='120' font-family='Georgia,serif' font-size='90' font-weight='300' fill='%23f7f5f0' text-anchor='middle'>M</text></svg>">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f7f5f0;
+    color: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+  input, textarea, button, select { font-family: inherit; font-size: 16px; }
+  button { cursor: pointer; background: none; border: none; color: inherit; }
+  .serif { font-family: 'Cormorant Garamond', ui-serif, Georgia, serif; }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.05em; }
+
+  /* Tokens */
+  :root {
+    --black: #1a1a1a;
+    --cream: #f7f5f0;
+    --white: #ffffff;
+    --gray: #6b6b6b;
+    --light: #e8e4de;
+    --accent: #8b7355;
+    --accent-soft: #b8a38a;
+    --pink: #f7ebe1;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bot: env(safe-area-inset-bottom);
+  }
+
+  /* Header */
+  .app-header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--black); color: var(--white);
+    padding: calc(var(--safe-top) + 14px) 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  }
+  .app-header h1 { font-size: 26px; font-weight: 300; letter-spacing: 0.01em; }
+  .app-header .eyebrow { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+  .btn-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--white); color: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 300;
+    transition: transform 0.15s;
+  }
+  .btn-icon:active { transform: scale(0.88); }
+
+  /* Content */
+  .app-content { padding: 16px; padding-bottom: calc(80px + var(--safe-bot)); min-height: calc(100vh - 80px); }
+
+  /* Bottom Nav */
+  .app-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: var(--white); border-top: 0.5px solid var(--light);
+    display: flex;
+    padding-bottom: var(--safe-bot);
+  }
+  .nav-btn {
+    flex: 1; padding: 10px 6px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--gray); transition: color 0.15s;
+  }
+  .nav-btn.active { color: var(--black); }
+  .nav-btn svg { width: 22px; height: 22px; }
+  .nav-btn span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 500; }
+
+  /* Cards */
+  .card {
+    background: var(--white); border: 0.5px solid var(--light); border-radius: 14px;
+    padding: 14px; transition: transform 0.15s;
+    width: 100%; text-align: left;
+  }
+  .card:active { transform: scale(0.98); }
+
+  /* Search */
+  .search-input {
+    width: 100%; padding: 12px 16px;
+    background: var(--white); border: 0.5px solid var(--light); border-radius: 12px;
+    font-size: 15px; outline: none; margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--accent-soft); }
+
+  /* List items */
+  .pigeon-item { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .pigeon-badge {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--accent);
+  }
+  .pigeon-badge.male { background: var(--light); }
+  .pigeon-badge.female { background: var(--pink); }
+  .pigeon-info { flex: 1; min-width: 0; }
+  .pigeon-name { font-size: 19px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pigeon-ring { font-size: 11px; color: var(--gray); letter-spacing: 0.08em; }
+  .pigeon-trophy { font-size: 11px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; }
+  .empty-icon { font-size: 48px; opacity: 0.2; margin-bottom: 14px; }
+  .empty-text { color: var(--gray); font-size: 14px; line-height: 1.6; }
+
+  /* Detail */
+  .back-btn { padding: 10px 4px; color: var(--gray); font-size: 14px; }
+  .action-btn { padding: 10px 12px; color: var(--accent); font-size: 14px; font-weight: 500; }
+  .pigeon-hero { text-align: center; padding: 6px 0 20px; }
+  .pigeon-hero .big-badge {
+    width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: var(--accent);
+  }
+  .pigeon-hero .big-badge.male { background: var(--light); }
+  .pigeon-hero .big-badge.female { background: var(--pink); }
+  .pigeon-hero h2 { font-size: 30px; font-weight: 300; line-height: 1; }
+  .pigeon-hero .ring-text { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); margin-top: 6px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .tab {
+    flex: 1; padding: 10px 6px; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; border-radius: 10px; text-align: center; font-weight: 500;
+    background: var(--white); color: var(--gray); border: 0.5px solid var(--light);
+    transition: all 0.15s;
+  }
+  .tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+
+  .detail-row {
+    background: var(--white); border: 0.5px solid var(--light); border-radius: 12px;
+    padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .detail-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); font-weight: 500; }
+  .detail-value { font-size: 14px; text-align: right; }
+
+  .notes-box { background: var(--white); border: 0.5px solid var(--light); border-radius: 12px; padding: 14px 16px; margin-top: 8px; }
+  .notes-text { font-size: 14px; line-height: 1.6; color: var(--black); white-space: pre-wrap; word-wrap: break-word; }
+
+  /* Pedigree */
+  .pedigree-group { margin-bottom: 16px; }
+  .pedigree-group h3 { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; font-weight: 500; }
+  .pedigree-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pedigree-node {
+    padding: 10px 12px; border-radius: 10px; overflow: hidden;
+    background: var(--white); border: 0.5px solid var(--light);
+  }
+  .pedigree-node.empty-node { background: transparent; border: 1px dashed #c4bfb6; }
+  .pedigree-node .role { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); margin-bottom: 2px; }
+  .pedigree-node .name { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pedigree-node .ring-small { font-size: 10px; color: var(--gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Palmarés */
+  .trophy-item {
+    background: var(--white); border: 0.5px solid var(--light); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .trophy-main { flex: 1; min-width: 0; }
+  .trophy-pos { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .trophy-name { font-size: 17px; font-weight: 500; margin-top: 1px; }
+  .trophy-meta { font-size: 12px; color: var(--gray); margin-top: 3px; }
+  .trophy-del { color: #bbb; font-size: 18px; padding: 4px 8px; }
+
+  /* Forms */
+  .form-row {
+    background: var(--white); border: 0.5px solid var(--light); border-radius: 12px;
+    padding: 10px 14px; margin-bottom: 8px;
+  }
+  .form-row label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); font-weight: 500; margin-bottom: 4px; }
+  .form-row input, .form-row textarea {
+    width: 100%; border: none; outline: none; background: transparent;
+    font-size: 15px; color: var(--black); padding: 0;
+  }
+  .form-row textarea { resize: none; min-height: 80px; }
+  .form-row input.mono-input { letter-spacing: 0.1em; }
+
+  .sex-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+  .sex-btn {
+    padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    background: #eeeae2; color: var(--gray);
+    transition: all 0.15s;
+  }
+  .sex-btn.active { background: var(--black); color: var(--white); }
+
+  .form-actions { display: flex; justify-content: space-between; padding: 8px 0 16px; }
+  .form-actions button { padding: 8px 10px; font-size: 14px; }
+  .form-actions .save { color: var(--accent); font-weight: 600; }
+  .form-actions .cancel { color: var(--gray); }
+
+  .btn-add {
+    width: 100%; padding: 14px; background: var(--white); color: var(--accent);
+    border: 0.5px solid var(--light); border-radius: 12px; font-size: 14px;
+    margin-top: 14px; font-weight: 500; transition: background 0.15s;
+  }
+  .btn-add:active { background: #f0ece4; }
+  .btn-danger {
+    width: 100%; padding: 14px; background: var(--white); color: #c93a3a;
+    border: 0.5px solid #f3d4d4; border-radius: 12px; font-size: 14px;
+    margin-top: 20px; font-weight: 500;
+  }
+
+  /* Inline palmarés form */
+  .palmares-inline {
+    background: #eeeae2; border: 0.5px solid #d8d2c4; border-radius: 12px;
+    padding: 12px; margin-top: 10px;
+  }
+  .palmares-inline .form-row { background: var(--white); margin-bottom: 6px; }
+  .palmares-inline-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  .palmares-inline-actions button { padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 500; }
+  .palmares-inline-actions .cancel { background: var(--white); color: var(--gray); border: 0.5px solid var(--light); }
+  .palmares-inline-actions .save { background: var(--accent); color: var(--white); }
+
+  /* Parent picker */
+  .parent-picker { background: var(--white); border: 0.5px solid var(--light); border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; }
+  .parent-picker label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); font-weight: 500; margin-bottom: 8px; display: block; }
+  .parent-selected { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .parent-selected .name-small { font-size: 15px; font-weight: 500; }
+  .parent-selected .ring-tiny { font-size: 11px; color: var(--gray); }
+  .parent-remove { color: #bbb; font-size: 20px; padding: 0 4px; }
+  .parent-list { max-height: 140px; overflow-y: auto; margin: 4px 0; }
+  .parent-option {
+    width: 100%; padding: 10px 12px; border-radius: 8px; text-align: left;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; transition: background 0.1s;
+    background: #eeeae2; margin-bottom: 4px;
+    border: 0.5px solid #d8d2c4;
+  }
+  .parent-option:active { background: #d8d2c4; }
+  .parent-option .ring-small { font-size: 11px; color: var(--gray); }
+  .parent-input {
+    width: 100%; padding: 8px 10px; border: 0.5px solid var(--light);
+    border-radius: 8px; font-size: 14px; margin-top: 6px; outline: none;
+    letter-spacing: 0.1em;
+  }
+  .parent-input:focus { border-color: var(--accent-soft); }
+
+  /* Menu/definições */
+  .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--white); border: 0.5px solid var(--light); border-radius: 12px; margin-bottom: 6px; font-size: 15px; }
+  .menu-item .chev { color: var(--gray); font-size: 20px; }
+
+  /* Modal */
+  .modal-back {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.5);
+    display: flex; align-items: flex-end;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-sheet {
+    width: 100%; background: var(--white); border-radius: 18px 18px 0 0;
+    padding: 16px 16px calc(20px + var(--safe-bot));
+    max-height: 80vh; overflow-y: auto;
+    animation: slideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 36px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 14px; }
+  .modal-title { font-size: 20px; font-weight: 500; margin-bottom: 12px; text-align: center; }
+  .modal-text { color: var(--gray); font-size: 13px; line-height: 1.5; margin-bottom: 14px; text-align: center; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: calc(90px + var(--safe-bot)); left: 50%; transform: translateX(-50%);
+    background: var(--black); color: var(--white);
+    padding: 10px 18px; border-radius: 40px; font-size: 13px;
+    z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: toastIn 0.2s ease;
+  }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-type="module">
+const { useState, useEffect, useRef } = React;
+
+// ——————— Storage helpers ———————
+const STORAGE_KEY = 'mgsad_pombal_v1';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { pigeons: [], teamPrizes: [] };
+    const parsed = JSON.parse(raw);
+    return { pigeons: parsed.pigeons || [], teamPrizes: parsed.teamPrizes || [] };
+  } catch { return { pigeons: [], teamPrizes: [] }; }
+}
+
+function saveData(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
+  catch (e) { console.error(e); return false; }
+}
+
+// ——————— App ———————
+function App() {
+  const [data, setData] = useState(() => loadData());
+  const [tab, setTab] = useState('pombos');
+  const [view, setView] = useState('list');
+  const [selected, setSelected] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [editingPrize, setEditingPrize] = useState(null);
+  const [search, setSearch] = useState('');
+  const [detailTab, setDetailTab] = useState('info');
+  const [addingPalmares, setAddingPalmares] = useState(false);
+  const [toast, setToast] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+
+  useEffect(() => { saveData(data); }, [data]);
+
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2000);
+  }
+
+  function savePigeon(p) {
+    const pigeons = [...data.pigeons];
+    const idx = pigeons.findIndex(x => x.ring === p.ring);
+    if (idx >= 0) pigeons[idx] = p; else pigeons.push(p);
+    setData({ ...data, pigeons });
+    if (selected && selected.ring === p.ring) setSelected(p);
+    showToast('Pombo guardado');
+  }
+
+  function deletePigeon(ring) {
+    setData({ ...data, pigeons: data.pigeons.filter(p => p.ring !== ring) });
+    showToast('Pombo eliminado');
+  }
+
+  function saveTeamPrizes(list) {
+    setData({ ...data, teamPrizes: list });
+  }
+
+  function exportData() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pombal-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Backup transferido');
+  }
+
+  function importData(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        if (!parsed.pigeons || !Array.isArray(parsed.pigeons)) throw new Error('Invalid');
+        if (!confirm(`Importar ${parsed.pigeons.length} pombos e ${parsed.teamPrizes?.length || 0} prémios? Os dados actuais serão substituídos.`)) return;
+        setData({ pigeons: parsed.pigeons, teamPrizes: parsed.teamPrizes || [] });
+        showToast('Dados importados');
+      } catch {
+        alert('Ficheiro inválido.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  const filtered = data.pigeons.filter(p =>
+    !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.ring?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // ——— RENDER ———
+  return (
+    <>
+      <header className="app-header">
+        <div>
+          <div className="eyebrow">MGSad · Pombal</div>
+          <h1 className="serif">
+            {tab === 'pombos' && view === 'list' && 'Pombos'}
+            {tab === 'pombos' && view === 'detail' && (selected?.name || 'Pombo')}
+            {tab === 'pombos' && view === 'form' && (editing?.ring ? 'Editar pombo' : 'Novo pombo')}
+            {tab === 'premios' && view === 'prizes' && 'Prémios'}
+            {tab === 'premios' && view === 'prize-form' && (editingPrize?.title ? 'Editar prémio' : 'Novo prémio')}
+            {tab === 'menu' && 'Definições'}
+          </h1>
+        </div>
+        {tab === 'pombos' && view === 'list' && (
+          <button className="btn-icon" onClick={() => { setEditing({ring:'',name:'',sex:'M',color:'',birth:'',fatherRing:'',motherRing:'',notes:'',palmares:[]}); setView('form'); }}>+</button>
+        )}
+        {tab === 'premios' && view === 'prizes' && (
+          <button className="btn-icon" onClick={() => { setEditingPrize({id: Date.now().toString(), date:'', title:'', position:'', description:''}); setView('prize-form'); }}>+</button>
+        )}
+      </header>
+
+      <main className="app-content">
+        {/* LIST de POMBOS */}
+        {tab === 'pombos' && view === 'list' && (
+          <>
+            <input className="search-input" type="search" placeholder="Pesquisar por nome ou anilha..." value={search} onChange={e => setSearch(e.target.value)} />
+            {filtered.length === 0 && (
+              <div className="empty">
+                <div className="empty-icon">🕊️</div>
+                <div className="empty-text">
+                  {data.pigeons.length === 0 ? 'Ainda não tens pombos.\nToca em + para adicionar o primeiro.' : 'Nenhum pombo encontrado.'}
+                </div>
+              </div>
+            )}
+            {filtered.map(p => (
+              <button key={p.ring} className="card pigeon-item" onClick={() => { setSelected(p); setDetailTab('info'); setView('detail'); }}>
+                <div className={`pigeon-badge ${p.sex === 'M' ? 'male' : 'female'}`}>{p.sex === 'M' ? '♂' : '♀'}</div>
+                <div className="pigeon-info">
+                  <div className="pigeon-name serif">{p.name || 'Sem nome'}</div>
+                  <div className="pigeon-ring mono">{p.ring}</div>
+                </div>
+                {p.palmares?.length > 0 && <div className="pigeon-trophy">{p.palmares.length} 🏆</div>}
+              </button>
+            ))}
+          </>
+        )}
+
+        {/* DETALHE POMBO */}
+        {tab === 'pombos' && view === 'detail' && selected && (
+          <>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8}}>
+              <button className="back-btn" onClick={() => setView('list')}>← Voltar</button>
+              <button className="action-btn" onClick={() => { setEditing({...selected}); setView('form'); }}>Editar</button>
+            </div>
+            <div className="pigeon-hero">
+              <div className={`big-badge ${selected.sex === 'M' ? 'male' : 'female'}`}>{selected.sex === 'M' ? '♂' : '♀'}</div>
+              <h2 className="serif">{selected.name || 'Sem nome'}</h2>
+              <div className="ring-text mono">{selected.ring}</div>
+            </div>
+            <div className="tabs">
+              <button className={`tab ${detailTab==='info'?'active':''}`} onClick={() => setDetailTab('info')}>Info</button>
+              <button className={`tab ${detailTab==='pedigree'?'active':''}`} onClick={() => setDetailTab('pedigree')}>Pedigree</button>
+              <button className={`tab ${detailTab==='palmares'?'active':''}`} onClick={() => setDetailTab('palmares')}>Palmarés</button>
+            </div>
+
+            {detailTab === 'info' && (
+              <>
+                <div className="detail-row"><div className="detail-label">Sexo</div><div className="detail-value">{selected.sex === 'M' ? 'Macho ♂' : 'Fêmea ♀'}</div></div>
+                <div className="detail-row"><div className="detail-label">Nascimento</div><div className="detail-value">{selected.birth || '—'}</div></div>
+                <div className="detail-row"><div className="detail-label">Cor</div><div className="detail-value">{selected.color || '—'}</div></div>
+                {selected.notes && (
+                  <div className="notes-box">
+                    <div className="detail-label" style={{marginBottom: 6}}>Notas</div>
+                    <div className="notes-text">{selected.notes}</div>
+                  </div>
+                )}
+                <button className="btn-danger" onClick={() => { if (confirm(`Eliminar ${selected.name || 'este pombo'}?`)) { deletePigeon(selected.ring); setView('list'); }}}>Eliminar pombo</button>
+              </>
+            )}
+
+            {detailTab === 'pedigree' && (
+              <PedigreeTree pigeon={selected} pigeons={data.pigeons} onOpen={(p) => { setSelected(p); setDetailTab('info'); }} />
+            )}
+
+            {detailTab === 'palmares' && (
+              <>
+                {(selected.palmares?.length ?? 0) === 0 && !addingPalmares && (
+                  <div className="empty">
+                    <div className="empty-icon">🏆</div>
+                    <div className="empty-text">Ainda sem prémios registados.</div>
+                  </div>
+                )}
+                {(selected.palmares || []).map((pr, i) => (
+                  <div key={i} className="trophy-item">
+                    <div className="trophy-main">
+                      <div className="trophy-pos">{pr.position}</div>
+                      <div className="trophy-name serif">{pr.competition}</div>
+                      <div className="trophy-meta">{[pr.date, pr.distance].filter(Boolean).join(' · ')}</div>
+                    </div>
+                    <button className="trophy-del" onClick={() => {
+                      const next = [...selected.palmares]; next.splice(i, 1);
+                      savePigeon({...selected, palmares: next});
+                    }}>×</button>
+                  </div>
+                ))}
+                {addingPalmares && (
+                  <PalmaresForm onSave={(pr) => {
+                    savePigeon({...selected, palmares: [...(selected.palmares||[]), pr]});
+                    setAddingPalmares(false);
+                  }} onCancel={() => setAddingPalmares(false)} />
+                )}
+                {!addingPalmares && (
+                  <button className="btn-add" onClick={() => setAddingPalmares(true)}>+ Adicionar prémio</button>
+                )}
+              </>
+            )}
+          </>
+        )}
+
+        {/* FORM POMBO */}
+        {tab === 'pombos' && view === 'form' && editing && (
+          <PigeonForm
+            pigeon={editing}
+            pigeons={data.pigeons}
+            onSave={(p) => { savePigeon(p); setView(selected ? 'detail' : 'list'); }}
+            onCancel={() => setView(selected && data.pigeons.find(x => x.ring === selected.ring) ? 'detail' : 'list')}
+          />
+        )}
+
+        {/* PRÉMIOS equipa */}
+        {tab === 'premios' && view === 'prizes' && (
+          <>
+            {data.teamPrizes.length === 0 && (
+              <div className="empty">
+                <div className="empty-icon">🏆</div>
+                <div className="empty-text">Sem prémios registados.\nToca em + para adicionar.</div>
+              </div>
+            )}
+            {[...data.teamPrizes].sort((a,b) => (b.date||'').localeCompare(a.date||'')).map(pr => (
+              <button key={pr.id} className="card trophy-item" onClick={() => { setEditingPrize(pr); setView('prize-form'); }}>
+                <div className="trophy-main">
+                  <div className="trophy-pos">{pr.position}</div>
+                  <div className="trophy-name serif">{pr.title}</div>
+                  <div className="trophy-meta">{pr.date}</div>
+                  {pr.description && <div style={{fontSize: 13, color: 'var(--gray)', marginTop: 6, lineHeight: 1.5}}>{pr.description}</div>}
+                </div>
+              </button>
+            ))}
+          </>
+        )}
+
+        {/* FORM PRÉMIO */}
+        {tab === 'premios' && view === 'prize-form' && editingPrize && (
+          <TeamPrizeForm
+            prize={editingPrize}
+            onSave={(pr) => {
+              const idx = data.teamPrizes.findIndex(x => x.id === pr.id);
+              const next = idx >= 0 ? data.teamPrizes.map((x,i) => i===idx ? pr : x) : [...data.teamPrizes, pr];
+              saveTeamPrizes(next); setView('prizes');
+            }}
+            onDelete={() => { saveTeamPrizes(data.teamPrizes.filter(x => x.id !== editingPrize.id)); setView('prizes'); }}
+            onCancel={() => setView('prizes')}
+          />
+        )}
+
+        {/* MENU */}
+        {tab === 'menu' && (
+          <>
+            <div style={{padding: '20px 4px 12px'}}>
+              <div className="detail-label" style={{marginBottom: 4}}>Resumo</div>
+            </div>
+            <div className="detail-row"><div className="detail-label">Pombos</div><div className="detail-value">{data.pigeons.length}</div></div>
+            <div className="detail-row"><div className="detail-label">Machos</div><div className="detail-value">{data.pigeons.filter(p => p.sex === 'M').length}</div></div>
+            <div className="detail-row"><div className="detail-label">Fêmeas</div><div className="detail-value">{data.pigeons.filter(p => p.sex === 'F').length}</div></div>
+            <div className="detail-row"><div className="detail-label">Prémios equipa</div><div className="detail-value">{data.teamPrizes.length}</div></div>
+
+            <div style={{padding: '20px 4px 12px'}}>
+              <div className="detail-label" style={{marginBottom: 4}}>Dados</div>
+            </div>
+            <button className="menu-item" onClick={exportData}>
+              <span>Exportar backup</span>
+              <span className="chev">↓</span>
+            </button>
+            <label className="menu-item" style={{cursor: 'pointer'}}>
+              <span>Importar backup</span>
+              <span className="chev">↑</span>
+              <input type="file" accept=".json" style={{display: 'none'}} onChange={(e) => {
+                const f = e.target.files[0]; if (f) importData(f);
+                e.target.value = '';
+              }} />
+            </label>
+
+            <div style={{padding: '24px 4px 8px', textAlign: 'center'}}>
+              <div style={{fontSize: 11, color: 'var(--gray)', lineHeight: 1.6}}>
+                MGSad Pombal · v1.0<br/>
+                Todos os dados ficam guardados apenas neste dispositivo.
+              </div>
+            </div>
+          </>
+        )}
+      </main>
+
+      <nav className="app-nav">
+        <button className={`nav-btn ${tab==='pombos'?'active':''}`} onClick={() => { setTab('pombos'); setView('list'); setSelected(null); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2c-2 0-3.5 1-3.5 2.5 0 1 0.5 1.8 1.5 2.5-3 1.2-6 4-6 9 0 4 3 5 5 5h6c2 0 5-1 5-5 0-5-3-7.8-6-9 1-0.7 1.5-1.5 1.5-2.5 0-1.5-1.5-2.5-3.5-2.5z"/>
+            <circle cx="10" cy="7" r="0.6" fill="currentColor"/>
+          </svg>
+          <span>Pombos</span>
+        </button>
+        <button className={`nav-btn ${tab==='premios'?'active':''}`} onClick={() => { setTab('premios'); setView('prizes'); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 3h12v5a6 6 0 0 1-12 0V3z"/>
+            <path d="M6 5H3a3 3 0 0 0 3 3"/>
+            <path d="M18 5h3a3 3 0 0 1-3 3"/>
+            <path d="M12 14v4"/>
+            <path d="M8 21h8"/>
+            <path d="M10 18h4"/>
+          </svg>
+          <span>Prémios</span>
+        </button>
+        <button className={`nav-btn ${tab==='menu'?'active':''}`} onClick={() => { setTab('menu'); }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Menu</span>
+        </button>
+      </nav>
+
+      {toast && <div className="toast">{toast}</div>}
+    </>
+  );
+}
+
+// ——— Componentes ———
+function PedigreeTree({pigeon, pigeons, onOpen}) {
+  const find = (ring) => ring ? pigeons.find(p => p.ring === ring) : null;
+  const father = find(pigeon.fatherRing);
+  const mother = find(pigeon.motherRing);
+  const pGf = father ? find(father.fatherRing) : null;
+  const pGm = father ? find(father.motherRing) : null;
+  const mGf = mother ? find(mother.fatherRing) : null;
+  const mGm = mother ? find(mother.motherRing) : null;
+
+  // Filhos directos — pombos que têm este pombo como pai ou mãe
+  const children = pigeons.filter(p => p.fatherRing === pigeon.ring || p.motherRing === pigeon.ring);
+
+  const Node = ({p, fallbackRing, role}) => {
+    if (p) return (
+      <button className="pedigree-node" onClick={() => onOpen(p)}>
+        <div className="role">{role}</div>
+        <div className="name serif">{p.name || 'Sem nome'}</div>
+        <div className="ring-small mono">{p.ring}</div>
+      </button>
+    );
+    return (
+      <div className="pedigree-node empty-node">
+        <div className="role">{role}</div>
+        <div className="ring-small">{fallbackRing || 'Desconhecido'}</div>
+      </div>
+    );
+  };
+
+  const hasAscendants = father || mother || pigeon.fatherRing || pigeon.motherRing;
+  const hasDescendants = children.length > 0;
+
+  if (!hasAscendants && !hasDescendants) {
+    return (
+      <div className="empty">
+        <div className="empty-icon">🌳</div>
+        <div className="empty-text">Adiciona as anilhas dos pais ou cria filhos para ver o pedigree.</div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {hasAscendants && (
+        <>
+          <div className="pedigree-group">
+            <h3>Pais</h3>
+            <div className="pedigree-grid">
+              <Node p={father} fallbackRing={pigeon.fatherRing} role="Pai ♂" />
+              <Node p={mother} fallbackRing={pigeon.motherRing} role="Mãe ♀" />
+            </div>
+          </div>
+          {(father || mother) && (
+            <div className="pedigree-group">
+              <h3>Avós</h3>
+              <div className="pedigree-grid">
+                <Node p={pGf} fallbackRing={father?.fatherRing} role="Avô pat." />
+                <Node p={pGm} fallbackRing={father?.motherRing} role="Avó pat." />
+                <Node p={mGf} fallbackRing={mother?.fatherRing} role="Avô mat." />
+                <Node p={mGm} fallbackRing={mother?.motherRing} role="Avó mat." />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {hasDescendants && (
+        <div className="pedigree-group">
+          <h3>Descendência ({children.length})</h3>
+          <div className="pedigree-grid">
+            {children.map(c => (
+              <button key={c.ring} className="pedigree-node" onClick={() => onOpen(c)}>
+                <div className="role">{c.sex === 'M' ? 'Filho ♂' : 'Filha ♀'}</div>
+                <div className="name serif">{c.name || 'Sem nome'}</div>
+                <div className="ring-small mono">{c.ring}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PigeonForm({pigeon, pigeons, onSave, onCancel}) {
+  const [d, setD] = useState(pigeon);
+  const set = (k, v) => setD({...d, [k]: v});
+  const others = pigeons.filter(p => p.ring !== pigeon.ring);
+
+  function handleSave() {
+    if (!d.ring?.trim()) return alert('A anilha é obrigatória.');
+    if (!pigeon.ring && pigeons.find(p => p.ring === d.ring.trim())) return alert('Já existe um pombo com essa anilha.');
+    onSave({...d, ring: d.ring.trim()});
+  }
+
+  return (
+    <>
+      <div className="form-actions">
+        <button className="cancel" onClick={onCancel}>Cancelar</button>
+        <button className="save" onClick={handleSave}>Guardar</button>
+      </div>
+      <div className="form-row">
+        <label>Anilha *</label>
+        <input className="mono-input" type="text" value={d.ring || ''} onChange={e => set('ring', e.target.value)} placeholder="PT-2024-1234567" />
+      </div>
+      <div className="form-row">
+        <label>Nome</label>
+        <input type="text" value={d.name || ''} onChange={e => set('name', e.target.value)} placeholder="Trovão" />
+      </div>
+      <div className="form-row">
+        <label>Sexo</label>
+        <div className="sex-toggle">
+          <button className={`sex-btn ${d.sex==='M'?'active':''}`} onClick={() => set('sex', 'M')}>♂ Macho</button>
+          <button className={`sex-btn ${d.sex==='F'?'active':''}`} onClick={() => set('sex', 'F')}>♀ Fêmea</button>
+        </div>
+      </div>
+      <div className="form-row">
+        <label>Nascimento</label>
+        <input type="text" value={d.birth || ''} onChange={e => set('birth', e.target.value)} placeholder="Março 2023" />
+      </div>
+      <div className="form-row">
+        <label>Cor</label>
+        <input type="text" value={d.color || ''} onChange={e => set('color', e.target.value)} placeholder="Azul escamado" />
+      </div>
+
+      <ParentPicker label="Pai ♂" value={d.fatherRing} onChange={v => set('fatherRing', v)} candidates={others.filter(p => p.sex === 'M')} />
+      <ParentPicker label="Mãe ♀" value={d.motherRing} onChange={v => set('motherRing', v)} candidates={others.filter(p => p.sex === 'F')} />
+
+      <div className="form-row">
+        <label>Notas</label>
+        <textarea value={d.notes || ''} onChange={e => set('notes', e.target.value)} placeholder="Linhagem, observações, temperamento..." rows={4} />
+      </div>
+    </>
+  );
+}
+
+function ParentPicker({label, value, onChange, candidates}) {
+  const [typing, setTyping] = useState(false);
+  const selected = candidates.find(p => p.ring === value);
+  const hasExternal = value && !selected;
+
+  return (
+    <div className="parent-picker">
+      <label>{label}</label>
+      {selected && (
+        <div className="parent-selected">
+          <div>
+            <div className="name-small serif">{selected.name || 'Sem nome'}</div>
+            <div className="ring-tiny mono">{selected.ring}</div>
+          </div>
+          <button className="parent-remove" onClick={() => { onChange(''); setTyping(false); }}>×</button>
+        </div>
+      )}
+      {hasExternal && !typing && (
+        <div className="parent-selected">
+          <div>
+            <div className="name-small">Externo</div>
+            <div className="ring-tiny mono">{value}</div>
+          </div>
+          <button className="parent-remove" onClick={() => { onChange(''); setTyping(false); }}>×</button>
+        </div>
+      )}
+      {!selected && !hasExternal && (
+        <>
+          <div style={{fontSize: 11, color: 'var(--gray)', marginBottom: 6, fontStyle: 'italic'}}>
+            {candidates.length > 0 ? 'Selecciona da lista ou escreve anilha externa:' : 'Sem pais registados. Escreve anilha (opcional):'}
+          </div>
+          {candidates.length > 0 && !typing && (
+            <div className="parent-list">
+              {candidates.map(p => (
+                <button key={p.ring} className="parent-option" onClick={() => onChange(p.ring)}>
+                  <span className="serif">{p.name || 'Sem nome'}</span>
+                  <span className="ring-small mono">{p.ring}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <input
+            className="parent-input"
+            type="text"
+            placeholder="Anilha externa (opcional)"
+            onFocus={() => setTyping(true)}
+            onBlur={e => { if (!e.target.value.trim()) setTyping(false); }}
+            onChange={e => onChange(e.target.value)}
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+function PalmaresForm({onSave, onCancel}) {
+  const [d, setD] = useState({date:'', competition:'', position:'', distance:''});
+  return (
+    <div className="palmares-inline">
+      <div className="form-row">
+        <label>Data</label>
+        <input type="text" value={d.date} onChange={e => setD({...d, date: e.target.value})} placeholder="Junho 2024" />
+      </div>
+      <div className="form-row">
+        <label>Prova</label>
+        <input type="text" value={d.competition} onChange={e => setD({...d, competition: e.target.value})} placeholder="Barcelona" />
+      </div>
+      <div className="form-row">
+        <label>Posição</label>
+        <input type="text" value={d.position} onChange={e => setD({...d, position: e.target.value})} placeholder="1º lugar" />
+      </div>
+      <div className="form-row">
+        <label>Distância</label>
+        <input type="text" value={d.distance} onChange={e => setD({...d, distance: e.target.value})} placeholder="1120 km" />
+      </div>
+      <div className="palmares-inline-actions">
+        <button className="cancel" onClick={onCancel}>Cancelar</button>
+        <button className="save" onClick={() => { if (!d.competition) return alert('Indica a prova'); onSave(d); }}>Guardar</button>
+      </div>
+    </div>
+  );
+}
+
+function TeamPrizeForm({prize, onSave, onCancel, onDelete}) {
+  const [d, setD] = useState(prize);
+  const isNew = !prize.title;
+  return (
+    <>
+      <div className="form-actions">
+        <button className="cancel" onClick={onCancel}>Cancelar</button>
+        <button className="save" onClick={() => { if (!d.title) return alert('Indica o título'); onSave(d); }}>Guardar</button>
+      </div>
+      <div className="form-row">
+        <label>Título</label>
+        <input type="text" value={d.title || ''} onChange={e => setD({...d, title: e.target.value})} placeholder="Algarve Golden Race" />
+      </div>
+      <div className="form-row">
+        <label>Data</label>
+        <input type="text" value={d.date || ''} onChange={e => setD({...d, date: e.target.value})} placeholder="2025" />
+      </div>
+      <div className="form-row">
+        <label>Posição</label>
+        <input type="text" value={d.position || ''} onChange={e => setD({...d, position: e.target.value})} placeholder="10º · Million Euro" />
+      </div>
+      <div className="form-row">
+        <label>Descrição</label>
+        <textarea value={d.description || ''} onChange={e => setD({...d, description: e.target.value})} rows={4} placeholder="Detalhes sobre o prémio..." />
+      </div>
+      {!isNew && (
+        <button className="btn-danger" onClick={() => { if (confirm('Eliminar este prémio?')) onDelete(); }}>
+          Eliminar prémio
+        </button>
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
