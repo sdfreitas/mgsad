@@ -319,6 +319,7 @@ function App() {
   const [search, setSearch] = useState('');
   const [detailTab, setDetailTab] = useState('info');
   const [addingPalmares, setAddingPalmares] = useState(false);
+  const [pedigreeContext, setPedigreeContext] = useState(null); // {sex, childRing, role}
   const [toast, setToast] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -330,10 +331,23 @@ function App() {
     setTimeout(() => setToast(''), 2000);
   }
 
-  function savePigeon(p) {
+  function savePigeon(p, pedCtx) {
     const pigeons = [...data.pigeons];
     const idx = pigeons.findIndex(x => x.ring === p.ring);
     if (idx >= 0) pigeons[idx] = p; else pigeons.push(p);
+
+    // Se estamos a criar este pombo via contexto de pedigree,
+    // actualiza o pombo filho para ter este como pai/mãe
+    if (pedCtx && pedCtx.childRing) {
+      const childIdx = pigeons.findIndex(x => x.ring === pedCtx.childRing);
+      if (childIdx >= 0) {
+        const child = {...pigeons[childIdx]};
+        if (pedCtx.role === 'father') child.fatherRing = p.ring;
+        if (pedCtx.role === 'mother') child.motherRing = p.ring;
+        pigeons[childIdx] = child;
+      }
+    }
+
     setData({ ...data, pigeons });
     if (selected && selected.ring === p.ring) setSelected(p);
     showToast('Pombo guardado');
@@ -462,7 +476,17 @@ function App() {
             )}
 
             {detailTab === 'pedigree' && (
-              <PedigreeTree pigeon={selected} pigeons={data.pigeons} onOpen={(p) => { setSelected(p); setDetailTab('info'); }} />
+              <PedigreeTree
+                pigeon={selected}
+                pigeons={data.pigeons}
+                onOpen={(p) => { setSelected(p); setDetailTab('info'); }}
+                onCreate={(ctx) => {
+                  if (!ctx) return;
+                  setPedigreeContext(ctx);
+                  setEditing({ring:'', name:'', sex: ctx.sex, color:'', birth:'', fatherRing:'', motherRing:'', notes:'', palmares:[]});
+                  setView('form');
+                }}
+              />
             )}
 
             {detailTab === 'palmares' && (
@@ -505,8 +529,31 @@ function App() {
           <PigeonForm
             pigeon={editing}
             pigeons={data.pigeons}
-            onSave={(p) => { savePigeon(p); setView(selected ? 'detail' : 'list'); }}
-            onCancel={() => setView(selected && data.pigeons.find(x => x.ring === selected.ring) ? 'detail' : 'list')}
+            pedigreeContext={pedigreeContext}
+            onSave={(p) => {
+              savePigeon(p, pedigreeContext);
+              if (pedigreeContext) {
+                // Voltar ao pombo filho no pedigree
+                const child = data.pigeons.find(x => x.ring === pedigreeContext.childRing);
+                if (child) {
+                  const updatedChild = {...child};
+                  if (pedigreeContext.role === 'father') updatedChild.fatherRing = p.ring;
+                  if (pedigreeContext.role === 'mother') updatedChild.motherRing = p.ring;
+                  setSelected(updatedChild);
+                  setDetailTab('pedigree');
+                  setView('detail');
+                } else {
+                  setView(selected ? 'detail' : 'list');
+                }
+                setPedigreeContext(null);
+              } else {
+                setView(selected ? 'detail' : 'list');
+              }
+            }}
+            onCancel={() => {
+              setPedigreeContext(null);
+              setView(selected && data.pigeons.find(x => x.ring === selected.ring) ? 'detail' : 'list');
+            }}
           />
         )}
 
@@ -617,7 +664,7 @@ function App() {
 }
 
 // ——— Componentes ———
-function PedigreeTree({pigeon, pigeons, onOpen}) {
+function PedigreeTree({pigeon, pigeons, onOpen, onCreate}) {
   const find = (ring) => ring ? pigeons.find(p => p.ring === ring) : null;
   const father = find(pigeon.fatherRing);
   const mother = find(pigeon.motherRing);
@@ -629,7 +676,7 @@ function PedigreeTree({pigeon, pigeons, onOpen}) {
   // Filhos directos — pombos que têm este pombo como pai ou mãe
   const children = pigeons.filter(p => p.fatherRing === pigeon.ring || p.motherRing === pigeon.ring);
 
-  const Node = ({p, fallbackRing, role}) => {
+  const Node = ({p, fallbackRing, role, createContext}) => {
     if (p) return (
       <button className="pedigree-node" onClick={() => onOpen(p)}>
         <div className="role">{role}</div>
@@ -637,49 +684,44 @@ function PedigreeTree({pigeon, pigeons, onOpen}) {
         <div className="ring-small mono">{p.ring}</div>
       </button>
     );
+    // Slot vazio — clicável para criar
     return (
-      <div className="pedigree-node empty-node">
+      <button className="pedigree-node empty-node" onClick={() => onCreate && onCreate(createContext)}>
         <div className="role">{role}</div>
-        <div className="ring-small">{fallbackRing || 'Desconhecido'}</div>
-      </div>
+        <div className="ring-small" style={{color: 'var(--accent)'}}>+ Adicionar</div>
+        {fallbackRing && <div className="ring-small mono" style={{marginTop: 2}}>{fallbackRing}</div>}
+      </button>
     );
   };
 
   const hasAscendants = father || mother || pigeon.fatherRing || pigeon.motherRing;
   const hasDescendants = children.length > 0;
 
-  if (!hasAscendants && !hasDescendants) {
-    return (
-      <div className="empty">
-        <div className="empty-icon">🌳</div>
-        <div className="empty-text">Adiciona as anilhas dos pais ou cria filhos para ver o pedigree.</div>
-      </div>
-    );
-  }
-
   return (
     <>
-      {hasAscendants && (
-        <>
-          <div className="pedigree-group">
-            <h3>Pais</h3>
-            <div className="pedigree-grid">
-              <Node p={father} fallbackRing={pigeon.fatherRing} role="Pai ♂" />
-              <Node p={mother} fallbackRing={pigeon.motherRing} role="Mãe ♀" />
-            </div>
+      <div className="pedigree-group">
+        <h3>Pais</h3>
+        <div className="pedigree-grid">
+          <Node p={father} fallbackRing={pigeon.fatherRing} role="Pai ♂"
+                createContext={{sex: 'M', childRing: pigeon.ring, role: 'father'}} />
+          <Node p={mother} fallbackRing={pigeon.motherRing} role="Mãe ♀"
+                createContext={{sex: 'F', childRing: pigeon.ring, role: 'mother'}} />
+        </div>
+      </div>
+      {(father || mother) && (
+        <div className="pedigree-group">
+          <h3>Avós</h3>
+          <div className="pedigree-grid">
+            <Node p={pGf} fallbackRing={father?.fatherRing} role="Avô pat."
+                  createContext={father ? {sex: 'M', childRing: father.ring, role: 'father'} : null} />
+            <Node p={pGm} fallbackRing={father?.motherRing} role="Avó pat."
+                  createContext={father ? {sex: 'F', childRing: father.ring, role: 'mother'} : null} />
+            <Node p={mGf} fallbackRing={mother?.fatherRing} role="Avô mat."
+                  createContext={mother ? {sex: 'M', childRing: mother.ring, role: 'father'} : null} />
+            <Node p={mGm} fallbackRing={mother?.motherRing} role="Avó mat."
+                  createContext={mother ? {sex: 'F', childRing: mother.ring, role: 'mother'} : null} />
           </div>
-          {(father || mother) && (
-            <div className="pedigree-group">
-              <h3>Avós</h3>
-              <div className="pedigree-grid">
-                <Node p={pGf} fallbackRing={father?.fatherRing} role="Avô pat." />
-                <Node p={pGm} fallbackRing={father?.motherRing} role="Avó pat." />
-                <Node p={mGf} fallbackRing={mother?.fatherRing} role="Avô mat." />
-                <Node p={mGm} fallbackRing={mother?.motherRing} role="Avó mat." />
-              </div>
-            </div>
-          )}
-        </>
+        </div>
       )}
 
       {hasDescendants && (
@@ -700,7 +742,7 @@ function PedigreeTree({pigeon, pigeons, onOpen}) {
   );
 }
 
-function PigeonForm({pigeon, pigeons, onSave, onCancel}) {
+function PigeonForm({pigeon, pigeons, onSave, onCancel, pedigreeContext}) {
   const [d, setD] = useState(pigeon);
   const set = (k, v) => setD({...d, [k]: v});
   const others = pigeons.filter(p => p.ring !== pigeon.ring);
@@ -711,12 +753,19 @@ function PigeonForm({pigeon, pigeons, onSave, onCancel}) {
     onSave({...d, ring: d.ring.trim()});
   }
 
+  const childPigeon = pedigreeContext ? pigeons.find(p => p.ring === pedigreeContext.childRing) : null;
+
   return (
     <>
       <div className="form-actions">
         <button className="cancel" onClick={onCancel}>Cancelar</button>
         <button className="save" onClick={handleSave}>Guardar</button>
       </div>
+      {pedigreeContext && childPigeon && (
+        <div style={{background: '#eeeae2', border: '0.5px solid #d8d2c4', borderRadius: 12, padding: 12, marginBottom: 10, fontSize: 13, color: 'var(--accent)', textAlign: 'center'}}>
+          A criar {pedigreeContext.role === 'father' ? '♂ pai' : '♀ mãe'} de <b>{childPigeon.name || childPigeon.ring}</b>
+        </div>
+      )}
       <div className="form-row">
         <label>Anilha *</label>
         <input className="mono-input" type="text" value={d.ring || ''} onChange={e => set('ring', e.target.value)} placeholder="PT-2024-1234567" />
