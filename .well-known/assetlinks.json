@@ -1,1 +1,12 @@
-
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "pt.myuapps.pombal",
+      "sha256_cert_fingerprints": [
+        "DE:CB:F5:8D:10:D3:71:8D:0D:48:62:09:1C:4F:33:95:CA:19:8C:DA:9A:FF:CC:46:E3:3A:53:03:A5:B1:2D:19"
+      ]
+    }
+  }
+]
