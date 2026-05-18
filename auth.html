@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pombal — Confirmação</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1e3a5f;
+    color: #faf6ed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .card { max-width: 380px; }
+  .logo {
+    font-family: Georgia, serif;
+    font-size: 56px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+  p { font-size: 15px; line-height: 1.6; opacity: 0.85; margin-bottom: 24px; }
+  .btn {
+    display: inline-block;
+    background: #faf6ed;
+    color: #1e3a5f;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .small { font-size: 13px; opacity: 0.6; margin-top: 20px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🕊️</div>
+    <h1 id="title">A confirmar a tua conta…</h1>
+    <p id="msg">Aguarda um momento.</p>
+    <a class="btn" id="openBtn" href="#" style="display:none;">Abrir a app Pombal</a>
+    <p class="small" id="hint"></p>
+  </div>
+
+<script>
+  // O Supabase manda o token no fragmento (#) ou query (?)
+  // Reconstruímos o deep link para a app: pombal://auth + parâmetros
+  (function () {
+    var hash = window.location.hash ? window.location.hash.substring(1) : '';
+    var query = window.location.search ? window.location.search.substring(1) : '';
+    var params = hash || query;
+
+    var deepLink = 'pombal://auth' + (params ? '#' + params : '');
+
+    var title = document.getElementById('title');
+    var msg = document.getElementById('msg');
+    var btn = document.getElementById('openBtn');
+    var hint = document.getElementById('hint');
+
+    // Tenta abrir a app automaticamente
+    var hasError = params.indexOf('error') !== -1;
+
+    if (hasError) {
+      title.textContent = 'Link inválido ou expirado';
+      msg.textContent = 'Este link de confirmação já não é válido. Abre a app e pede um novo email de confirmação.';
+      btn.style.display = 'inline-block';
+      btn.textContent = 'Abrir a app Pombal';
+      btn.href = 'pombal://auth';
+    } else {
+      // Redireciona automaticamente para a app
+      window.location.href = deepLink;
+
+      title.textContent = 'Conta confirmada!';
+      msg.textContent = 'A abrir a app Pombal…';
+      btn.style.display = 'inline-block';
+      btn.href = deepLink;
+      hint.textContent = 'Se a app não abrir automaticamente, toca no botão acima. Certifica-te de que tens a app Pombal instalada.';
+    }
+  })();
+</script>
+</body>
+</html>
