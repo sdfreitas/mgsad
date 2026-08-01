@@ -224,7 +224,10 @@ const jogadoresInfo = jogadores.map((nome,j)=>{
 const emDia = jogadoresInfo.filter(q=>q.emDia).length;
 const taxaCob = Math.round((totalReceitas/(jogadores.length*QUOTA*mesesAtivos))*100);
 
-// ─── TABS ───
+// ─── TABS (lazy chart init) ───
+const chartInstances = {};
+const chartsInit = { resumo: false, despesas: false };
+
 function showTab(id){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -232,6 +235,9 @@ function showTab(id){
   document.querySelectorAll('.tab-btn').forEach(b=>{
     if(b.textContent.toLowerCase().includes(id)) b.classList.add('active');
   });
+  // Create charts on first visit so animations play visibly
+  if(id === 'resumo' && !chartsInit.resumo) { initResumoCharts(); chartsInit.resumo = true; }
+  if(id === 'despesas' && !chartsInit.despesas) { initDespesasChart(); chartsInit.despesas = true; }
 }
 
 // ─── SUMMARY CARDS ───
@@ -255,31 +261,38 @@ document.getElementById('quotas-cards').innerHTML =
   makeCard('Quota Mensal','€20','por jogador','#64748b') +
   makeCard('Taxa Cobrança',taxaCob+'%','da receita esperada','#1A6FB5');
 
-// ─── CHARTS ───
+// ─── CHART CONFIG ───
 const mesesLabels = despesas.map(d=>d.mes);
-const chartOpts = {responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{usePointStyle:true,pointStyle:'circle',padding:16,font:{size:12}}}},scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{grid:{color:'#f0f3f7'},ticks:{font:{size:11},callback:v=>'€'+v}}}};
+const animOpts = { animation: { duration: 1000, easing: 'easeOutQuart' } };
+const chartOpts = {responsive:true,maintainAspectRatio:true,...animOpts,plugins:{legend:{display:true,labels:{usePointStyle:true,pointStyle:'circle',padding:16,font:{size:12}}}},scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{grid:{color:'#f0f3f7'},ticks:{font:{size:11},callback:v=>'€'+v}}}};
 
-new Chart(document.getElementById('chartBarMensal'),{
-  type:'bar',
-  data:{labels:mesesLabels,datasets:[
-    {label:'Receitas',data:receitasMes,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
-    {label:'Despesas',data:despesasMes,backgroundColor:'#C5D5E4',borderRadius:4,barPercentage:.45},
-  ]},
-  options:chartOpts
-});
-
-new Chart(document.getElementById('chartSaldo'),{
-  type:'line',
-  data:{labels:mesesLabels,datasets:[{label:'Saldo Acumulado',data:saldoAcum,borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
-  options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}
-});
+function initResumoCharts(){
+  chartInstances.bar = new Chart(document.getElementById('chartBarMensal'),{
+    type:'bar',
+    data:{labels:mesesLabels,datasets:[
+      {label:'Receitas',data:receitasMes,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
+      {label:'Despesas',data:despesasMes,backgroundColor:'#C5D5E4',borderRadius:4,barPercentage:.45},
+    ]},
+    options:chartOpts
+  });
+  chartInstances.line = new Chart(document.getElementById('chartSaldo'),{
+    type:'line',
+    data:{labels:mesesLabels,datasets:[{label:'Saldo Acumulado',data:saldoAcum,borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
+    options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}
+  });
+}
 
 const pieData = catDesp.map(c=>({nome:c.nome,valor:despesas.reduce((s,d)=>s+d[c.chave],0),cor:c.cor})).filter(c=>c.valor>0);
-new Chart(document.getElementById('chartPie'),{
-  type:'doughnut',
-  data:{labels:pieData.map(c=>c.nome),datasets:[{data:pieData.map(c=>c.valor),backgroundColor:pieData.map(c=>c.cor),borderWidth:2,borderColor:'#fff'}]},
-  options:{responsive:true,maintainAspectRatio:true,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
-});
+function initDespesasChart(){
+  chartInstances.pie = new Chart(document.getElementById('chartPie'),{
+    type:'doughnut',
+    data:{labels:pieData.map(c=>c.nome),datasets:[{data:pieData.map(c=>c.valor),backgroundColor:pieData.map(c=>c.cor),borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:true,...animOpts,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
+  });
+}
+
+// Init resumo charts immediately (it's the default visible tab)
+initResumoCharts(); chartsInit.resumo = true;
 
 // ─── TABELA DESPESAS ───
 const chaves = ['campo','arbitro','equipamento','inscricao','outros'];
