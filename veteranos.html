@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veteranos A.D.C. Lobão — Transparência Financeira</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--azul-escuro:#082347;--azul-medio:#0D3B66;--azul-claro:#1A6FB5;--azul-light:#5BA4D9;--azul-bg:#dbeafe;--bg:#F0F4F8;--card:#fff;--cinza:#64748b;--vermelho:#c1121f;--laranja:#dc6843}
+body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:#1a1a1a;min-height:100vh}
+
+header{background:linear-gradient(135deg,#082347 0%,#0D3B66 40%,#1A6FB5 100%);color:#fff;padding:28px 20px 24px}
+.header-inner{max-width:940px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.shield{width:52px;height:60px;background:linear-gradient(180deg,#fff,#e8eef5);clip-path:polygon(50% 0%,100% 12%,100% 65%,50% 100%,0% 65%,0% 12%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.shield-inner{width:46px;height:54px;background:linear-gradient(180deg,#0D3B66,#1A6FB5);clip-path:polygon(50% 0%,100% 12%,100% 65%,50% 100%,0% 65%,0% 12%);display:flex;align-items:center;justify-content:center;font-size:22px}
+header h1{font-size:20px;font-weight:700;letter-spacing:-0.3px;line-height:1.2}
+header p{margin-top:4px;font-size:12px;opacity:.7;letter-spacing:.5px}
+.stripe{height:3px;background:linear-gradient(90deg,#fff 0%,#fff 33%,#1A6FB5 33%,#1A6FB5 66%,#fff 66%)}
+
+nav{background:#fff;border-bottom:1px solid #dde4ec;position:sticky;top:0;z-index:10}
+.nav-inner{max-width:940px;margin:0 auto;display:flex;gap:0}
+.tab-btn{padding:13px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:400;color:#888;border-bottom:2.5px solid transparent;transition:all .2s;font-family:inherit}
+.tab-btn.active{font-weight:600;color:var(--azul-medio);border-bottom-color:var(--azul-claro)}
+.tab-btn:hover{color:var(--azul-medio)}
+
+main{max-width:940px;margin:0 auto;padding:20px 16px 60px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+.card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(13,59,102,.06);border-top:3px solid var(--azul-medio)}
+.card-label{font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.card-value{font-size:26px;font-weight:700;color:var(--azul-medio);letter-spacing:-.5px;line-height:1.2}
+.card-sub{font-size:11px;color:#aaa;margin-top:3px}
+.section-card{background:#fff;border-radius:10px;padding:20px 16px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:16px}
+.section-title{font-size:14px;font-weight:600;margin:0 0 16px 2px;color:var(--azul-medio);letter-spacing:-.2px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid #e8eef5}
+td{padding:10px 12px;color:#333;border-bottom:1px solid #f0f3f7}
+th.center,td.center{text-align:center}
+tfoot td{border-top:2px solid var(--azul-medio);border-bottom:none;font-weight:600}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-ok{background:var(--azul-bg);color:var(--azul-medio);border:1px solid #bfdbfe}
+.badge-falta{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+.dot{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700}
+.dot-ok{background:var(--azul-bg);color:var(--azul-medio)}
+.dot-falta{background:#fee2e2;color:#991b1b}
+
+.player-name{font-weight:500;white-space:nowrap}
+.player-name.em-falta{color:var(--vermelho);font-weight:600}
+
+.legend-wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:center;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#555}
+.legend-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.chart-container{position:relative;width:100%;max-height:260px}
+
+footer{background:#082347;color:rgba(255,255,255,.6);text-align:center;padding:20px 16px;font-size:12px}
+footer strong{color:rgba(255,255,255,.85);font-weight:600}
+
+.note{font-size:11px;color:#aaa;text-align:center;margin-top:20px}
+.table-wrap{overflow-x:auto}
+
+.ata-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:14px;border-left:4px solid var(--azul-claro)}
+.ata-card.destaque{border-left-color:#d4a017}
+.ata-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.ata-date{font-size:12px;color:#fff;background:var(--azul-medio);padding:3px 10px;border-radius:12px;font-weight:600;white-space:nowrap}
+.ata-title{font-size:15px;font-weight:600;color:var(--azul-medio)}
+.ata-body{font-size:13px;color:#444;line-height:1.7}
+.ata-body ul{margin:8px 0 0 18px;padding:0}
+.ata-body li{margin-bottom:4px}
+.ata-body li::marker{color:var(--azul-claro)}
+.ata-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-right:6px}
+.ata-tag.decisao{background:#dbeafe;color:#0D3B66}
+.ata-tag.info{background:#e0f2fe;color:#0369a1}
+.ata-tag.urgente{background:#fef3c7;color:#92400e}
+.ata-presentes{font-size:11px;color:#999;margin-top:10px;padding-top:8px;border-top:1px solid #f0f3f7}
+
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:1fr 1fr}
+  .card-value{font-size:22px}
+  header h1{font-size:17px}
+  th,td{padding:8px 6px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="shield"><div class="shield-inner">⚽</div></div>
+    <div>
+      <h1>Veteranos A.D.C. Lobão</h1>
+      <p>TRANSPARÊNCIA FINANCEIRA — ÉPOCA 2026/27</p>
+    </div>
+  </div>
+</header>
+<div class="stripe"></div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active" onclick="showTab('resumo')">📊 Resumo</button>
+    <button class="tab-btn" onclick="showTab('despesas')">💰 Despesas</button>
+    <button class="tab-btn" onclick="showTab('quotas')">👥 Quotas</button>
+    <button class="tab-btn" onclick="showTab('atas')">📋 Atas</button>
+  </div>
+</nav>
+
+<main>
+  <!-- RESUMO -->
+  <div id="tab-resumo" class="tab-panel active">
+    <div class="cards-grid" id="resumo-cards"></div>
+    <div class="section-card">
+      <h2 class="section-title">Receitas vs Despesas por Mês</h2>
+      <div class="chart-container"><canvas id="chartBarMensal"></canvas></div>
+    </div>
+    <div class="section-card">
+      <h2 class="section-title">Evolução do Saldo Acumulado</h2>
+      <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
+    </div>
+    <p class="note">Última atualização: 1 de Agosto de 2026 · Dados fictícios para validação de layout</p>
+  </div>
+
+  <!-- DESPESAS -->
+  <div id="tab-despesas" class="tab-panel">
+    <div class="section-card">
+      <h2 class="section-title">Distribuição de Despesas</h2>
+      <div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div>
+    </div>
+    <div class="section-card">
+      <h2 class="section-title">Detalhe Mensal de Despesas</h2>
+      <div class="table-wrap" id="tabela-despesas"></div>
+    </div>
+  </div>
+
+  <!-- QUOTAS -->
+  <div id="tab-quotas" class="tab-panel">
+    <div class="cards-grid" id="quotas-cards"></div>
+    <div class="section-card">
+      <h2 class="section-title">Estado das Quotas por Jogador</h2>
+      <div class="table-wrap" id="tabela-quotas"></div>
+    </div>
+  </div>
+
+  <!-- ATAS -->
+  <div id="tab-atas" class="tab-panel">
+    <div class="cards-grid" id="atas-cards"></div>
+    <div id="atas-lista"></div>
+  </div>
+</main>
+
+<footer>
+  <strong>Veteranos A.D.C. Lobão</strong><br>
+  Lobão, Santa Maria da Feira
+</footer>
+
+<script>
+// ─── DADOS ───
+const MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const QUOTA = 20;
+const MES_ATUAL = 7; // 0-indexed, Agosto
+
+const jogadores = [
+  "André Silva","Bruno Costa","Carlos Mendes","Daniel Rocha","Eduardo Pinto",
+  "Fábio Lopes","Gonçalo Reis","Hugo Ferreira","Igor Santos","João Almeida",
+  "Kevin Sousa","Luís Neves","Marco Oliveira","Nuno Ribeiro","Óscar Tavares",
+  "Paulo Vieira","Quim Barros","Ricardo Moreira","Sérgio Cardoso","Tiago Monteiro",
+  "Ulisses Faria","Vítor Gomes","Wilson Pereira","Xavier Correia","Zé Matos"
+];
+
+const quotasMensais = [
+  [1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,0,1,0,0,0,0],
+  [1,1,1,1,1,1,1,1,0,0,0,0],[1,1,0,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],
+  [1,1,1,1,0,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,0,1,1,0,0,0,0],
+  [1,1,1,1,1,1,1,1,0,0,0,0],[1,0,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],
+  [1,1,1,0,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,0,0,0,0,0],
+  [1,1,1,1,1,1,1,1,0,0,0,0],[0,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],
+  [1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,0,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],
+  [1,1,1,1,1,1,0,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],[1,1,1,1,1,1,1,1,0,0,0,0],
+  [1,1,0,1,1,1,1,1,0,0,0,0],
+];
+
+const despesas = [
+  {mes:"Jan",campo:200,arbitro:60,equipamento:0,inscricao:150,outros:30},
+  {mes:"Fev",campo:200,arbitro:60,equipamento:0,inscricao:0,outros:25},
+  {mes:"Mar",campo:200,arbitro:60,equipamento:350,inscricao:0,outros:40},
+  {mes:"Abr",campo:200,arbitro:60,equipamento:0,inscricao:0,outros:35},
+  {mes:"Mai",campo:200,arbitro:60,equipamento:0,inscricao:0,outros:20},
+  {mes:"Jun",campo:200,arbitro:60,equipamento:0,inscricao:0,outros:50},
+  {mes:"Jul",campo:200,arbitro:60,equipamento:0,inscricao:0,outros:15},
+  {mes:"Ago",campo:200,arbitro:60,equipamento:180,inscricao:0,outros:30},
+];
+
+const catDesp = [
+  {nome:"Aluguer de Campo",cor:"#0D3B66",chave:"campo"},
+  {nome:"Árbitros",cor:"#1A6FB5",chave:"arbitro"},
+  {nome:"Equipamento",cor:"#5BA4D9",chave:"equipamento"},
+  {nome:"Inscrição Liga",cor:"#082347",chave:"inscricao"},
+  {nome:"Outros",cor:"#8DC4E8",chave:"outros"},
+];
+
+// ─── CÁLCULOS ───
+function calcReceita(mi){ return jogadores.reduce((s,_,j)=>s+quotasMensais[j][mi]*QUOTA,0); }
+function calcDespTotal(d){ return d.campo+d.arbitro+d.equipamento+d.inscricao+d.outros; }
+
+const mesesAtivos = despesas.length;
+const receitasMes = despesas.map((_,i)=>calcReceita(i));
+const despesasMes = despesas.map(d=>calcDespTotal(d));
+const totalReceitas = receitasMes.reduce((a,b)=>a+b,0);
+const totalDespesas = despesasMes.reduce((a,b)=>a+b,0);
+const saldo = totalReceitas - totalDespesas;
+
+let saldoAcum = []; let acc = 0;
+receitasMes.forEach((r,i)=>{ acc += r - despesasMes[i]; saldoAcum.push(acc); });
+
+const jogadoresInfo = jogadores.map((nome,j)=>{
+  const pagas = quotasMensais[j].slice(0,MES_ATUAL+1).filter(v=>v===1).length;
+  const devidas = MES_ATUAL+1;
+  return {nome, pagas, devidas, emDia: pagas===devidas, falta: devidas-pagas};
+});
+const emDia = jogadoresInfo.filter(q=>q.emDia).length;
+const taxaCob = Math.round((totalReceitas/(jogadores.length*QUOTA*mesesAtivos))*100);
+
+// ─── TABS ───
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    if(b.textContent.toLowerCase().includes(id)) b.classList.add('active');
+  });
+}
+
+// ─── SUMMARY CARDS ───
+function makeCard(label,value,sub,accent){
+  return `<div class="card" style="border-top-color:${accent}">
+    <div class="card-label">${label}</div>
+    <div class="card-value" style="color:${accent}">${value}</div>
+    ${sub?`<div class="card-sub">${sub}</div>`:''}
+  </div>`;
+}
+
+document.getElementById('resumo-cards').innerHTML = 
+  makeCard('Saldo Atual','€'+saldo, saldo>=0?'Positivo':'Negativo', saldo>=0?'#0D3B66':'#c1121f') +
+  makeCard('Total Receitas','€'+totalReceitas, mesesAtivos+' meses', '#1A6FB5') +
+  makeCard('Total Despesas','€'+totalDespesas, 'Média €'+Math.round(totalDespesas/mesesAtivos)+'/mês', '#64748b') +
+  makeCard('Quotas em Dia', emDia+'/'+jogadores.length, Math.round(emDia/jogadores.length*100)+'% dos jogadores', '#0D3B66');
+
+document.getElementById('quotas-cards').innerHTML = 
+  makeCard('Em Dia',emDia,'jogadores','#0D3B66') +
+  makeCard('Com Falta(s)',jogadores.length-emDia,'jogadores','#dc6843') +
+  makeCard('Quota Mensal','€20','por jogador','#64748b') +
+  makeCard('Taxa Cobrança',taxaCob+'%','da receita esperada','#1A6FB5');
+
+// ─── CHARTS ───
+const mesesLabels = despesas.map(d=>d.mes);
+const chartOpts = {responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{usePointStyle:true,pointStyle:'circle',padding:16,font:{size:12}}}},scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{grid:{color:'#f0f3f7'},ticks:{font:{size:11},callback:v=>'€'+v}}}};
+
+new Chart(document.getElementById('chartBarMensal'),{
+  type:'bar',
+  data:{labels:mesesLabels,datasets:[
+    {label:'Receitas',data:receitasMes,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
+    {label:'Despesas',data:despesasMes,backgroundColor:'#C5D5E4',borderRadius:4,barPercentage:.45},
+  ]},
+  options:chartOpts
+});
+
+new Chart(document.getElementById('chartSaldo'),{
+  type:'line',
+  data:{labels:mesesLabels,datasets:[{label:'Saldo Acumulado',data:saldoAcum,borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
+  options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}
+});
+
+const pieData = catDesp.map(c=>({nome:c.nome,valor:despesas.reduce((s,d)=>s+d[c.chave],0),cor:c.cor})).filter(c=>c.valor>0);
+new Chart(document.getElementById('chartPie'),{
+  type:'doughnut',
+  data:{labels:pieData.map(c=>c.nome),datasets:[{data:pieData.map(c=>c.valor),backgroundColor:pieData.map(c=>c.cor),borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:true,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
+});
+
+// ─── TABELA DESPESAS ───
+const chaves = ['campo','arbitro','equipamento','inscricao','outros'];
+const chaveLabels = ['Campo','Árbitro','Equip.','Inscrição','Outros'];
+let html = '<table><thead><tr><th>Mês</th>';
+chaveLabels.forEach(l=>html+=`<th>${l}</th>`);
+html += '<th style="color:#0D3B66">Total</th></tr></thead><tbody>';
+despesas.forEach(d=>{
+  html += `<tr><td style="font-weight:600;color:#0D3B66">${d.mes}</td>`;
+  chaves.forEach(k=>html+=`<td>${d[k]?'€'+d[k]:'—'}</td>`);
+  html += `<td style="font-weight:700">€${calcDespTotal(d)}</td></tr>`;
+});
+html += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total</td>';
+chaves.forEach(k=>{
+  const t = despesas.reduce((s,d)=>s+d[k],0);
+  html += `<td>€${t}</td>`;
+});
+html += `<td style="font-weight:700;color:#0D3B66;font-size:14px">€${totalDespesas}</td></tr></tfoot></table>`;
+document.getElementById('tabela-despesas').innerHTML = html;
+
+// ─── TABELA QUOTAS ───
+const mesesVisiveis = MESES.slice(0,MES_ATUAL+1);
+let qhtml = '<table><thead><tr><th>Jogador</th>';
+mesesVisiveis.forEach(m=>qhtml+=`<th class="center" style="min-width:36px;padding:10px 5px">${m}</th>`);
+qhtml += '<th class="center">Estado</th></tr></thead><tbody>';
+jogadoresInfo.forEach((q,i)=>{
+  const nameClass = q.emDia ? 'player-name' : 'player-name em-falta';
+  qhtml += `<tr><td class="${nameClass}">${q.nome}</td>`;
+  quotasMensais[i].slice(0,MES_ATUAL+1).forEach(v=>{
+    const cls = v ? 'dot dot-ok' : 'dot dot-falta';
+    qhtml += `<td class="center" style="padding:7px 3px"><span class="${cls}">${v?'✓':'✗'}</span></td>`;
+  });
+  const badgeCls = q.emDia ? 'badge badge-ok' : 'badge badge-falta';
+  const badgeTxt = q.emDia ? 'Em dia' : q.falta+' em falta';
+  qhtml += `<td class="center"><span class="${badgeCls}">${badgeTxt}</span></td></tr>`;
+});
+qhtml += '</tbody></table>';
+document.getElementById('tabela-quotas').innerHTML = qhtml;
+
+// ─── ATAS / REUNIÕES ───
+const atas = [
+  {
+    data: "28 Jul 2026",
+    titulo: "Reunião Ordinária — Preparação da Época",
+    tags: [["decisao","Decisão"],["urgente","Urgente"]],
+    destaque: true,
+    pontos: [
+      "Aprovado o orçamento para a época 2026/27 com base no modelo de €20/mês por jogador.",
+      "Decidido adquirir novo jogo de camisolas (modelo azul escuro) — orçamento aprovado de €450, encomenda a fazer em Agosto.",
+      "Inscrição na Liga de Veteranos da AF Aveiro confirmada — prazo até 15 de Setembro.",
+      "Treinos às quartas-feiras (21h00) e jogos ao sábado mantêm-se.",
+      "Nomeado novo tesoureiro por unanimidade."
+    ],
+    presentes: "18 de 25 jogadores presentes"
+  },
+  {
+    data: "15 Jun 2026",
+    titulo: "Reunião sobre Torneio de Verão",
+    tags: [["info","Info"]],
+    destaque: false,
+    pontos: [
+      "Confirmada participação no Torneio de Verão de S. João — 24 e 25 de Junho em Fiães.",
+      "Inscrição: €50 (paga do fundo comum).",
+      "Definida a lista de convocados (20 jogadores disponíveis).",
+      "Combinado jantar de equipa após o torneio — cada jogador paga o seu."
+    ],
+    presentes: "14 de 25 jogadores presentes"
+  },
+  {
+    data: "3 Mai 2026",
+    titulo: "Reunião Ordinária — Ponto de Situação",
+    tags: [["decisao","Decisão"]],
+    destaque: false,
+    pontos: [
+      "Balanço financeiro apresentado pelo tesoureiro cessante — saldo positivo de €380 à data.",
+      "Identificados 4 jogadores com quotas em atraso — será enviado lembrete pelo capitão.",
+      "Reparação das balizas portáteis aprovada — custo estimado €80.",
+      "Proposta de organizar um torneio inter-veteranos em Outubro — ficou em análise."
+    ],
+    presentes: "16 de 25 jogadores presentes"
+  },
+  {
+    data: "12 Mar 2026",
+    titulo: "Reunião sobre Equipamento",
+    tags: [["decisao","Decisão"],["info","Info"]],
+    destaque: false,
+    pontos: [
+      "Aprovada compra de 10 bolas de treino (€350) — fornecedor Sportzone.",
+      "Caneleiras e meias ficam a cargo de cada jogador.",
+      "Discutida a possibilidade de arranjar um patrocinador local para as camisolas — Hugo Ferreira ficou responsável por contactar empresas.",
+      "Renovação do seguro desportivo coletivo feita com sucesso — €6/jogador."
+    ],
+    presentes: "15 de 25 jogadores presentes"
+  },
+  {
+    data: "10 Jan 2026",
+    titulo: "Assembleia de Início de Época",
+    tags: [["decisao","Decisão"],["urgente","Urgente"]],
+    destaque: true,
+    pontos: [
+      "Boas-vindas aos 3 novos jogadores: Xavier Correia, Wilson Pereira e Zé Matos.",
+      "Definido o valor da quota mensal: €20 (mantém-se da época anterior).",
+      "Inscrição na Liga de Veteranos — €150 pagos do fundo.",
+      "Aluguer do campo confirmado: €200/mês no Campo São Tiago de Lobão.",
+      "Eleição da comissão: capitão (Nuno Ribeiro), vice-capitão (André Silva), tesoureiro (a designar).",
+      "Aprovado regulamento interno: faltas a jogos sem aviso prévio sujeitas a €5 de multa simbólica."
+    ],
+    presentes: "22 de 25 jogadores presentes"
+  }
+];
+
+// Atas summary cards
+document.getElementById('atas-cards').innerHTML =
+  makeCard('Total Reuniões', atas.length, 'nesta época', '#0D3B66') +
+  makeCard('Última Reunião', atas[0].data, '', '#1A6FB5') +
+  makeCard('Decisões', atas.filter(a=>a.tags.some(t=>t[0]==='decisao')).length, 'reuniões com deliberações', '#64748b');
+
+// Render atas
+let atasHtml = '';
+atas.forEach(a => {
+  const cls = a.destaque ? 'ata-card destaque' : 'ata-card';
+  let tagsHtml = a.tags.map(t => `<span class="ata-tag ${t[0]}">${t[1]}</span>`).join('');
+  let pontosHtml = a.pontos.map(p => `<li>${p}</li>`).join('');
+  atasHtml += `
+    <div class="${cls}">
+      <div class="ata-header">
+        <div>
+          <div style="margin-bottom:6px">${tagsHtml}</div>
+          <div class="ata-title">${a.titulo}</div>
+        </div>
+        <span class="ata-date">${a.data}</span>
+      </div>
+      <div class="ata-body">
+        <ul>${pontosHtml}</ul>
+      </div>
+      <div class="ata-presentes">👥 ${a.presentes}</div>
+    </div>`;
+});
+document.getElementById('atas-lista').innerHTML = atasHtml;
+</script>
+</body>
+</html>
