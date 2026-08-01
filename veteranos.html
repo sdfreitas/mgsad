@@ -224,8 +224,18 @@ const jogadoresInfo = jogadores.map((nome,j)=>{
 const emDia = jogadoresInfo.filter(q=>q.emDia).length;
 const taxaCob = Math.round((totalReceitas/(jogadores.length*QUOTA*mesesAtivos))*100);
 
-// ─── TABS (destroy & recreate charts for animation) ───
+// ─── TABS (fresh canvas + recreate charts for animation) ───
 const chartInstances = {};
+
+function freshCanvas(id){
+  const old = document.getElementById(id);
+  const parent = old.parentNode;
+  old.remove();
+  const c = document.createElement('canvas');
+  c.id = id;
+  parent.appendChild(c);
+  return c;
+}
 
 function destroyCharts(...names){
   names.forEach(n=>{ if(chartInstances[n]){ chartInstances[n].destroy(); delete chartInstances[n]; } });
@@ -238,8 +248,8 @@ function showTab(id){
   document.querySelectorAll('.tab-btn').forEach(b=>{
     if(b.textContent.toLowerCase().includes(id)) b.classList.add('active');
   });
-  if(id === 'resumo'){ destroyCharts('bar','line'); initResumoCharts(); }
-  if(id === 'despesas'){ destroyCharts('pie'); initDespesasChart(); }
+  if(id === 'resumo'){ destroyCharts('bar','line'); setTimeout(initResumoCharts, 50); }
+  if(id === 'despesas'){ destroyCharts('pie'); setTimeout(initDespesasChart, 50); }
 }
 
 // ─── SUMMARY CARDS ───
@@ -269,7 +279,7 @@ const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
 const chartOpts = {responsive:true,maintainAspectRatio:true,...animOpts,plugins:{legend:{display:true,labels:{usePointStyle:true,pointStyle:'circle',padding:16,font:{size:12}}}},scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{grid:{color:'#f0f3f7'},ticks:{font:{size:11},callback:v=>'€'+v}}}};
 
 function initResumoCharts(){
-  chartInstances.bar = new Chart(document.getElementById('chartBarMensal'),{
+  chartInstances.bar = new Chart(freshCanvas('chartBarMensal'),{
     type:'bar',
     data:{labels:mesesLabels,datasets:[
       {label:'Receitas',data:receitasMes,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
@@ -277,7 +287,7 @@ function initResumoCharts(){
     ]},
     options:chartOpts
   });
-  chartInstances.line = new Chart(document.getElementById('chartSaldo'),{
+  chartInstances.line = new Chart(freshCanvas('chartSaldo'),{
     type:'line',
     data:{labels:mesesLabels,datasets:[{label:'Saldo Acumulado',data:saldoAcum,borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
     options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}
@@ -286,7 +296,7 @@ function initResumoCharts(){
 
 const pieData = catDesp.map(c=>({nome:c.nome,valor:despesas.reduce((s,d)=>s+d[c.chave],0),cor:c.cor})).filter(c=>c.valor>0);
 function initDespesasChart(){
-  chartInstances.pie = new Chart(document.getElementById('chartPie'),{
+  chartInstances.pie = new Chart(freshCanvas('chartPie'),{
     type:'doughnut',
     data:{labels:pieData.map(c=>c.nome),datasets:[{data:pieData.map(c=>c.valor),backgroundColor:pieData.map(c=>c.cor),borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:true,...animOpts,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
