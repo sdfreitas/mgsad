@@ -300,7 +300,11 @@ document.getElementById('tabela-despesas').innerHTML=dh;
 function calcIdade(nasc){ if(!nasc) return '—'; const p=nasc.split('/'); const d=new Date(p[2],p[1]-1,p[0]); const diff=Date.now()-d.getTime(); return Math.floor(diff/31557600000); }
 // Map birth month to season month index: Set=0(9),Out=1(10),Nov=2(11),Dez=3(12),Jan=4(1),Fev=5(2),Mar=6(3),Abr=7(4),Mai=8(5),Jun=9(6)
 const mesMap={9:0,10:1,11:2,12:3,1:4,2:5,3:6,4:7,5:8,6:9};
-function getBirthMonthIdx(nasc){ if(!nasc) return -1; const m=parseInt(nasc.split('/')[1]); return mesMap[m]!==undefined?mesMap[m]:-1; }
+const mesNomes={1:'Jan',2:'Fev',3:'Mar',4:'Abr',5:'Mai',6:'Jun',7:'Jul',8:'Ago',9:'Set',10:'Out',11:'Nov',12:'Dez'};
+function getBirthMonth(nasc){ if(!nasc) return 0; return parseInt(nasc.split('/')[1]); }
+function getBirthMonthIdx(nasc){ const m=getBirthMonth(nasc); return mesMap[m]!==undefined?mesMap[m]:-1; }
+function isOffSeason(nasc){ const m=getBirthMonth(nasc); return m===7||m===8; }
+function offSeasonTag(nasc){ if(!isOffSeason(nasc)) return ''; const m=getBirthMonth(nasc); return ` <span style="font-size:9px;font-weight:600;background:#fff7ed;color:#92400e;padding:1px 6px;border-radius:4px;white-space:nowrap">🎂 ${mesNomes[m]}</span>`; }
 function monthCell(m,birthIdx){
   if(m===birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
   return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
@@ -313,9 +317,10 @@ qh+='<th class="center">Estado</th></tr></thead><tbody>';
 
 inscritos.forEach(j=>{
   const grTag = j.gr ? ' <span style="font-size:9px;color:#1A6FB5;font-weight:700;background:#dbeafe;padding:1px 5px;border-radius:4px">GR</span>' : '';
+  const osTag = offSeasonTag(j.nasc);
   const bi = getBirthMonthIdx(j.nasc);
   qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
-  qh+=`<td class="player-name">${j.nome}${grTag}</td>`;
+  qh+=`<td class="player-name">${j.nome}${grTag}${osTag}</td>`;
   qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
   qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
   for(let m=0;m<10;m++) qh+=monthCell(m,bi);
@@ -331,8 +336,9 @@ qh+='<th class="center">Estado</th></tr></thead><tbody>';
 
 naoInscritos.forEach(j=>{
   const bi = getBirthMonthIdx(j.nasc);
+  const osTag = offSeasonTag(j.nasc);
   qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
-  qh+=`<td class="player-name">${j.nome}</td>`;
+  qh+=`<td class="player-name">${j.nome}${osTag}</td>`;
   qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
   qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
   for(let m=0;m<10;m++) qh+=monthCell(m,bi);
