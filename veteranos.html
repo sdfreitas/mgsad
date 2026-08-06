@@ -265,7 +265,7 @@ const chartOpts = {responsive:true,maintainAspectRatio:true,...animOpts,plugins:
 
 function initResumoCharts(){
   const prevRec = MESES.map(()=>receitaMensalEsperada);
-  const prevDesp = MESES.map((_,i)=> i===0 ? 1500 : 0);
+  const prevDesp = MESES.map((_,i)=> i===0 ? 1540 : 0);
   chartInstances.bar = new Chart(freshCanvas('chartBarMensal'),{
     type:'bar',data:{labels:MESES,datasets:[
       {label:'Receita Esperada',data:prevRec,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
@@ -280,7 +280,7 @@ function initResumoCharts(){
   });
 }
 function initDespesasChart(){
-  const pd=[{name:'Campo',value:1000,color:'#0D3B66'},{name:'Inscrição AFA (€20×25)',value:500,color:'#1A6FB5'}];
+  const pd=[{name:'Campo',value:1000,color:'#0D3B66'},{name:'Inscrição AFA (€20×27)',value:540,color:'#1A6FB5'}];
   chartInstances.pie = new Chart(freshCanvas('chartPie'),{
     type:'doughnut',data:{labels:pd.map(c=>c.name),datasets:[{data:pd.map(c=>c.value),backgroundColor:pd.map(c=>c.color),borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:true,...animOpts,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
@@ -291,10 +291,10 @@ initResumoCharts();
 // ─── TABELA DESPESAS ───
 let dh='<table><thead><tr><th>Despesa Prevista</th><th>Valor</th><th>Quando</th></tr></thead><tbody>';
 dh+='<tr><td style="font-weight:600;color:#0D3B66">Campo (anual)</td><td style="font-weight:700">€1.000</td><td>Setembro</td></tr>';
-dh+='<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (25 atletas × €20)</td><td style="font-weight:700">€500</td><td>Setembro</td></tr>';
+dh+='<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (27 atletas × €20)</td><td style="font-weight:700">€540</td><td>Setembro</td></tr>';
 dh+='<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
 dh+='<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
-dh+='</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Conhecido</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€1.500</td><td></td></tr></tfoot></table>';
+dh+='</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Conhecido</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€1.540</td><td></td></tr></tfoot></table>';
 dh+='<p class="note" style="margin-top:12px">Outras despesas serão adicionadas ao longo da época</p>';
 document.getElementById('tabela-despesas').innerHTML=dh;
 
