@@ -178,89 +178,109 @@ function menuNav(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen)toggleMenu()});
-// ─── DADOS REAIS ───
-const MESES_EPOCA = ["Set","Out","Nov","Dez","Jan","Fev","Mar","Abr","Mai","Jun"];
+// ─── DADOS REAIS (Época 26/27) ───
+const MESES = ["Set","Out","Nov","Dez","Jan","Fev","Mar","Abr","Mai","Jun"];
 const QUOTA = 20;
+const QUOTA_NI = 10;
 const SALDO_INICIAL = 2220;
 
-const jogadores = [
-  "Pedro Melo","Pedro Costa","Rocha","André Pinho","Inácio",
-  "Romeu","Sérgio Freitas","Jogador 8","Jogador 9","Jogador 10",
-  "Jogador 11","Jogador 12","Jogador 13","Jogador 14","Jogador 15",
-  "Jogador 16","Jogador 17","Jogador 18","Jogador 19","Jogador 20",
-  "Jogador 21","Jogador 22","Jogador 23","Jogador 24","Guarda-Redes"
+const inscritos = [
+  {nome:"André Pinho",apelido:"PINHO",num:30,nasc:"13/12/1984",gr:false},
+  {nome:"Sérgio Tavares",apelido:"TAVARES",num:27,nasc:"10/10/1984",gr:false},
+  {nome:"Américo Oliveira",apelido:"AMÉRICO",num:13,nasc:"10/08/1982",gr:false},
+  {nome:"Armando",apelido:"ARMANDO",num:7,nasc:"19/03/1973",gr:false},
+  {nome:"Hugo André",apelido:"H. ANDRÉ",num:6,nasc:"10/05/1986",gr:false},
+  {nome:"Mário Oliveira",apelido:"MÁRIO",num:18,nasc:"11/11/1970",gr:false},
+  {nome:"Mendes",apelido:"MENDES",num:21,nasc:"28/05/1986",gr:false},
+  {nome:"Rui Rocha",apelido:"RUI ROCHA",num:77,nasc:"12/11/1988",gr:false},
+  {nome:"António Rocha",apelido:"ROCHINHA",num:11,nasc:"08/04/1965",gr:false},
+  {nome:"Pedro Cadete",apelido:"CADETE",num:17,nasc:"10/07/1973",gr:false},
+  {nome:"António Oliveira",apelido:"OLIVEIRA",num:8,nasc:"10/11/1988",gr:false},
+  {nome:"Amílcar André",apelido:"AMILCAR",num:10,nasc:"26/01/1987",gr:false},
+  {nome:"Pedro Costa",apelido:"MOCHO",num:9,nasc:"13/07/1986",gr:false},
+  {nome:"Sérgio (Ervilha)",apelido:"SÉRGIO",num:79,nasc:"31/10/1986",gr:false},
+  {nome:"Pedro Ferreira",apelido:"PEDRO F.",num:71,nasc:"11/02/1979",gr:false},
+  {nome:"Jorge Santos",apelido:"JORGE",num:23,nasc:"28/09/1989",gr:false},
+  {nome:"Américo Silva",apelido:"AMÉRICO SILVA",num:88,nasc:"12/10/1979",gr:false},
+  {nome:"Tiago Mota",apelido:"MOTINHA",num:98,nasc:"28/02/1990",gr:false},
+  {nome:"José Eduardo",apelido:"ZÉ EDUARDO",num:5,nasc:"01/09/1985",gr:false},
+  {nome:"Sergio Rodrigues",apelido:"RODRIGUES",num:25,nasc:"01/11/1983",gr:false},
+  {nome:"Joel Tavares",apelido:"JOEL",num:3,nasc:"27/09/1981",gr:false},
+  {nome:"Fábio Gonçalves",apelido:"FÁBIO",num:null,nasc:"13/07/1990",gr:true},
+  {nome:"André Lopes",apelido:"ANDRÉ",num:20,nasc:"15/08/1990",gr:false},
+  {nome:"António José Silva",apelido:"TOZE",num:70,nasc:"16/03/1981",gr:false},
+  {nome:"Miguel Almeida",apelido:"MIGUEL",num:19,nasc:"10/05/1974",gr:false},
+  {nome:"Sergio Silva",apelido:"SERGINHO",num:4,nasc:"01/01/1988",gr:false},
+  {nome:"Luís Paiva",apelido:"LUÍS",num:26,nasc:"21/11/1982",gr:false},
 ];
-const isGR = (j) => j === jogadores.length - 1;
-const quotasMensais = jogadores.map(() => [0,0,0,0,0,0,0,0,0,0]);
 
-const receitaMensalEsperada = (jogadores.length - 1) * QUOTA;
+const naoInscritos = [
+  {nome:"Inácio",apelido:"INÁCIO",num:3,nasc:"26/10/1976"},
+  {nome:"Telmo",apelido:"TELMO",num:null,nasc:"23/03/1991"},
+  {nome:"Fábio Oliveira",apelido:"FÁBIO",num:null,nasc:"21/10/2000"},
+  {nome:"Romeu",apelido:"ROMEU",num:2,nasc:"11/05/1976"},
+  {nome:"Marcelo",apelido:"MARCELO",num:null,nasc:"18/12/1992"},
+  {nome:"Celso Ferreira",apelido:"CELSO",num:null,nasc:null},
+  {nome:"Daniel Dias",apelido:"DANIEL",num:null,nasc:"10/03/1982"},
+  {nome:"Salvador",apelido:"SALVADOR",num:null,nasc:"13/07/1978"},
+  {nome:"Vitor Leite",apelido:"VITINHA GR",num:null,nasc:"01/06/1992"},
+  {nome:"Zé Buraca",apelido:"ZÉ BURACA",num:null,nasc:"04/08/1980"},
+];
+
+const nInscPagam = inscritos.filter(j=>!j.gr).length;
+const receitaMensalEsperada = nInscPagam * QUOTA;
 const saldo = SALDO_INICIAL;
 
 // ─── TABS ───
 const chartInstances = {};
-function freshCanvas(id){
-  const old = document.getElementById(id);
-  const p = old.parentNode; old.remove();
-  const c = document.createElement('canvas'); c.id = id; p.appendChild(c); return c;
-}
+function freshCanvas(id){ const o=document.getElementById(id);const p=o.parentNode;o.remove();const c=document.createElement('canvas');c.id=id;p.appendChild(c);return c; }
 function destroyCharts(...n){ n.forEach(k=>{ if(chartInstances[k]){ chartInstances[k].destroy(); delete chartInstances[k]; } }); }
-
 function showTab(id){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   if(id==='resumo'){ destroyCharts('bar','line'); setTimeout(initResumoCharts,50); }
   if(id==='despesas'){ destroyCharts('pie'); setTimeout(initDespesasChart,50); }
 }
+function makeCard(l,v,s,a){ return `<div class="card" style="border-top-color:${a}"><div class="card-label">${l}</div><div class="card-value" style="color:${a}">${v}</div>${s?`<div class="card-sub">${s}</div>`:''}</div>`; }
 
-function makeCard(label,value,sub,accent){
-  return `<div class="card" style="border-top-color:${accent}">
-    <div class="card-label">${label}</div>
-    <div class="card-value" style="color:${accent}">${value}</div>
-    ${sub?`<div class="card-sub">${sub}</div>`:''}
-  </div>`;
-}
-
+// ─── RESUMO CARDS ───
 document.getElementById('resumo-cards').innerHTML =
-  makeCard('Saldo Atual','€'+saldo,'Caixa transitada','#0D3B66') +
-  makeCard('Caixa Transitada','€'+SALDO_INICIAL,'Época anterior','#1A6FB5') +
-  makeCard('Receita Esperada','€'+receitaMensalEsperada+'/mês',(jogadores.length-1)+' jogadores × €'+QUOTA,'#64748b') +
-  makeCard('Jogadores',jogadores.length,'1 guarda-redes (isento)','#0D3B66');
+  makeCard('Saldo Atual','€'+saldo,'Caixa transitada','#0D3B66')+
+  makeCard('Caixa Transitada','€'+SALDO_INICIAL,'Época anterior','#1A6FB5')+
+  makeCard('Receita Esperada','€'+receitaMensalEsperada+'/mês',nInscPagam+' inscritos × €'+QUOTA,'#64748b')+
+  makeCard('Plantel',inscritos.length+' + '+naoInscritos.length,inscritos.length+' inscritos · '+naoInscritos.length+' não inscritos','#0D3B66');
 
+// ─── QUOTAS CARDS ───
 document.getElementById('quotas-cards').innerHTML =
-  makeCard('Jogadores',jogadores.length-1,'pagam quota','#0D3B66') +
-  makeCard('Guarda-Redes',1,'isento de quota','#1A6FB5') +
-  makeCard('Quota Mensal','€20','por jogador (Set–Jun)','#64748b') +
-  makeCard('Início','Setembro 2026','1ª cobrança','#0D3B66');
+  makeCard('Inscritos',inscritos.length,'(1 GR isento)','#0D3B66')+
+  makeCard('Não Inscritos',naoInscritos.length,'€10/mês','#1A6FB5')+
+  makeCard('Quota Inscrito','€20/mês','Set–Jun','#64748b')+
+  makeCard('Quota Não Inscrito','€10/mês','quando comparecem','#0D3B66');
 
 // ─── CHARTS ───
 const animOpts = {animation:{duration:900,easing:'easeOutQuart'}};
 const chartOpts = {responsive:true,maintainAspectRatio:true,...animOpts,plugins:{legend:{display:true,labels:{usePointStyle:true,pointStyle:'circle',padding:16,font:{size:12}}}},scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{grid:{color:'#f0f3f7'},ticks:{font:{size:11},callback:v=>'€'+v}}}};
 
 function initResumoCharts(){
-  const prevRec = MESES_EPOCA.map(()=>receitaMensalEsperada);
-  const prevDesp = MESES_EPOCA.map((_,i)=> i===0 ? 1500 : 0);
+  const prevRec = MESES.map(()=>receitaMensalEsperada);
+  const prevDesp = MESES.map((_,i)=> i===0 ? 1500 : 0);
   chartInstances.bar = new Chart(freshCanvas('chartBarMensal'),{
-    type:'bar',
-    data:{labels:MESES_EPOCA,datasets:[
+    type:'bar',data:{labels:MESES,datasets:[
       {label:'Receita Esperada',data:prevRec,backgroundColor:'#1A6FB5',borderRadius:4,barPercentage:.45},
       {label:'Despesas Previstas',data:prevDesp,backgroundColor:'#C5D5E4',borderRadius:4,barPercentage:.45},
-    ]},
-    options:chartOpts
+    ]},options:chartOpts
   });
   let acc=SALDO_INICIAL;
-  const saldoPrev = MESES_EPOCA.map((_,i)=>{ acc+=prevRec[i]-prevDesp[i]; return acc; });
+  const sp=MESES.map((_,i)=>{acc+=prevRec[i]-prevDesp[i];return acc;});
   chartInstances.line = new Chart(freshCanvas('chartSaldo'),{
-    type:'line',
-    data:{labels:['Início',...MESES_EPOCA],datasets:[{label:'Saldo Previsto',data:[SALDO_INICIAL,...saldoPrev],borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
+    type:'line',data:{labels:['Início',...MESES],datasets:[{label:'Saldo Previsto',data:[SALDO_INICIAL,...sp],borderColor:'#0D3B66',backgroundColor:'rgba(13,59,102,.08)',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0D3B66',borderWidth:2.5}]},
     options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}
   });
 }
-
 function initDespesasChart(){
   const pd=[{name:'Campo',value:1000,color:'#0D3B66'},{name:'Inscrição AFA (€20×25)',value:500,color:'#1A6FB5'}];
   chartInstances.pie = new Chart(freshCanvas('chartPie'),{
-    type:'doughnut',
-    data:{labels:pd.map(c=>c.name),datasets:[{data:pd.map(c=>c.value),backgroundColor:pd.map(c=>c.color),borderWidth:2,borderColor:'#fff'}]},
+    type:'doughnut',data:{labels:pd.map(c=>c.name),datasets:[{data:pd.map(c=>c.value),backgroundColor:pd.map(c=>c.color),borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:true,...animOpts,cutout:'55%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',padding:14,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.label+': €'+ctx.raw}}}}
   });
 }
@@ -270,26 +290,56 @@ initResumoCharts();
 let dh='<table><thead><tr><th>Despesa Prevista</th><th>Valor</th><th>Quando</th></tr></thead><tbody>';
 dh+='<tr><td style="font-weight:600;color:#0D3B66">Campo (anual)</td><td style="font-weight:700">€1.000</td><td>Setembro</td></tr>';
 dh+='<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (25 atletas × €20)</td><td style="font-weight:700">€500</td><td>Setembro</td></tr>';
-dh+='<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total por atleta: €50 (atleta paga €30 + caixa cobre €20)</td><td></td><td></td></tr>';
+dh+='<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
 dh+='<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
 dh+='</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Conhecido</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€1.500</td><td></td></tr></tfoot></table>';
 dh+='<p class="note" style="margin-top:12px">Outras despesas serão adicionadas ao longo da época</p>';
 document.getElementById('tabela-despesas').innerHTML=dh;
 
 // ─── TABELA QUOTAS ───
-let qh='<table><thead><tr><th>Jogador</th>';
-MESES_EPOCA.forEach(m=>qh+=`<th class="center" style="min-width:36px;padding:10px 5px">${m}</th>`);
+function calcIdade(nasc){ if(!nasc) return '—'; const p=nasc.split('/'); const d=new Date(p[2],p[1]-1,p[0]); const diff=Date.now()-d.getTime(); return Math.floor(diff/31557600000); }
+// Map birth month to season month index: Set=0(9),Out=1(10),Nov=2(11),Dez=3(12),Jan=4(1),Fev=5(2),Mar=6(3),Abr=7(4),Mai=8(5),Jun=9(6)
+const mesMap={9:0,10:1,11:2,12:3,1:4,2:5,3:6,4:7,5:8,6:9};
+function getBirthMonthIdx(nasc){ if(!nasc) return -1; const m=parseInt(nasc.split('/')[1]); return mesMap[m]!==undefined?mesMap[m]:-1; }
+function monthCell(m,birthIdx){
+  if(m===birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
+  return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
+}
+
+let qh='<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Inscritos (€20/mês)</h3>';
+qh+='<div class="table-wrap"><table><thead><tr><th style="width:30px">Nº</th><th>Nome</th><th class="center">Nasc.</th><th class="center">Idade</th>';
+MESES.forEach(m=>qh+=`<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`);
 qh+='<th class="center">Estado</th></tr></thead><tbody>';
-jogadores.forEach((nome,i)=>{
-  const gr=isGR(i);
-  const grLabel=gr?' <span style="font-size:10px;color:#1A6FB5;font-weight:600">(GR)</span>':'';
-  qh+=`<tr><td class="player-name">${nome}${grLabel}</td>`;
-  for(let m=0;m<10;m++) qh+='<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
-  if(gr) qh+='<td class="center"><span class="badge badge-ok">Isento</span></td></tr>';
+
+inscritos.forEach(j=>{
+  const grTag = j.gr ? ' <span style="font-size:9px;color:#1A6FB5;font-weight:700;background:#dbeafe;padding:1px 5px;border-radius:4px">GR</span>' : '';
+  const bi = getBirthMonthIdx(j.nasc);
+  qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
+  qh+=`<td class="player-name">${j.nome}${grTag}</td>`;
+  qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
+  qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
+  for(let m=0;m<10;m++) qh+=monthCell(m,bi);
+  if(j.gr) qh+='<td class="center"><span class="badge badge-ok">Isento</span></td></tr>';
   else qh+='<td class="center"><span style="color:#999;font-size:11px">Inicia Set</span></td></tr>';
 });
-qh+='</tbody></table>';
-qh+='<p class="note" style="margin-top:12px">Quotas de €20/mês · Início em Setembro 2026 · Guarda-redes isento</p>';
+qh+='</tbody></table></div>';
+
+qh+='<h3 style="font-size:13px;color:#dc6843;font-weight:600;margin:24px 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Não Inscritos (€10/mês)</h3>';
+qh+='<div class="table-wrap"><table><thead><tr><th style="width:30px">Nº</th><th>Nome</th><th class="center">Nasc.</th><th class="center">Idade</th>';
+MESES.forEach(m=>qh+=`<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`);
+qh+='<th class="center">Estado</th></tr></thead><tbody>';
+
+naoInscritos.forEach(j=>{
+  const bi = getBirthMonthIdx(j.nasc);
+  qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
+  qh+=`<td class="player-name">${j.nome}</td>`;
+  qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
+  qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
+  for(let m=0;m<10;m++) qh+=monthCell(m,bi);
+  qh+='<td class="center"><span style="color:#999;font-size:11px">Inicia Set</span></td></tr>';
+});
+qh+='</tbody></table></div>';
+qh+='<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · GR isento · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário</p>';
 document.getElementById('tabela-quotas').innerHTML=qh;
 
 // ─── ATA ───
@@ -301,11 +351,13 @@ const atas=[{
   pontos:[
     "Caixa transitada da época anterior: €2.220.",
     "Campo — custo anual de €1.000 confirmado.",
-    "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20 (total da caixa: €500 para 25 atletas).",
+    "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20.",
     "Massagista — valor a definir em reunião futura.",
     "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
     "Mensalidade definida em €20/mês a começar em Setembro.",
-    "Guarda-redes é um jogador extra e fica isento de quota."
+    "Guarda-redes é um jogador extra e fica isento de quota.",
+    "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
+    "Atletas não inscritos pagam €10/mês.",
   ],
   presentes:"Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
 }];
@@ -333,7 +385,7 @@ function showSubTab(id){
 }
 
 // ─── COMPETIÇÃO ───
-document.getElementById('sub-calendario').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026. O calendário será atualizado assim que disponível.</div></div>';
+document.getElementById('sub-calendario').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
 
 const equipas=[
   {nome:"Vet. A.D.C. Lobão",us:true},{nome:"Vet. FC Fiães",us:false},{nome:"Vet. SC Espinho",us:false},
@@ -348,5 +400,5 @@ equipas.forEach((e,i)=>{
 ch+='</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
 document.getElementById('sub-classificacao').innerHTML=ch;
 
-document.getElementById('sub-marcadores').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela de marcadores será atualizada quando a época começar.</div></div>';
+document.getElementById('sub-marcadores').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 </script></body></html>
