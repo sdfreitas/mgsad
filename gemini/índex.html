@@ -1,1 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale5.0">
+    <title>Tesouraria -Veteranos</title>
+    <!-- Importação do Tailwind CSS para um design rápido e bonito -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importação do Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
+    <!-- CABEÇALHO -->
+    <header class="bg-emerald-800 text-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">⚽ Tesouraria | Veteranos FC</h1>
+            <span class="text-sm bg-emerald-700 px-3 py-1 rounded-full">Época 2026</span>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="container mx-auto px-6 py-8">
+
+        <!-- CARTÕES DE RESUMO -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-emerald-500">
+                <p class="text-gray-500 text-sm font-semibold uppercase">Saldo Atual</p>
+                <p class="text-3xl font-bold text-emerald-600 mt-2">1.250,00 €</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+                <p class="text-gray-500 text-sm font-semibold uppercase">Total Recebido</p>
+                <p class="text-3xl font-bold text-blue-600 mt-2">2.400,00 €</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
+                <p class="text-gray-500 text-sm font-semibold uppercase">Total Gasto</p>
+                <p class="text-3xl font-bold text-red-600 mt-2">1.150,00 €</p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO DE GRÁFICOS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Gráfico 1: Resumo Geral -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-bold text-gray-700 mb-4">Balanço Financeiro</h2>
+                <div class="relative h-64">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 2: Despesas por Categoria -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-bold text-gray-700 mb-4">Distribuição de Despesas</h2>
+                <div class="relative h-64 flex justify-center">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA DE TRANSAÇÕES -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-bold text-gray-700">Últimos Movimentos</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-sm uppercase">
+                            <th class="py-3 px-6">Data</th>
+                            <th class="py-3 px-6">Descrição</th>
+                            <th class="py-3 px-6">Categoria</th>
+                            <th class="py-3 px-6 text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 divide-y divide-gray-200">
+                        <tr>
+                            <td class="py-3 px-6">02/08/2026</td>
+                            <td class="py-3 px-6">Mensalidades (Grupo A)</td>
+                            <td class="py-3 px-6"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Receita</span></td>
+                            <td class="py-3 px-6 text-right font-semibold text-blue-600">+ 150,00 €</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6">28/07/2026</td>
+                            <td class="py-3 px-6">Pagamento de Árbitros</td>
+                            <td class="py-3 px-6"><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Arbitragem</span></td>
+                            <td class="py-3 px-6 text-right font-semibold text-red-600">- 60,00 €</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6">20/07/2026</td>
+                            <td class="py-3 px-6">Compra de Coletes e Bolas</td>
+                            <td class="py-3 px-6"><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Material</span></td>
+                            <td class="py-3 px-6 text-right font-semibold text-red-600">- 120,00 €</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6">15/07/2026</td>
+                            <td class="py-3 px-6">Almoço de Convívio (Inscrições)</td>
+                            <td class="py-3 px-6"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Receita</span></td>
+                            <td class="py-3 px-6 text-right font-semibold text-blue-600">+ 300,00 €</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-12">
+        <p class="text-sm">Gestão de Tesouraria para Veteranos &copy; 2026</p>
+    </footer>
+
+    <!-- SCRIPTS PARA CONFIGURAR OS GRÁFICOS -->
+    <script>
+        // Gráfico de Barras (Receitas vs Despesas)
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Receitas', 'Despesas'],
+                datasets: [{
+                    label: 'Montante em €',
+                    data: [2400, 1150],
+                    backgroundColor: ['#3b82f6', '#ef4444'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Gráfico Circular (Distribuição de Despesas)
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Árbitros', 'Material', 'Campo/Instalações', 'Outros'],
+                datasets: [{
+                    data: [450, 300, 250, 150],
+                    backgroundColor: ['#f59e0b', '#ef4444', '#10b981', '#6366f1']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+
+</body>
+</html>
