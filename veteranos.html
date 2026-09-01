@@ -100,6 +100,24 @@ tfoot td{border-top:2px solid var(--azul-medio);border-bottom:none;font-weight:6
 footer{background:#082347;color:rgba(255,255,255,.6);text-align:center;padding:20px 16px;font-size:12px}
 footer strong{color:rgba(255,255,255,.85);font-weight:600}
 
+.bday-months-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.bday-month-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(13,59,102,.06);overflow:hidden}
+.bday-month-card.current{box-shadow:0 0 0 2px var(--azul-claro),0 4px 12px rgba(13,59,102,.15)}
+.bday-month-card.offseason{opacity:.75}
+.bday-month-head{background:linear-gradient(135deg,#0D3B66,#1A6FB5);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.bday-month-card.offseason .bday-month-head{background:linear-gradient(135deg,#94a3b8,#cbd5e1)}
+.bday-month-name{font-size:14px;font-weight:700;letter-spacing:.3px}
+.bday-month-count{font-size:11px;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px;font-weight:600}
+.bday-month-body{padding:10px 16px 14px}
+.bday-person{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f3f7;font-size:13px}
+.bday-person:last-child{border-bottom:none}
+.bday-person-name{color:#333;font-weight:500}
+.bday-person-name.ni{color:#dc6843}
+.bday-person-day{color:#999;font-size:12px;font-weight:600;background:#f0f4f8;padding:2px 8px;border-radius:8px;white-space:nowrap}
+.bday-empty{color:#bbb;font-size:12px;font-style:italic;padding:8px 0;text-align:center}
+.bday-legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:16px 0 4px;font-size:12px;color:#666}
+.bday-legend span.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
 @media(max-width:600px){
   .cards-grid{grid-template-columns:1fr 1fr}
   .card-value{font-size:22px}
@@ -123,6 +141,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
     <button class="menu-link active" onclick="menuNav('resumo')">📊  Resumo</button>
     <button class="menu-link" onclick="menuNav('despesas')">💰  Despesas</button>
     <button class="menu-link" onclick="menuNav('quotas')">👥  Quotas</button>
+    <button class="menu-link" onclick="menuNav('aniversarios')">🎂  Aniversários</button>
     <button class="menu-link" onclick="menuNav('competicao')">🏆  Competição</button>
     <button class="menu-link" onclick="menuNav('atas')">📋  Atas</button>
   </div>
@@ -142,6 +161,10 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
   <div id="tab-quotas" class="tab-panel">
     <div class="cards-grid" id="quotas-cards"></div>
     <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
+  </div>
+  <div id="tab-aniversarios" class="tab-panel">
+    <div class="cards-grid" id="aniversarios-cards"></div>
+    <div id="aniversarios-grid"></div>
   </div>
   <div id="tab-competicao" class="tab-panel">
     <div class="sub-tabs">
@@ -355,6 +378,63 @@ qh+='</div></div>';
 qh+='<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário</p>';
 document.getElementById('tabela-quotas').innerHTML=qh;
 
+// ─── MAPA DE ANIVERSÁRIOS ───
+const todosJogadores = [
+  ...inscritos.map(j=>({...j, inscrito:true})),
+  ...naoInscritos.map(j=>({...j, inscrito:false}))
+];
+const mesesAno = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const hoje = new Date();
+const mesAtualNum = hoje.getMonth()+1; // 1-12
+
+// Group by birth month
+const porMes = {};
+for(let m=1;m<=12;m++) porMes[m] = [];
+todosJogadores.forEach(j=>{
+  if(!j.nasc) return;
+  const partes = j.nasc.split('/');
+  const mes = parseInt(partes[1]);
+  const dia = parseInt(partes[0]);
+  porMes[mes].push({...j, dia});
+});
+Object.keys(porMes).forEach(m => porMes[m].sort((a,b)=>a.dia-b.dia));
+
+const totalComData = todosJogadores.filter(j=>j.nasc).length;
+const aniversariantesMesAtual = porMes[mesAtualNum].length;
+let mesMaisAniversarios = 1, maxCount = 0;
+for(let m=1;m<=12;m++){ if(porMes[m].length > maxCount){ maxCount = porMes[m].length; mesMaisAniversarios = m; } }
+
+document.getElementById('aniversarios-cards').innerHTML =
+  makeCard('Total com Data',totalComData,'de '+todosJogadores.length+' jogadores','#0D3B66')+
+  makeCard('Este Mês',aniversariantesMesAtual,mesesAno[mesAtualNum-1],'#1A6FB5')+
+  makeCard('Mês com Mais',mesesAno[mesMaisAniversarios-1],maxCount+' aniversariantes','#64748b')+
+  makeCard('Fora da Época',porMes[7].length+porMes[8].length,'Julho + Agosto','#dc6843');
+
+let bmHtml = '<div class="bday-months-grid">';
+for(let m=1;m<=12;m++){
+  const lista = porMes[m];
+  const isOff = (m===7||m===8);
+  const isCurrent = (m===mesAtualNum);
+  let cls = 'bday-month-card';
+  if(isCurrent) cls += ' current';
+  if(isOff) cls += ' offseason';
+  bmHtml += `<div class="${cls}">`;
+  bmHtml += `<div class="bday-month-head"><span class="bday-month-name">${mesesAno[m-1]}${isCurrent?' 📍':''}</span><span class="bday-month-count">${lista.length}</span></div>`;
+  bmHtml += '<div class="bday-month-body">';
+  if(lista.length === 0){
+    bmHtml += '<div class="bday-empty">Sem aniversários</div>';
+  } else {
+    lista.forEach(j=>{
+      const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
+      bmHtml += `<div class="bday-person"><span class="${nameCls}">${j.nome}</span><span class="bday-person-day">${j.dia} ${mesesAno[m-1].slice(0,3)}</span></div>`;
+    });
+  }
+  bmHtml += '</div></div>';
+}
+bmHtml += '</div>';
+bmHtml += '<div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span></div>';
+document.getElementById('aniversarios-grid').innerHTML = bmHtml;
+
 // ─── ATA ───
 const atas=[{
   data:"5 Ago 2026",
@@ -364,7 +444,7 @@ const atas=[{
   pontos:[
     "Caixa transitada da época anterior: €2.220.",
     "Campo — custo anual de €1.000 confirmado.",
-    "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20.",
+    "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20 (total da caixa: €540 para 27 atletas).",
     "Massagista — valor a definir em reunião futura.",
     "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
     "Mensalidade definida em €20/mês a começar em Setembro.",
