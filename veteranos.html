@@ -139,6 +139,27 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
 .pres-body{padding:16px 18px}
 .pres-pending-msg{text-align:center;color:#999;font-size:13px;padding:12px 0}
 
+.mes-acc{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:8px;overflow:hidden}
+.mes-acc-head{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;transition:background .15s}
+.mes-acc-head:hover{background:#f8fafc}
+.mes-acc-left{display:flex;align-items:center;gap:12px}
+.mes-acc-name{font-size:14px;font-weight:700;color:#0D3B66}
+.mes-acc-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;background:#f0f4f8;color:#64748b}
+.mes-acc-badge.paid{background:#dcfce7;color:#166534}
+.mes-acc-chevron{font-size:12px;color:#aaa;transition:transform .25s}
+.mes-acc.open .mes-acc-chevron{transform:rotate(180deg)}
+.mes-acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.mes-acc.open .mes-acc-body{max-height:2000px}
+.mes-acc-inner{padding:4px 18px 14px}
+.mes-player-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f3f7;font-size:13px}
+.mes-player-row:last-child{border-bottom:none}
+.mes-player-name{color:#333}
+.mes-player-name.ni-tag::after{content:'NI';font-size:9px;font-weight:700;color:#dc6843;background:#fff1e8;padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.mes-player-status{font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap}
+.mes-player-status.pago{background:#dcfce7;color:#166534}
+.mes-player-status.nao{background:#f1f5f9;color:#94a3b8}
+.mes-player-status.bday{background:#fff7ed;color:#92400e}
+
 @media(max-width:600px){
   .cards-grid{grid-template-columns:1fr 1fr}
   .card-value{font-size:22px}
@@ -183,6 +204,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
   </div>
   <div id="tab-quotas" class="tab-panel">
     <div class="cards-grid" id="quotas-cards"></div>
+    <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
     <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
   </div>
   <div id="tab-aniversarios" class="tab-panel">
@@ -469,6 +491,40 @@ qh+='<div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;pad
 qh+='<div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div>';
 qh+='</div></div>';
 qh+='<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário · ✓ Mês pago</p>';
+// ─── QUOTAS POR MÊS (acordeão) ───
+const todosParaQuotas = [
+  ...inscritos.map(j=>({...j, ni:false, quota:QUOTA})),
+  ...naoInscritos.map(j=>({...j, ni:true, quota:QUOTA_NI}))
+];
+let maHtml = '';
+MESES.forEach((mNome,mIdx)=>{
+  let pagosCount = 0;
+  let rowsHtml = '';
+  todosParaQuotas.forEach(j=>{
+    const pago = jaPagou(j.nome, mIdx);
+    if(pago) pagosCount++;
+    const bi = getBirthMonthIdx(j.nasc);
+    const isBday = (bi === mIdx);
+    let statusHtml, statusCls;
+    if(pago){ statusHtml = `✓ Pago (€${j.quota})`; statusCls='pago'; }
+    else if(isBday){ statusHtml = '🎂 Aniversário'; statusCls='bday'; }
+    else { statusHtml = 'Por pagar'; statusCls='nao'; }
+    const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
+    rowsHtml += `<div class="mes-player-row"><span class="${nameCls}">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
+  });
+  const receitaMes = todosParaQuotas.reduce((s,j)=> s + (jaPagou(j.nome,mIdx)?j.quota:0), 0);
+  const badgeCls = pagosCount>0 ? 'mes-acc-badge paid' : 'mes-acc-badge';
+  maHtml += `<div class="mes-acc" id="mesacc-${mIdx}">
+    <div class="mes-acc-head" onclick="toggleMesAcc(${mIdx})">
+      <div class="mes-acc-left"><span class="mes-acc-name">${mNome}</span><span class="${badgeCls}">${pagosCount} pago(s) · €${receitaMes}</span></div>
+      <span class="mes-acc-chevron">▾</span>
+    </div>
+    <div class="mes-acc-body"><div class="mes-acc-inner">${rowsHtml}</div></div>
+  </div>`;
+});
+document.getElementById('quotas-por-mes').innerHTML = maHtml;
+function toggleMesAcc(i){ document.getElementById('mesacc-'+i).classList.toggle('open'); }
+
 document.getElementById('tabela-quotas').innerHTML=qh;
 
 // ─── MAPA DE ANIVERSÁRIOS ───
