@@ -301,10 +301,10 @@ const inscritos = [
   {nome:"Joel Tavares",apelido:"JOEL",num:3,nasc:"27/09/1981"},
   {nome:"Fábio Gonçalves",apelido:"FÁBIO",num:null,nasc:"13/07/1990"},
   {nome:"André Lopes",apelido:"ANDRÉ",num:20,nasc:"15/08/1990"},
-  {nome:"António José Silva",apelido:"TOZE",num:70,nasc:"16/03/1981"},
   {nome:"Miguel Almeida",apelido:"MIGUEL",num:19,nasc:"10/05/1974"},
   {nome:"Sergio Silva",apelido:"SERGINHO",num:4,nasc:"01/01/1988"},
   {nome:"Luís Paiva",apelido:"LUÍS",num:26,nasc:"21/11/1982"},
+  {nome:"Daniel Dias",apelido:"DANIEL",num:null,nasc:"10/03/1982"},
 ];
 
 const naoInscritos = [
@@ -314,7 +314,7 @@ const naoInscritos = [
   {nome:"Romeu",apelido:"ROMEU",num:2,nasc:"11/05/1976"},
   {nome:"Marcelo",apelido:"MARCELO",num:null,nasc:"18/12/1992"},
   {nome:"Celso Ferreira",apelido:"CELSO",num:null,nasc:null},
-  {nome:"Daniel Dias",apelido:"DANIEL",num:null,nasc:"10/03/1982"},
+  {nome:"António José Silva",apelido:"TOZE",num:70,nasc:"16/03/1981"},
   {nome:"Salvador",apelido:"SALVADOR",num:null,nasc:"13/07/1978"},
   {nome:"Vitor Leite",apelido:"VITINHA GR",num:null,nasc:"01/06/1992"},
   {nome:"Zé Buraca",apelido:"ZÉ BURACA",num:null,nasc:"04/08/1980"},
@@ -647,6 +647,7 @@ document.getElementById('atas-lista').innerHTML=ah;
 
 // ─── HISTÓRICO FINANCEIRO ───
 const historico = [
+  { data:"2 Set 2026", tipo:"aviso", desc:"Daniel Dias passou de não inscrito para inscrito (€20/mês); António José Silva passou de inscrito para não inscrito (€10/mês)." },
   { data:"2 Set 2026", tipo:"pagamento", desc:"Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
   { data:"5 Ago 2026", tipo:"ata", desc:"Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
   { data:"5 Ago 2026", tipo:"caixa", desc:"Caixa transitada da época 2025/26: €2.220." },
