@@ -127,6 +127,18 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
 .hist-date{font-size:11px;color:#1A6FB5;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
 .hist-desc{font-size:13px;color:#333;line-height:1.5;background:#fff;border-radius:8px;padding:10px 14px;box-shadow:0 1px 3px rgba(13,59,102,.05)}
 
+.pres-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:14px;overflow:hidden}
+.pres-head{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.pres-head.treino{background:linear-gradient(135deg,#0D3B66,#1A6FB5)}
+.pres-head.jogo{background:linear-gradient(135deg,#082347,#0D3B66)}
+.pres-title{color:#fff;font-size:14px;font-weight:700}
+.pres-date{color:rgba(255,255,255,.75);font-size:11px;margin-top:2px}
+.pres-status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;text-transform:uppercase;letter-spacing:.3px}
+.pres-status.pending{background:rgba(255,255,255,.2);color:#fff}
+.pres-status.done{background:#dcfce7;color:#166534}
+.pres-body{padding:16px 18px}
+.pres-pending-msg{text-align:center;color:#999;font-size:13px;padding:12px 0}
+
 @media(max-width:600px){
   .cards-grid{grid-template-columns:1fr 1fr}
   .card-value{font-size:22px}
@@ -151,6 +163,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
     <button class="menu-link" onclick="menuNav('despesas')">💰  Despesas</button>
     <button class="menu-link" onclick="menuNav('quotas')">👥  Quotas</button>
     <button class="menu-link" onclick="menuNav('aniversarios')">🎂  Aniversários</button>
+    <button class="menu-link" onclick="menuNav('presencas')">✅  Presenças</button>
     <button class="menu-link" onclick="menuNav('competicao')">🏆  Competição</button>
     <button class="menu-link" onclick="menuNav('atas')">📋  Atas</button>
     <button class="menu-link" onclick="menuNav('historico')">🕒  Histórico</button>
@@ -162,7 +175,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
     <div class="cards-grid" id="resumo-cards"></div>
     <div class="section-card"><h2 class="section-title">Receitas vs Despesas Previstas por Mês</h2><div class="chart-container"><canvas id="chartBarMensal"></canvas></div><p class="note">Despesas estimadas com base no padrão da época anterior</p></div>
     <div class="section-card"><h2 class="section-title">Evolução Prevista do Saldo</h2><div class="chart-container"><canvas id="chartSaldo"></canvas></div><p class="note">Projeção — os valores reais serão atualizados mensalmente</p></div>
-    <p class="note">Última atualização: 1 de Setembro de 2026</p>
+    <p class="note">Última atualização: 2 de Setembro de 2026</p>
   </div>
   <div id="tab-despesas" class="tab-panel">
     <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -175,6 +188,10 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
   <div id="tab-aniversarios" class="tab-panel">
     <div class="cards-grid" id="aniversarios-cards"></div>
     <div id="aniversarios-grid"></div>
+  </div>
+  <div id="tab-presencas" class="tab-panel">
+    <div class="cards-grid" id="presencas-cards"></div>
+    <div id="presencas-lista"></div>
   </div>
   <div id="tab-competicao" class="tab-panel">
     <div class="sub-tabs">
@@ -211,7 +228,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
       Facebook
     </a>
   </div>
-  <span style="font-size:10px;opacity:.6">Última atualização: 1 de Setembro de 2026</span>
+  <span style="font-size:10px;opacity:.6">Última atualização: 2 de Setembro de 2026</span>
 </footer>
 
 <script>
@@ -284,7 +301,19 @@ const naoInscritos = [
 const receitaInscritos = inscritos.length * QUOTA;
 const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
-const saldo = SALDO_INICIAL;
+
+// ─── PAGAMENTOS REGISTADOS (mês: 0=Set,1=Out,2=Nov,3=Dez,4=Jan,5=Fev,6=Mar,7=Abr,8=Mai,9=Jun) ───
+const pagamentos = {
+  "Telmo": [0,1], // Setembro e Outubro pagos
+};
+function mesesPagos(nome){ return pagamentos[nome] || []; }
+function jaPagou(nome,mIdx){ return mesesPagos(nome).includes(mIdx); }
+const recebidoReal = Object.entries(pagamentos).reduce((tot,[nome,meses])=>{
+  const isInsc = inscritos.some(j=>j.nome===nome);
+  const valor = isInsc ? QUOTA : QUOTA_NI;
+  return tot + meses.length*valor;
+},0);
+const saldo = SALDO_INICIAL + recebidoReal;
 
 // ─── TABS ───
 const chartInstances = {};
@@ -300,7 +329,7 @@ function makeCard(l,v,s,a){ return `<div class="card" style="border-top-color:${
 
 // ─── RESUMO CARDS ───
 document.getElementById('resumo-cards').innerHTML =
-  makeCard('Saldo Atual','€'+saldo,'Caixa transitada','#0D3B66')+
+  makeCard('Saldo Atual','€'+saldo,'Caixa + €'+recebidoReal+' recebidos','#0D3B66')+
   makeCard('Caixa Transitada','€'+SALDO_INICIAL,'Época anterior','#1A6FB5')+
   makeCard('Receita Esperada','€'+receitaMensalEsperada+'/mês',inscritos.length+'×€'+QUOTA+' + '+naoInscritos.length+'×€'+QUOTA_NI,'#64748b')+
   makeCard('Plantel',inscritos.length+' + '+naoInscritos.length,inscritos.length+' inscritos · '+naoInscritos.length+' não inscritos','#0D3B66');
@@ -309,7 +338,7 @@ document.getElementById('resumo-cards').innerHTML =
 document.getElementById('quotas-cards').innerHTML =
   makeCard('Inscritos',inscritos.length,'€20/mês','#0D3B66')+
   makeCard('Não Inscritos',naoInscritos.length,'€10/mês','#1A6FB5')+
-  makeCard('Quota Inscrito','€20/mês','Set–Jun','#64748b')+
+  makeCard('Recebido',recebidoReal?'€'+recebidoReal:'€0','até à data','#16a34a')+
   makeCard('Quota Não Inscrito','€10/mês','quando comparecem','#0D3B66');
 
 // ─── CHARTS ───
@@ -389,7 +418,8 @@ function getBirthMonth(nasc){ if(!nasc) return 0; return parseInt(nasc.split('/'
 function getBirthMonthIdx(nasc){ const m=getBirthMonth(nasc); return mesMap[m]!==undefined?mesMap[m]:-1; }
 function isOffSeason(nasc){ const m=getBirthMonth(nasc); return m===7||m===8; }
 function offSeasonTag(nasc){ if(!isOffSeason(nasc)) return ''; const m=getBirthMonth(nasc); return ` <span style="font-size:9px;font-weight:600;background:#fff7ed;color:#92400e;padding:1px 6px;border-radius:4px;white-space:nowrap">🎂 ${mesNomes[m]}</span>`; }
-function monthCell(m,birthIdx){
+function monthCell(m,birthIdx,pago){
+  if(pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
   if(m===birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
   return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
 }
@@ -402,12 +432,14 @@ qh+='<th class="center">Estado</th></tr></thead><tbody>';
 inscritos.forEach(j=>{
   const osTag = offSeasonTag(j.nasc);
   const bi = getBirthMonthIdx(j.nasc);
+  const pagos = mesesPagos(j.nome);
   qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
   qh+=`<td class="player-name">${j.nome}${osTag}</td>`;
   qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
   qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
-  for(let m=0;m<10;m++) qh+=monthCell(m,bi);
-  qh+='<td class="center"><span style="color:#999;font-size:11px">Inicia Set</span></td></tr>';
+  for(let m=0;m<10;m++) qh+=monthCell(m,bi,pagos.includes(m));
+  const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
+  qh+=`<td class="center">${estado}</td></tr>`;
 });
 qh+='</tbody></table></div>';
 
@@ -419,12 +451,14 @@ qh+='<th class="center">Estado</th></tr></thead><tbody>';
 naoInscritos.forEach(j=>{
   const bi = getBirthMonthIdx(j.nasc);
   const osTag = offSeasonTag(j.nasc);
+  const pagos = mesesPagos(j.nome);
   qh+=`<tr><td class="center" style="color:#999;font-size:12px">${j.num||'—'}</td>`;
   qh+=`<td class="player-name">${j.nome}${osTag}</td>`;
   qh+=`<td class="center" style="font-size:11px;color:#888">${j.nasc||'—'}</td>`;
   qh+=`<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
-  for(let m=0;m<10;m++) qh+=monthCell(m,bi);
-  qh+='<td class="center"><span style="color:#999;font-size:11px">Inicia Set</span></td></tr>';
+  for(let m=0;m<10;m++) qh+=monthCell(m,bi,pagos.includes(m));
+  const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
+  qh+=`<td class="center">${estado}</td></tr>`;
 });
 qh+='</tbody></table></div>';
 qh+='<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5">';
@@ -434,7 +468,7 @@ qh+='<div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;pad
 qh+='<div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div>';
 qh+='<div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div>';
 qh+='</div></div>';
-qh+='<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário</p>';
+qh+='<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário · ✓ Mês pago</p>';
 document.getElementById('tabela-quotas').innerHTML=qh;
 
 // ─── MAPA DE ANIVERSÁRIOS ───
@@ -494,6 +528,34 @@ bmHtml += '</div>';
 bmHtml += '<div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span></div>';
 document.getElementById('aniversarios-grid').innerHTML = bmHtml;
 
+// ─── PRESENÇAS ───
+const treinosJogos = [
+  { data:"2 Set 2026", tipo:"treino", titulo:"Treino", estado:"pendente" },
+];
+
+const totalEventos = treinosJogos.length;
+const pendentes = treinosJogos.filter(t=>t.estado==='pendente').length;
+document.getElementById('presencas-cards').innerHTML =
+  makeCard('Registados',totalEventos,'treinos e jogos','#0D3B66')+
+  makeCard('Por Definir',pendentes,'presenças a marcar','#dc6843')+
+  makeCard('Dia de Treino','Quarta 21h','todas as semanas','#1A6FB5');
+
+let ph = '';
+treinosJogos.forEach(t=>{
+  const icon = t.tipo==='treino' ? '🏃' : '⚽';
+  ph += `<div class="pres-card">
+    <div class="pres-head ${t.tipo}">
+      <div><div class="pres-title">${icon} ${t.titulo}</div><div class="pres-date">${t.data}</div></div>
+      <span class="pres-status ${t.estado==='pendente'?'pending':'done'}">${t.estado==='pendente'?'A Definir':'Registado'}</span>
+    </div>
+    <div class="pres-body">`;
+  if(t.estado==='pendente'){
+    ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>';
+  }
+  ph += '</div></div>';
+});
+document.getElementById('presencas-lista').innerHTML = ph;
+
 // ─── ATA ───
 const atas=[{
   data:"5 Ago 2026",
@@ -529,6 +591,7 @@ document.getElementById('atas-lista').innerHTML=ah;
 
 // ─── HISTÓRICO FINANCEIRO ───
 const historico = [
+  { data:"2 Set 2026", tipo:"pagamento", desc:"Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
   { data:"5 Ago 2026", tipo:"ata", desc:"Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
   { data:"5 Ago 2026", tipo:"caixa", desc:"Caixa transitada da época 2025/26: €2.220." },
   { data:"—", tipo:"despesa", desc:"Campo (época 2026/27) — €1.000, a pagar em Setembro." },
