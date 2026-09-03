@@ -127,15 +127,19 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
 .hist-date{font-size:11px;color:#1A6FB5;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
 .hist-desc{font-size:13px;color:#333;line-height:1.5;background:#fff;border-radius:8px;padding:10px 14px;box-shadow:0 1px 3px rgba(13,59,102,.05)}
 
-.pres-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:14px;overflow:hidden}
-.pres-head{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.pres-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:10px;overflow:hidden}
+.pres-head{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;cursor:pointer;user-select:none}
 .pres-head.treino{background:linear-gradient(135deg,#0D3B66,#1A6FB5)}
 .pres-head.jogo{background:linear-gradient(135deg,#082347,#0D3B66)}
-.pres-title{color:#fff;font-size:14px;font-weight:700}
+.pres-title{color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
 .pres-date{color:rgba(255,255,255,.75);font-size:11px;margin-top:2px}
 .pres-status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;text-transform:uppercase;letter-spacing:.3px}
 .pres-status.pending{background:rgba(255,255,255,.2);color:#fff}
 .pres-status.done{background:#dcfce7;color:#166534}
+.pres-chevron{color:rgba(255,255,255,.8);font-size:12px;transition:transform .25s}
+.pres-card.open .pres-chevron{transform:rotate(180deg)}
+.pres-body-wrap{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.pres-card.open .pres-body-wrap{max-height:2000px}
 .pres-body{padding:16px 18px}
 .pres-pending-msg{text-align:center;color:#999;font-size:13px;padding:12px 0}
 
@@ -600,14 +604,17 @@ document.getElementById('presencas-cards').innerHTML =
   makeCard('Dia de Treino','Quarta 21h','todas as semanas','#1A6FB5');
 
 let ph = '';
-treinosJogos.forEach(t=>{
+treinosJogos.forEach((t,idx)=>{
   const icon = t.tipo==='treino' ? '🏃' : '⚽';
-  ph += `<div class="pres-card">
-    <div class="pres-head ${t.tipo}">
-      <div><div class="pres-title">${icon} ${t.titulo}</div><div class="pres-date">${t.data}</div></div>
-      <span class="pres-status ${t.estado==='pendente'?'pending':'done'}">${t.estado==='pendente'?'A Definir':'Registado'}</span>
+  ph += `<div class="pres-card" id="presacc-${idx}">
+    <div class="pres-head ${t.tipo}" onclick="togglePresAcc(${idx})">
+      <div class="pres-title">${icon} ${t.titulo}<div class="pres-date" style="margin-top:2px;font-weight:400">${t.data}</div></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="pres-status ${t.estado==='pendente'?'pending':'done'}">${t.estado==='pendente'?'A Definir':'Registado'}</span>
+        <span class="pres-chevron">▾</span>
+      </div>
     </div>
-    <div class="pres-body">`;
+    <div class="pres-body-wrap"><div class="pres-body">`;
   if(t.estado==='pendente'){
     ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>';
   } else {
@@ -627,9 +634,10 @@ treinosJogos.forEach(t=>{
       ph += '</div>';
     }
   }
-  ph += '</div></div>';
+  ph += '</div></div></div>';
 });
 document.getElementById('presencas-lista').innerHTML = ph;
+function togglePresAcc(i){ document.getElementById('presacc-'+i).classList.toggle('open'); }
 
 // ─── ATA ───
 const atas=[{
