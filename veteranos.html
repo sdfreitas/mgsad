@@ -586,7 +586,10 @@ document.getElementById('aniversarios-grid').innerHTML = bmHtml;
 
 // ─── PRESENÇAS ───
 const treinosJogos = [
-  { data:"2 Set 2026", tipo:"treino", titulo:"Treino", estado:"pendente" },
+  { data:"2 Set 2026", tipo:"treino", titulo:"Treino", estado:"registado",
+    presentes: ["Fábio Gonçalves","Joel Tavares","Hugo André","Pedro Costa","António Rocha","Américo Oliveira","Pedro Cadete","Mário Oliveira","Jorge Santos","Sergio Rodrigues","Luís Paiva","António José Silva","Pedro Ferreira","Américo Silva","Tiago Mota","Amílcar André","Rui Rocha","Sérgio (Ervilha)","André Pinho"],
+    extra: ["Telmo","Marcelo","Daniel Dias","Zé Buraca"]
+  },
 ];
 
 const totalEventos = treinosJogos.length;
@@ -607,6 +610,22 @@ treinosJogos.forEach(t=>{
     <div class="pres-body">`;
   if(t.estado==='pendente'){
     ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>';
+  } else {
+    const totalPresentes = (t.presentes?.length||0) + (t.extra?.length||0);
+    ph += `<div style="font-size:12px;color:#888;margin-bottom:10px">${totalPresentes} presenças registadas</div>`;
+    ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px;margin-bottom:12px">';
+    (t.presentes||[]).forEach(nome=>{
+      ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#16a34a;font-weight:700">✓</span> ${nome}</div>`;
+    });
+    ph += '</div>';
+    if(t.extra && t.extra.length){
+      ph += '<div style="font-size:11px;color:#1A6FB5;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px">Atletas Extra</div>';
+      ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px">';
+      t.extra.forEach(nome=>{
+        ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#1A6FB5;font-weight:700">✓</span> ${nome}</div>`;
+      });
+      ph += '</div>';
+    }
   }
   ph += '</div></div>';
 });
@@ -647,6 +666,7 @@ document.getElementById('atas-lista').innerHTML=ah;
 
 // ─── HISTÓRICO FINANCEIRO ───
 const historico = [
+  { data:"2 Set 2026", tipo:"presenca", desc:"Presenças registadas no treino de 2 de Setembro — 19 atletas + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
   { data:"2 Set 2026", tipo:"aviso", desc:"Daniel Dias passou de não inscrito para inscrito (€20/mês); António José Silva passou de inscrito para não inscrito (€10/mês)." },
   { data:"2 Set 2026", tipo:"pagamento", desc:"Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
   { data:"5 Ago 2026", tipo:"ata", desc:"Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
@@ -662,6 +682,7 @@ const tipoInfo = {
   despesa:{cor:'#dc6843',icon:'🧾',label:'Despesa'},
   pagamento:{cor:'#16a34a',icon:'✅',label:'Pagamento'},
   aviso:{cor:'#d97706',icon:'⚠️',label:'Aviso'},
+  presenca:{cor:'#7c3aed',icon:'🏃',label:'Presença'},
 };
 historico.forEach((h,i) => {
   const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
