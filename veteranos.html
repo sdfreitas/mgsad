@@ -1,3 +1,6 @@
+Aqui está o código completo com as duas alterações aplicadas (pagamento do Pedro Costa + entrada no histórico):
+
+```html
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -330,7 +333,8 @@ const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 
 // ─── PAGAMENTOS REGISTADOS (mês: 0=Set,1=Out,2=Nov,3=Dez,4=Jan,5=Fev,6=Mar,7=Abr,8=Mai,9=Jun) ───
 const pagamentos = {
-  "Telmo": [0,1], // Setembro e Outubro pagos
+  "Telmo": [0, 1],       // Setembro e Outubro pagos (não inscrito, €10/mês)
+  "Pedro Costa": [0],    // Setembro pago (inscrito, €20/mês)
 };
 function mesesPagos(nome){ return pagamentos[nome] || []; }
 function jaPagou(nome,mIdx){ return mesesPagos(nome).includes(mIdx); }
@@ -674,59 +678,9 @@ document.getElementById('atas-lista').innerHTML=ah;
 
 // ─── HISTÓRICO FINANCEIRO ───
 const historico = [
+  { data:"2 Set 2026", tipo:"pagamento", desc:"Pedro Costa pagou Setembro — €20/mês." },
   { data:"2 Set 2026", tipo:"presenca", desc:"Presenças registadas no treino de 2 de Setembro — 19 atletas + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
   { data:"2 Set 2026", tipo:"aviso", desc:"Daniel Dias passou de não inscrito para inscrito (€20/mês); António José Silva passou de inscrito para não inscrito (€10/mês)." },
   { data:"2 Set 2026", tipo:"pagamento", desc:"Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
   { data:"5 Ago 2026", tipo:"ata", desc:"Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
-  { data:"5 Ago 2026", tipo:"caixa", desc:"Caixa transitada da época 2025/26: €2.220." },
-  { data:"—", tipo:"despesa", desc:"Campo (época 2026/27) — €1.000, a pagar em Setembro." },
-  { data:"—", tipo:"despesa", desc:"Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
-];
-
-let hh = '';
-const tipoInfo = {
-  ata:{cor:'#1A6FB5',icon:'📋',label:'Ata'},
-  caixa:{cor:'#0D3B66',icon:'💰',label:'Caixa'},
-  despesa:{cor:'#dc6843',icon:'🧾',label:'Despesa'},
-  pagamento:{cor:'#16a34a',icon:'✅',label:'Pagamento'},
-  aviso:{cor:'#d97706',icon:'⚠️',label:'Aviso'},
-  presenca:{cor:'#7c3aed',icon:'🏃',label:'Presença'},
-};
-historico.forEach((h,i) => {
-  const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
-  hh += `<div class="hist-item">
-    <div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div>
-    <div class="hist-content">
-      <div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div>
-      <div class="hist-desc">${h.desc}</div>
-    </div>
-  </div>`;
-});
-document.getElementById('historico-lista').innerHTML = hh;
-
-// ─── SUB-TABS ───
-function showSubTab(id){
-  document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sub-'+id).classList.add('active');
-  document.querySelectorAll('.sub-tab').forEach(b=>{ if(b.textContent.toLowerCase().includes(id.slice(0,5))) b.classList.add('active'); });
-}
-
-// ─── COMPETIÇÃO ───
-document.getElementById('sub-calendario').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
-
-const equipas=[
-  {nome:"Vet. A.D.C. Lobão",us:true},{nome:"Vet. FC Fiães",us:false},{nome:"Vet. SC Espinho",us:false},
-  {nome:"Vet. CD Feira",us:false},{nome:"Vet. AD Sanjoanense",us:false},{nome:"Vet. SC Salgueiros",us:false},
-  {nome:"Vet. FC Arouca",us:false},{nome:"Vet. AD Oliveirense",us:false}
-];
-let ch='<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
-equipas.forEach((e,i)=>{
-  const rc=e.us?'class-row-us':'';
-  ch+=`<tr class="${rc}"><td><span class="class-pos">${i+1}</span></td><td style="text-align:left;white-space:nowrap">${e.us?'⚽ ':''}<strong>${e.nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
-});
-ch+='</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
-document.getElementById('sub-classificacao').innerHTML=ch;
-
-document.getElementById('sub-marcadores').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
-</script></body></html>
+  { data:"5 Ago 2026", tipo:"caixa", desc:"Caixa transitada da época 2025
