@@ -356,6 +356,7 @@ const compras6Set = [
   { nome: "Mário Oliveira", itens: ["Boné"] },
   { nome: "Vitor Leite", itens: ["Calções saída", "Polo"] },
   { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné"] },
+  { nome: "Zé Buraca", itens: ["Calções saída"] }
 ];
 function calcularTotalVenda(itens) {
   return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0);
@@ -693,9 +694,9 @@ atas.forEach(a=>{
 });
 document.getElementById('atas-lista').innerHTML=ah;
 
-// ─── HISTÓRICO (sem valores) ───
+// ─── HISTÓRICO (com Zé Buraca incluído) ───
 const historico = [
-  { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné)" },
+  { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné), Zé Buraca (Calções saída)" },
   { data:"5 Set 2026", tipo:"despesa", desc:"Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
   { data:"5 Set 2026", tipo:"despesa", desc:"Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
   { data:"4 Set 2026", tipo:"pagamento", desc:"✅ Pedro Costa pagou Setembro — €20/mês." },
