@@ -130,6 +130,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
 .venda-card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(13,59,102,.06);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .venda-prod{font-weight:600;color:var(--azul-medio)}
 .venda-qtd{font-size:13px;color:#444}
+.venda-total{font-weight:700;color:#16a34a}
 /* Estatísticas treinos */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
 .stat-box{background:#f8fafc;border-radius:8px;padding:14px;text-align:center}
@@ -189,7 +190,6 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
   </div>
   <div id="tab-presencas" class="tab-panel">
     <div class="cards-grid" id="presencas-cards"></div>
-    <!-- NOVA SECÇÃO DE ESTATÍSTICAS DE TREINOS -->
     <div class="section-card">
       <h2 class="section-title">📊 Estatísticas de Treinos</h2>
       <div id="treinos-stats"></div>
@@ -646,7 +646,7 @@ treinosJogos.forEach((t,idx)=>{
 document.getElementById('presencas-lista').innerHTML = ph;
 function togglePresAcc(i){ document.getElementById('presacc-'+i).classList.toggle('open'); }
 
-// ─── VENDAS (COM CARDS INFORMATIVOS, SEM RECEITA) ───
+// ─── VENDAS (COM TOTAIS INDIVIDUAIS E RESUMO) ───
 document.getElementById('vendas-cards').innerHTML =
   makeCard('Itens Vendidos',totalItensVendidos,'unidades','#0D3B66')+
   makeCard('Produtos na lista',Object.keys(listaPrecos).length,'tipos','#1A6FB5')+
@@ -659,8 +659,18 @@ document.getElementById('tabela-precos-body').innerHTML = precoHtml;
 let vendasHtml = '';
 compras6Set.forEach(v=>{
   const itensStr = v.itens.join(', ');
-  vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span></div></div>`;
+  vendasHtml += `<div class="venda-card">
+    <div style="flex:1">
+      <span class="venda-prod">${v.nome}</span><br>
+      <span class="venda-qtd">${itensStr}</span>
+    </div>
+    <span class="venda-total">€${v.total}</span>
+  </div>`;
 });
+vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:#0D3B66;background:#f0f6ff;padding:10px;border-radius:8px;display:flex;justify-content:space-between;">
+  <span>Total: ${totalItensVendidos} itens</span>
+  <span>€${totalVendasDia6}</span>
+</div>`;
 document.getElementById('vendas-lista').innerHTML = vendasHtml;
 
 // ─── ATAS ───
@@ -683,7 +693,7 @@ atas.forEach(a=>{
 });
 document.getElementById('atas-lista').innerHTML=ah;
 
-// ─── HISTÓRICO (agora com venda de equipamento sem valores) ───
+// ─── HISTÓRICO (sem valores) ───
 const historico = [
   { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné)" },
   { data:"5 Set 2026", tipo:"despesa", desc:"Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
