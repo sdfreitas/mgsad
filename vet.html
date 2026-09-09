@@ -28,7 +28,7 @@
         .search-btn svg { width: 20px; height: 20px; fill: #fff; transition: fill .2s; }
         .search-btn:hover svg { fill: var(--azul-light); }
         .menu-panel { position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 90; background: rgba(20,30,48,.97); max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(.4,0,.2,1); border-bottom: 1px solid rgba(255,255,255,.06); }
-        .menu-panel.open { max-height: 560px; }
+        .menu-panel.open { max-height: 600px; }
         .menu-panel-inner { padding: 16px 0 20px; }
         .menu-link { display: block; color: rgba(255,255,255,.55); font-size: 14px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; padding: 14px 28px; border: none; background: none; cursor: pointer; font-family: inherit; width: 100%; text-align: left; transition: all .2s; border-left: 3px solid transparent; }
         .menu-link:hover { color: #fff; background: rgba(255,255,255,.04); }
@@ -163,6 +163,20 @@
         .presence-table td { padding: 10px 12px; border-bottom: 1px solid #f0f3f7; color: #333; }
         .presence-table td:first-child { font-weight: 600; color: #0D3B66; }
         .presence-table td:last-child { text-align: right; font-weight: 700; color: #1A6FB5; }
+        .clickable { cursor: pointer; transition: color .15s, text-decoration .15s; }
+        .clickable:hover { color: var(--azul-claro); text-decoration: underline; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-sheet { background: var(--bg); width: 100%; max-width: 600px; max-height: 85vh; border-radius: 20px 20px 0 0; overflow-y: auto; padding: 24px 20px 40px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-close { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; padding: 8px; float: right; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: 700; color: var(--azul-medio); }
+        .modal-section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(13,59,102,.06); }
+        .modal-section h4 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
+        .modal-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f3f7; }
+        .modal-row:last-child { border-bottom: none; }
+        .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
         @media(max-width:600px) {
             .cards-grid { grid-template-columns: 1fr 1fr; }
             .card-value { font-size: 22px; }
@@ -201,6 +215,7 @@
         <button class="menu-link" onclick="menuNav('despesas')">💰  Despesas</button>
         <button class="menu-link" onclick="menuNav('quotas')">👥  Quotas</button>
         <button class="menu-link" onclick="menuNav('inscricoes')">📝  Inscrições</button>
+        <button class="menu-link" onclick="menuNav('socios')">🤝  Sócios</button>
         <button class="menu-link" onclick="menuNav('aniversarios')">🎂  Aniversários</button>
         <button class="menu-link" onclick="menuNav('presencas')">✅  Presenças</button>
         <button class="menu-link" onclick="menuNav('competicao')">🏆  Competição</button>
@@ -229,6 +244,10 @@
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
         <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
+    </div>
+    <div id="tab-socios" class="tab-panel">
+        <div class="cards-grid" id="socios-cards"></div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
     <div id="tab-aniversarios" class="tab-panel">
         <div class="cards-grid" id="aniversarios-cards"></div>
@@ -266,6 +285,16 @@
         <div id="historico-lista"></div>
     </div>
 </main>
+
+<div class="modal-overlay" id="perfilModal" onclick="if(event.target===this)fecharPerfil()">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <span class="modal-title" id="perfilNome"></span>
+            <button class="modal-close" onclick="fecharPerfil()">✕</button>
+        </div>
+        <div id="perfilConteudo"></div>
+    </div>
+</div>
 
 <footer>
     <strong>Veteranos A.D.C. Lobão</strong><br>Lobão, Santa Maria da Feira<br>
@@ -408,6 +437,10 @@ const valorInscricao = 30;
 const inscricoesPagas = ["Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira", "Joel Tavares"];
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
+// ─── SÓCIOS ───
+const valorSocio = 10;
+const sociosPagos = ["Pedro Cadete"];
+
 // ─── TABS ───
 const chartInstances = {};
 function freshCanvas(id) { const o = document.getElementById(id); const p = o.parentNode; o.remove(); const c = document.createElement('canvas'); c.id = id; p.appendChild(c); return c; }
@@ -497,7 +530,7 @@ inscritos.forEach(j => {
     const bi = getBirthMonthIdx(j.nasc);
     const pagos = mesesPagos(j.nome);
     qh += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
-    qh += `<td class="player-name">${j.nome}${osTag}</td>`;
+    qh += `<td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${osTag}</td>`;
     qh += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
     qh += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
     for (let m = 0; m < 10; m++) qh += monthCell(m, bi, pagos.includes(m));
@@ -514,7 +547,7 @@ naoInscritos.forEach(j => {
     const osTag = offSeasonTag(j.nasc);
     const pagos = mesesPagos(j.nome);
     qh += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
-    qh += `<td class="player-name">${j.nome}${osTag}</td>`;
+    qh += `<td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${osTag}</td>`;
     qh += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
     qh += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
     for (let m = 0; m < 10; m++) qh += monthCell(m, bi, pagos.includes(m));
@@ -536,7 +569,7 @@ MESES.forEach((mNome, mIdx) => {
         else if (isBday) { statusHtml = '🎂 Aniversário'; statusCls = 'bday'; }
         else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
         const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
-        rowsHtml += `<div class="mes-player-row"><span class="${nameCls}">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
+        rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
     });
     const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? j.quota : 0), 0);
     const badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge';
@@ -586,7 +619,7 @@ for (let m = 1; m <= 12; m++) {
         lista.forEach(j => {
             const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
             const merenda = merendaPaga.includes(j.nome) ? ' <span title="Merenda paga" style="font-size:12px;">🍽️</span>' : '';
-            bmHtml += `<div class="bday-person"><span class="${nameCls}">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
+            bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
         });
     }
     bmHtml += '</div></div>';
@@ -635,10 +668,10 @@ statsHtml += `<div class="stat-box"><div class="stat-value">${totalPresencasGlob
 statsHtml += `<div class="stat-box"><div class="stat-value">${mediaPresencasGlobal}</div><div class="stat-label">Média por evento</div></div>`;
 statsHtml += '</div>';
 statsHtml += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px;color:#0D3B66">👥 Inscritos</h3><div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
-listasSeparadas.inscritos.forEach(j => { statsHtml += `<tr><td>${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
+listasSeparadas.inscritos.forEach(j => { statsHtml += `<tr><td class="clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
 statsHtml += '</tbody></table></div>';
 statsHtml += '<h3 style="font-size:14px;font-weight:600;margin:24px 0 8px;color:#dc6843">📋 Não Inscritos</h3><div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
-listasSeparadas.naoInscritos.forEach(j => { statsHtml += `<tr><td>${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
+listasSeparadas.naoInscritos.forEach(j => { statsHtml += `<tr><td class="clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
 statsHtml += '</tbody></table></div>';
 document.getElementById('treinos-stats').innerHTML = statsHtml;
 
@@ -651,12 +684,12 @@ treinosJogos.forEach((t, idx) => {
         const totalPresentes = (t.presentes?.length || 0) + (t.extra?.length || 0);
         ph += `<div style="font-size:12px;color:#888;margin-bottom:10px">${totalPresentes} presenças registadas</div>`;
         ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px;margin-bottom:12px">';
-        (t.presentes || []).forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#16a34a;font-weight:700">✓</span> ${nome}</div>`; });
+        (t.presentes || []).forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#16a34a;font-weight:700">✓</span> <span class="clickable" onclick="abrirPerfil('${nome.replace(/'/g, "\\'")}')">${nome}</span></div>`; });
         ph += '</div>';
         if (t.extra && t.extra.length) {
             ph += '<div style="font-size:11px;color:#1A6FB5;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px">Atletas Extra</div>';
             ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px">';
-            t.extra.forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#1A6FB5;font-weight:700">✓</span> ${nome}</div>`; });
+            t.extra.forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#1A6FB5;font-weight:700">✓</span> <span class="clickable" onclick="abrirPerfil('${nome.replace(/'/g, "\\'")}')">${nome}</span></div>`; });
             ph += '</div>';
         }
     }
@@ -677,7 +710,7 @@ let vendasHtml = '';
 compras6Set.forEach(v => {
     const itensStr = v.itens.join(', ');
     const badge = v.pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Pendente</span>';
-    vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span><div style="margin-top:6px">${badge}</div></div><span class="venda-total">€${v.total}</span></div>`;
+    vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod clickable" onclick="abrirPerfil('${v.nome.replace(/'/g, "\\'")}')">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span><div style="margin-top:6px">${badge}</div></div><span class="venda-total">€${v.total}</span></div>`;
 });
 vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:#0D3B66;background:#f0f6ff;padding:10px;border-radius:8px;display:flex;justify-content:space-between;"><span>Total: ${totalItensVendidos} itens</span><span>€${totalVendasDia6}</span></div>`;
 document.getElementById('vendas-lista').innerHTML = vendasHtml;
@@ -697,12 +730,34 @@ function atualizarInscricoes() {
     inscritos.forEach(j => {
         const pago = jaPagouInscricao(j.nome);
         const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
-        tabelaHtml += `<tr><td class="player-name">${j.nome}</td><td class="center">€${valorInscricao}</td><td class="center">${badge}</td></tr>`;
+        tabelaHtml += `<tr><td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">€${valorInscricao}</td><td class="center">${badge}</td></tr>`;
     });
     tabelaHtml += '</tbody></table></div>';
     document.getElementById('tabela-inscricoes').innerHTML = tabelaHtml;
 }
 atualizarInscricoes();
+
+// ─── SÓCIOS ───
+function atualizarSocios() {
+    const total = inscritos.length;
+    const pagos = inscritos.filter(j => sociosPagos.includes(j.nome)).length;
+    const porPagar = total - pagos;
+    const recebido = pagos * valorSocio;
+    document.getElementById('socios-cards').innerHTML =
+        makeCard('Total Sócios', total, 'jogadores inscritos', '#0D3B66') +
+        makeCard('Pagos', pagos, 'quota €' + valorSocio, '#16a34a') +
+        makeCard('Recebido', '€' + recebido, 'quota de sócio', '#0D3B66') +
+        makeCard('Por pagar', porPagar, 'sócios pendentes', '#dc6843');
+    let tabelaHtml = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
+    inscritos.forEach(j => {
+        const pago = sociosPagos.includes(j.nome);
+        const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
+        tabelaHtml += `<tr><td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">€${valorSocio}</td><td class="center">${badge}</td></tr>`;
+    });
+    tabelaHtml += '</tbody></table></div>';
+    document.getElementById('tabela-socios').innerHTML = tabelaHtml;
+}
+atualizarSocios();
 
 // ─── ATAS ───
 const atas = [{
@@ -726,7 +781,7 @@ document.getElementById('atas-lista').innerHTML = ah;
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30), Pedro Costa (Set €20), Telmo (Set+Out €20)" },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
     { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné)" },
     { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
     { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
@@ -762,13 +817,77 @@ ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Vet
 document.getElementById('sub-classificacao').innerHTML = ch;
 document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-// ─── PESQUISA GLOBAL (SEM ACENTOS) ───
+// ─── PERFIL DO JOGADOR ───
+function abrirPerfil(nome) {
+    const jogador = todosJogadores.find(j => j.nome === nome);
+    if (!jogador) return;
+    const modal = document.getElementById('perfilModal');
+    document.getElementById('perfilNome').textContent = nome;
+    let conteudo = '';
+    conteudo += `<div class="modal-section"><h4>📋 Dados</h4>`;
+    conteudo += `<div class="modal-row"><span>Apelido</span><strong>${jogador.apelido || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Número</span><strong>${jogador.num || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Nascimento</span><strong>${jogador.nasc || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Tipo</span><strong>${jogador.inscrito ? 'Inscrito' : 'Não Inscrito'}</strong></div>`;
+    conteudo += `</div>`;
+    const presencas = treinosJogos.reduce((total, t) => {
+        if (t.estado !== 'registado') return total;
+        return total + ((t.presentes?.includes(nome) || t.extra?.includes(nome)) ? 1 : 0);
+    }, 0);
+    const totalEventosPresenca = treinosJogos.filter(t => t.estado === 'registado').length;
+    const percentagemPresenca = totalEventosPresenca > 0 ? ((presencas / totalEventosPresenca) * 100).toFixed(0) + '%' : '0%';
+    conteudo += `<div class="modal-section"><h4>✅ Presenças</h4>`;
+    conteudo += `<div class="modal-row"><span>Presenças registadas</span><strong>${presencas} de ${totalEventosPresenca}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
+    conteudo += `</div>`;
+    const mesesPagosJogador = mesesPagos(nome);
+    conteudo += `<div class="modal-section"><h4>💰 Mensalidades</h4>`;
+    if (mesesPagosJogador.length === 0) {
+        conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
+    } else {
+        mesesPagosJogador.forEach(mIdx => {
+            conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`;
+        });
+    }
+    conteudo += `</div>`;
+    const inscricaoPaga = jaPagouInscricao(nome);
+    conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4>`;
+    conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
+    conteudo += `</div>`;
+    if (jogador.inscrito) {
+        const socioPago = sociosPagos.includes(nome);
+        conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${socioPago ? 'badge-ok' : 'badge-falta'}">${socioPago ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `</div>`;
+    }
+    const compraJogador = compras6Set.find(c => c.nome === nome);
+    if (compraJogador) {
+        conteudo += `<div class="modal-section"><h4>🛍️ Equipamento</h4>`;
+        conteudo += `<div class="modal-row"><span>Itens</span><strong>${compraJogador.itens.join(', ')}</strong></div>`;
+        conteudo += `<div class="modal-row"><span>Total</span><strong>€${compraJogador.total}</strong></div>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${compraJogador.pago ? 'badge-ok' : 'badge-falta'}">${compraJogador.pago ? 'Pago' : 'Pendente'}</span></div>`;
+        conteudo += `</div>`;
+    }
+    document.getElementById('perfilConteudo').innerHTML = conteudo;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function fecharPerfil() {
+    document.getElementById('perfilModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) {
+        fecharPerfil();
+    }
+});
+
+// ─── PESQUISA GLOBAL ───
 let searchOpen = false;
 function toggleSearch() {
     searchOpen = !searchOpen;
     const panel = document.getElementById('searchPanel');
     const input = document.getElementById('searchInput');
-
     if (searchOpen) {
         panel.classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -793,6 +912,7 @@ function buildSearchIndex() {
     historico.forEach(h => { items.push({ type: 'Histórico', text: h.desc, tab: 'historico', textNormalizado: normalizarTexto(h.desc) }); });
     treinosJogos.forEach(t => { items.push({ type: 'Evento', text: `${t.titulo} - ${t.data}`, tab: 'presencas', textNormalizado: normalizarTexto(`${t.titulo} - ${t.data}`) }); });
     atas.forEach(a => { items.push({ type: 'Ata', text: a.titulo, tab: 'atas', textNormalizado: normalizarTexto(a.titulo) }); });
+    inscritos.forEach(j => { items.push({ type: 'Sócio', text: j.nome, tab: 'socios', textNormalizado: normalizarTexto(j.nome) }); });
     return items;
 }
 const searchIndex = buildSearchIndex();
@@ -815,9 +935,7 @@ function handleSearch(query) {
     }
 }
 function goToTab(tab) {
-    if (searchOpen) {
-        toggleSearch();
-    }
+    if (searchOpen) toggleSearch();
     setTimeout(() => {
         showTab(tab);
         document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
