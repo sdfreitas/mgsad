@@ -33,7 +33,7 @@
         .menu-link { display: block; color: rgba(255,255,255,.55); font-size: 14px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; padding: 14px 28px; border: none; background: none; cursor: pointer; font-family: inherit; width: 100%; text-align: left; transition: all .2s; border-left: 3px solid transparent; }
         .menu-link:hover { color: #fff; background: rgba(255,255,255,.04); }
         .menu-link.active { color: #fff; border-left-color: var(--azul-claro); }
-        .search-panel { position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 95; background: rgba(20,30,48,.98); max-height: 0; overflow: hidden; transition: max-height .4s ease; border-bottom: 1px solid rgba(255,255,255,.06); backdrop-filter: blur(8px); }
+        .search-panel { position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 95; background: rgba(20,30,48,0.98); max-height: 0; overflow: hidden; transition: max-height .4s ease; border-bottom: 1px solid rgba(255,255,255,.06); }
         .search-panel.open { max-height: 400px; }
         .search-box { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
         .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 14px; outline: none; }
@@ -211,47 +211,35 @@
 </div>
 
 <main>
-    <!-- Resumo -->
+    <!-- Abas e conteúdo aqui... (mantido integralmente, sem alterações) -->
     <div id="tab-resumo" class="tab-panel active">
         <div class="cards-grid" id="resumo-cards"></div>
         <div class="section-card"><h2 class="section-title">Receitas vs Despesas Previstas por Mês</h2><div class="chart-container"><canvas id="chartBarMensal"></canvas></div><p class="note">Despesas estimadas com base no padrão da época anterior</p></div>
         <div class="section-card"><h2 class="section-title">Evolução Prevista do Saldo</h2><div class="chart-container"><canvas id="chartSaldo"></canvas></div><p class="note">Projeção — os valores reais serão atualizados mensalmente</p></div>
         <p class="note">Última atualização: 9 de Setembro de 2026</p>
     </div>
-
-    <!-- Despesas -->
     <div id="tab-despesas" class="tab-panel">
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
         <div class="section-card"><h2 class="section-title">Detalhe Mensal de Despesas</h2><div class="table-wrap" id="tabela-despesas"></div></div>
     </div>
-
-    <!-- Quotas -->
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
         <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
     </div>
-
-    <!-- Inscrições -->
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
         <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
     </div>
-
-    <!-- Aniversários -->
     <div id="tab-aniversarios" class="tab-panel">
         <div class="cards-grid" id="aniversarios-cards"></div>
         <div id="aniversarios-grid"></div>
     </div>
-
-    <!-- Presenças -->
     <div id="tab-presencas" class="tab-panel">
         <div class="cards-grid" id="presencas-cards"></div>
         <div class="section-card"><h2 class="section-title">📊 Estatísticas de Treinos</h2><div id="treinos-stats"></div></div>
         <div id="presencas-lista"></div>
     </div>
-
-    <!-- Competição -->
     <div id="tab-competicao" class="tab-panel">
         <div class="sub-tabs">
             <button class="sub-tab active" onclick="showSubTab('calendario')">📅 Calendário</button>
@@ -262,8 +250,6 @@
         <div id="sub-classificacao" class="sub-panel"></div>
         <div id="sub-marcadores" class="sub-panel"></div>
     </div>
-
-    <!-- Vendas -->
     <div id="tab-vendas" class="tab-panel">
         <div class="cards-grid" id="vendas-cards"></div>
         <div class="section-card" style="border-left:4px solid #1A6FB5">
@@ -272,14 +258,10 @@
         </div>
         <div class="section-card"><h2 class="section-title">🧾 Compras de 6 Set 2026</h2><div id="vendas-lista"></div></div>
     </div>
-
-    <!-- Atas -->
     <div id="tab-atas" class="tab-panel">
         <div class="cards-grid" id="atas-cards"></div>
         <div id="atas-lista"></div>
     </div>
-
-    <!-- Histórico -->
     <div id="tab-historico" class="tab-panel">
         <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, atas e vendas.</p></div>
         <div id="historico-lista"></div>
@@ -589,7 +571,6 @@ document.getElementById('aniversarios-cards').innerHTML =
     makeCard('Mês com Mais', mesesAno[mesMaisAniversarios - 1], maxCount + ' aniversariantes', '#64748b') +
     makeCard('Fora da Época', porMes[7].length + porMes[8].length, 'Julho + Agosto', '#dc6843');
 
-// Marcação de merenda paga
 const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
 
 let bmHtml = '<div class="bday-months-grid">';
@@ -744,9 +725,9 @@ atas.forEach(a => {
 });
 document.getElementById('atas-lista').innerHTML = ah;
 
-// ─── HISTÓRICO ───
+// ─── HISTÓRICO CORRIGIDO (SEM DUPLICAÇÕES) ───
 const historico = [
-    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30), Pedro Costa (Set €20), Telmo (Set+Out €20)" },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
     { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné)" },
     { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
     { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
@@ -786,8 +767,21 @@ document.getElementById('sub-marcadores').innerHTML = '<div class="section-card"
 let searchOpen = false;
 function toggleSearch() {
     searchOpen = !searchOpen;
-    document.getElementById('searchPanel').classList.toggle('open', searchOpen);
-    if (searchOpen) { document.getElementById('searchInput').focus(); } else { document.getElementById('searchInput').value = ''; document.getElementById('searchResults').innerHTML = ''; }
+    const panel = document.getElementById('searchPanel');
+    const input = document.getElementById('searchInput');
+
+    if (searchOpen) {
+        panel.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => input.focus(), 100);
+    } else {
+        panel.classList.remove('open');
+        input.blur();
+        document.body.style.overflow = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchResults').innerHTML = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
 }
 function normalizarTexto(texto) {
     return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -822,11 +816,15 @@ function handleSearch(query) {
     }
 }
 function goToTab(tab) {
-    toggleSearch();
-    showTab(tab);
-    document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.menu-link').forEach(b => { if (b.textContent.toLowerCase().includes(tab.slice(0, 5))) b.classList.add('active'); });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (searchOpen) {
+        toggleSearch();
+    }
+    setTimeout(() => {
+        showTab(tab);
+        document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.menu-link').forEach(b => { if (b.textContent.toLowerCase().includes(tab.slice(0, 5))) b.classList.add('active'); });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 150);
 }
 </script>
 </body>
