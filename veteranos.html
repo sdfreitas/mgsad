@@ -589,7 +589,7 @@ document.getElementById('aniversarios-cards').innerHTML =
     makeCard('Mês com Mais', mesesAno[mesMaisAniversarios - 1], maxCount + ' aniversariantes', '#64748b') +
     makeCard('Fora da Época', porMes[7].length + porMes[8].length, 'Julho + Agosto', '#dc6843');
 
-// Marcação de merenda paga (apenas indicativo)
+// Marcação de merenda paga
 const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
 
 let bmHtml = '<div class="bday-months-grid">';
@@ -782,33 +782,42 @@ ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Vet
 document.getElementById('sub-classificacao').innerHTML = ch;
 document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-// ─── PESQUISA GLOBAL ───
+// ─── PESQUISA GLOBAL (SEM ACENTOS) ───
 let searchOpen = false;
 function toggleSearch() {
     searchOpen = !searchOpen;
     document.getElementById('searchPanel').classList.toggle('open', searchOpen);
     if (searchOpen) { document.getElementById('searchInput').focus(); } else { document.getElementById('searchInput').value = ''; document.getElementById('searchResults').innerHTML = ''; }
 }
+function normalizarTexto(texto) {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
 function buildSearchIndex() {
     let items = [];
-    todosJogadores.forEach(j => { items.push({ type: 'Jogador', text: j.nome, tab: 'presencas' }); });
-    Object.keys(listaPrecos).forEach(prod => { items.push({ type: 'Produto', text: prod, tab: 'vendas' }); });
-    compras6Set.forEach(c => { items.push({ type: 'Compra', text: `${c.nome} (${c.itens.join(', ')})`, tab: 'vendas' }); });
-    historico.forEach(h => { items.push({ type: 'Histórico', text: h.desc, tab: 'historico' }); });
-    treinosJogos.forEach(t => { items.push({ type: 'Evento', text: `${t.titulo} - ${t.data}`, tab: 'presencas' }); });
-    atas.forEach(a => { items.push({ type: 'Ata', text: a.titulo, tab: 'atas' }); });
+    todosJogadores.forEach(j => { items.push({ type: 'Jogador', text: j.nome, tab: 'presencas', textNormalizado: normalizarTexto(j.nome) }); });
+    Object.keys(listaPrecos).forEach(prod => { items.push({ type: 'Produto', text: prod, tab: 'vendas', textNormalizado: normalizarTexto(prod) }); });
+    compras6Set.forEach(c => { items.push({ type: 'Compra', text: `${c.nome} (${c.itens.join(', ')})`, tab: 'vendas', textNormalizado: normalizarTexto(`${c.nome} (${c.itens.join(', ')})`) }); });
+    historico.forEach(h => { items.push({ type: 'Histórico', text: h.desc, tab: 'historico', textNormalizado: normalizarTexto(h.desc) }); });
+    treinosJogos.forEach(t => { items.push({ type: 'Evento', text: `${t.titulo} - ${t.data}`, tab: 'presencas', textNormalizado: normalizarTexto(`${t.titulo} - ${t.data}`) }); });
+    atas.forEach(a => { items.push({ type: 'Ata', text: a.titulo, tab: 'atas', textNormalizado: normalizarTexto(a.titulo) }); });
     return items;
 }
 const searchIndex = buildSearchIndex();
 function handleSearch(query) {
     const resultsDiv = document.getElementById('searchResults');
-    if (!query || query.trim().length < 2) { resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Digite pelo menos 2 caracteres...</p>'; return; }
-    const q = query.toLowerCase();
-    const matches = searchIndex.filter(item => item.text.toLowerCase().includes(q));
-    if (matches.length === 0) { resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>'; }
-    else {
+    if (!query || query.trim().length < 2) {
+        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Digite pelo menos 2 caracteres...</p>';
+        return;
+    }
+    const q = normalizarTexto(query);
+    const matches = searchIndex.filter(item => item.textNormalizado.includes(q));
+    if (matches.length === 0) {
+        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>';
+    } else {
         let html = '';
-        matches.slice(0, 20).forEach(m => { html += `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`; });
+        matches.slice(0, 20).forEach(m => {
+            html += `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`;
+        });
         resultsDiv.innerHTML = html;
     }
 }
