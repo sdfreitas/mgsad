@@ -174,7 +174,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
     <div class="cards-grid" id="resumo-cards"></div>
     <div class="section-card"><h2 class="section-title">Receitas vs Despesas Previstas por Mês</h2><div class="chart-container"><canvas id="chartBarMensal"></canvas></div><p class="note">Despesas estimadas com base no padrão da época anterior</p></div>
     <div class="section-card"><h2 class="section-title">Evolução Prevista do Saldo</h2><div class="chart-container"><canvas id="chartSaldo"></canvas></div><p class="note">Projeção — os valores reais serão atualizados mensalmente</p></div>
-    <p class="note">Última atualização: 6 de Setembro de 2026</p>
+    <p class="note">Última atualização: 9 de Setembro de 2026</p>
   </div>
   <div id="tab-despesas" class="tab-panel">
     <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -255,7 +255,7 @@ footer strong{color:rgba(255,255,255,.85);font-weight:600}
       Facebook
     </a>
   </div>
-  <span style="font-size:10px;opacity:.6">Última atualização: 6 de Setembro de 2026</span>
+  <span style="font-size:10px;opacity:.6">Última atualização: 9 de Setembro de 2026</span>
 </footer>
 
 <script>
@@ -334,6 +334,12 @@ const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const pagamentos = {
   "Pedro Costa": [0],
   "Telmo": [0,1],
+  "Mário Oliveira": [0],
+  "Américo Silva": [0],
+  "Sergio Rodrigues": [0],
+  "Américo Oliveira": [0],
+  "Joel Tavares": [0],
+  "Marcelo": [0]
 };
 function mesesPagos(nome){ return pagamentos[nome] || []; }
 function jaPagou(nome,mIdx){ return mesesPagos(nome).includes(mIdx); }
@@ -346,7 +352,7 @@ const recebidoReal = Object.entries(pagamentos).reduce((tot,[nome,meses])=>{
 // ─── DESPESAS CONFIRMADAS ───
 const despesasConfirmadas = 1000 + 540 + 4 + 200;
 
-// ─── VENDAS 6 SET ───
+// ─── VENDAS 6 SET (preços de venda, custos já pagos) ───
 const listaPrecos = {
   "Equipamento treino": 20,
   "T-shirt": 10,
@@ -363,8 +369,8 @@ const compras6Set = [
   { nome: "Telmo", itens: ["Calções saída", "Boné"] },
   { nome: "Mário Oliveira", itens: ["Boné"] },
   { nome: "Vitor Leite", itens: ["Calções saída", "Polo"] },
-  { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné"] },
-  { nome: "Zé Buraca", itens: ["Calções saída"] }
+  { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"] }, // + T-shirt (10) total 47
+  { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"] } // 15+10+5=30
 ];
 function calcularTotalVenda(itens) {
   return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0);
@@ -377,6 +383,19 @@ const totalItensVendidos = compras6Set.reduce((s,v)=>s+v.itens.length,0);
 
 // ─── SALDO ATUAL (inclui receita das vendas, mas não exibida separadamente) ───
 const saldo = SALDO_INICIAL + recebidoReal - despesasConfirmadas + totalVendasDia6;
+
+// ─── INSCRIÇÕES ───
+const valorInscricao = 30;
+const inscricoesPagas = [
+  "Mário Oliveira",
+  "Américo Silva",
+  "Sergio Rodrigues",
+  "Américo Oliveira",
+  "Joel Tavares"
+];
+function jaPagouInscricao(nome) {
+  return inscricoesPagas.includes(nome);
+}
 
 // ─── TABS ───
 const chartInstances = {};
@@ -682,6 +701,30 @@ vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:
 </div>`;
 document.getElementById('vendas-lista').innerHTML = vendasHtml;
 
+// ─── INSCRIÇÕES (NOVO SEPARADOR) ───
+function atualizarInscricoes() {
+  const totalInscritos = inscritos.length;
+  const pagos = inscritos.filter(j => jaPagouInscricao(j.nome)).length;
+  const porPagar = totalInscritos - pagos;
+  const recebido = pagos * valorInscricao;
+
+  document.getElementById('inscricoes-cards').innerHTML =
+    makeCard('Inscritos', totalInscritos, '€30 cada', '#0D3B66') +
+    makeCard('Pagos', pagos, 'até à data', '#16a34a') +
+    makeCard('Recebido', '€' + recebido, 'taxa de inscrição', '#0D3B66') +
+    makeCard('Por pagar', porPagar, 'inscritos', '#dc6843');
+
+  let tabelaHtml = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
+  inscritos.forEach(j => {
+    const pago = jaPagouInscricao(j.nome);
+    const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
+    tabelaHtml += `<tr><td class="player-name">${j.nome}</td><td class="center">€${valorInscricao}</td><td class="center">${badge}</td></tr>`;
+  });
+  tabelaHtml += '</tbody></table></div>';
+  document.getElementById('tabela-inscricoes').innerHTML = tabelaHtml;
+}
+atualizarInscricoes();
+
 // ─── ATAS ───
 const atas=[{
   data:"5 Ago 2026", titulo:"Reunião de Preparação da Época 2026/27",
@@ -702,9 +745,16 @@ atas.forEach(a=>{
 });
 document.getElementById('atas-lista').innerHTML=ah;
 
-// ─── HISTÓRICO (com Zé Buraca incluído) ───
+// ─── HISTÓRICO (com pagamentos de Setembro e inscrições) ───
 const historico = [
-  { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné), Zé Buraca (Calções saída)" },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Mário Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Américo Silva pagou Setembro (€20) e inscrição (€30) — total €50." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Sérgio Rodrigues pagou Setembro (€20) e inscrição (€30) — total €50." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Américo Oliveira (Regueifa) pagou Setembro (€20) e inscrição (€30) — total €50." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Joel Tavares pagou Setembro (€20) e inscrição (€30) — total €50." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Marcelo pagou Setembro (€10) e equipamento (€47)." },
+  { data:"9 Set 2026", tipo:"venda", desc:"🛍️ Zé Buraca pagou €30 de equipamento (Calções saída, T-shirt, Boné)." },
+  { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné)" },
   { data:"5 Set 2026", tipo:"despesa", desc:"Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
   { data:"5 Set 2026", tipo:"despesa", desc:"Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
   { data:"4 Set 2026", tipo:"pagamento", desc:"✅ Pedro Costa pagou Setembro — €20/mês." },
@@ -738,38 +788,6 @@ equipas.forEach((e,i)=>{ const rc=e.us?'class-row-us':''; ch+=`<tr class="${rc}"
 ch+='</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
 document.getElementById('sub-classificacao').innerHTML=ch;
 document.getElementById('sub-marcadores').innerHTML='<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
-
-// ─── INSCRIÇÕES (NOVO SEPARADOR) ───
-const valorInscricao = 30;
-const inscricoesPagas = []; // Edite esta lista com os nomes de quem já pagou a inscrição
-
-function jaPagouInscricao(nome) {
-  return inscricoesPagas.includes(nome);
-}
-
-function atualizarInscricoes() {
-  const totalInscritos = inscritos.length;
-  const pagos = inscritos.filter(j => jaPagouInscricao(j.nome)).length;
-  const porPagar = totalInscritos - pagos;
-  const recebido = pagos * valorInscricao;
-
-  document.getElementById('inscricoes-cards').innerHTML =
-    makeCard('Inscritos', totalInscritos, '€30 cada', '#0D3B66') +
-    makeCard('Pagos', pagos, 'até à data', '#16a34a') +
-    makeCard('Recebido', '€' + recebido, 'taxa de inscrição', '#0D3B66') +
-    makeCard('Por pagar', porPagar, 'inscritos', '#dc6843');
-
-  let tabelaHtml = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
-  inscritos.forEach(j => {
-    const pago = jaPagouInscricao(j.nome);
-    const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
-    tabelaHtml += `<tr><td class="player-name">${j.nome}</td><td class="center">€${valorInscricao}</td><td class="center">${badge}</td></tr>`;
-  });
-  tabelaHtml += '</tbody></table></div>';
-  document.getElementById('tabela-inscricoes').innerHTML = tabelaHtml;
-}
-
-atualizarInscricoes();
 </script>
 </body>
 </html>
