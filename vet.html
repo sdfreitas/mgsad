@@ -352,7 +352,7 @@ const recebidoReal = Object.entries(pagamentos).reduce((tot,[nome,meses])=>{
 // ─── DESPESAS CONFIRMADAS ───
 const despesasConfirmadas = 1000 + 540 + 4 + 200;
 
-// ─── VENDAS 6 SET (preços de venda, custos já pagos) ───
+// ─── VENDAS 6 SET ───
 const listaPrecos = {
   "Equipamento treino": 20,
   "T-shirt": 10,
@@ -369,8 +369,8 @@ const compras6Set = [
   { nome: "Telmo", itens: ["Calções saída", "Boné"] },
   { nome: "Mário Oliveira", itens: ["Boné"] },
   { nome: "Vitor Leite", itens: ["Calções saída", "Polo"] },
-  { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"] }, // + T-shirt (10) total 47
-  { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"] } // 15+10+5=30
+  { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"] },
+  { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"] }
 ];
 function calcularTotalVenda(itens) {
   return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0);
@@ -381,7 +381,7 @@ compras6Set.forEach(v => {
 const totalVendasDia6 = compras6Set.reduce((s,v)=>s+v.total,0);
 const totalItensVendidos = compras6Set.reduce((s,v)=>s+v.itens.length,0);
 
-// ─── SALDO ATUAL (inclui receita das vendas, mas não exibida separadamente) ───
+// ─── SALDO ATUAL (inclui receita das vendas e pagamentos) ───
 const saldo = SALDO_INICIAL + recebidoReal - despesasConfirmadas + totalVendasDia6;
 
 // ─── INSCRIÇÕES ───
@@ -745,15 +745,9 @@ atas.forEach(a=>{
 });
 document.getElementById('atas-lista').innerHTML=ah;
 
-// ─── HISTÓRICO (com pagamentos de Setembro e inscrições) ───
+// ─── HISTÓRICO AGRUPADO ───
 const historico = [
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Mário Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Américo Silva pagou Setembro (€20) e inscrição (€30) — total €50." },
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Sérgio Rodrigues pagou Setembro (€20) e inscrição (€30) — total €50." },
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Américo Oliveira (Regueifa) pagou Setembro (€20) e inscrição (€30) — total €50." },
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Joel Tavares pagou Setembro (€20) e inscrição (€30) — total €50." },
-  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Marcelo pagou Setembro (€10) e equipamento (€47)." },
-  { data:"9 Set 2026", tipo:"venda", desc:"🛍️ Zé Buraca pagou €30 de equipamento (Calções saída, T-shirt, Boné)." },
+  { data:"9 Set 2026", tipo:"pagamento", desc:"✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30), Pedro Costa (Set €20), Telmo (Set+Out €20)" },
   { data:"6 Set 2026", tipo:"venda", desc:"🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné)" },
   { data:"5 Set 2026", tipo:"despesa", desc:"Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
   { data:"5 Set 2026", tipo:"despesa", desc:"Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
