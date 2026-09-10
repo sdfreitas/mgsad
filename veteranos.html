@@ -421,7 +421,8 @@ const pagamentos = {
     "Américo Oliveira": [0],
     "Joel Tavares": [0],
     "Marcelo": [0],
-    "Pedro Cadete": [0]
+    "Pedro Cadete": [0],
+    "António Oliveira": [0]
 };
 function mesesPagos(nome) { return pagamentos[nome] || []; }
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
@@ -465,7 +466,7 @@ const totalItensVendidos = compras6Set.reduce((s, v) => s + v.itens.length, 0);
 
 // ─── INSCRIÇÕES ───
 const valorInscricao = 30;
-const inscricoesPagas = ["Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira", "Joel Tavares"];
+const inscricoesPagas = ["Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira", "Joel Tavares", "António Oliveira"];
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
 
@@ -850,7 +851,8 @@ document.getElementById('atas-lista').innerHTML = ah;
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€170) e inscrições recebidas (€150). Sócios entregues ao clube principal (não contam)." },
+    { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e a inscrição (€30) — total €50." },
+    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€190) e inscrições recebidas (€180). Sócios entregues ao clube principal (não contam)." },
     { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro — 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
     { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Pedro Cadete (Set €20), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
     { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) — Total €134 (entra na caixa)" },
@@ -995,23 +997,17 @@ function renderTorneios() {
 renderTorneios();
 
 // ─── PERFIL DO JOGADOR ───
-// Função auxiliar: procura por nome OU apelido (case-insensitive)
 function encontrarJogador(termo) {
     if (!termo) return null;
     const termoLower = termo.toLowerCase();
-    // Primeiro tenta por nome exato
     let jogador = todosJogadores.find(j => j.nome === termo);
     if (jogador) return jogador;
-    // Depois por nome case-insensitive
     jogador = todosJogadores.find(j => j.nome.toLowerCase() === termoLower);
     if (jogador) return jogador;
-    // Depois por apelido exato
     jogador = todosJogadores.find(j => j.apelido === termo);
     if (jogador) return jogador;
-    // Depois por apelido case-insensitive
     jogador = todosJogadores.find(j => j.apelido.toLowerCase() === termoLower);
     if (jogador) return jogador;
-    // Por fim, por primeiro nome (parte antes do primeiro espaço)
     jogador = todosJogadores.find(j => j.nome.split(' ')[0].toLowerCase() === termoLower);
     return jogador;
 }
@@ -1041,7 +1037,6 @@ function abrirPerfil(nome) {
     conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
     conteudo += `</div>`;
 
-    // ─── JOGOS / TORNEIOS ───
     let golosMarcados = 0;
     let jogosComGolos = [];
     torneios.forEach(t => {
