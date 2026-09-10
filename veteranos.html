@@ -469,6 +469,1039 @@ function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
 
 // ─── SÓCIOS ───
+const valorSocio = 40;
+const sociosPagos = ["Pedro Cadete"];
+
+// ─── SALDO ATUAL ───
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6;
+
+// ─── TORNEIOS E AMIGÁVEIS ───
+const torneios = [];
+const amigaveis = [];
+
+// ─── TABS ───
+const chartInstances = {};
+function freshCanvas(id) { const o = document.getElementById(id); const p = o.parentNode; o.remove(); const c = document.createElement('canvas'); c.id = id; p.appendChild(c); return c; }
+function destroyCharts(...n) { n.forEach(k => { if (chartInstances[k]) { chartInstances[k].destroy(); delete chartInstances[k]; } }); }
+function showTab(id) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    if (id === 'resumo') { destroyCharts('bar', 'line'); setTimeout(initResumoCharts, 50); }
+    if (id === 'despesas') { destroyCharts('pie'); setTimeout(initDespesasChart, 50); }
+}
+function makeCard(l, v, s, a) { return `<div class="card" style="border-top-color:${a}"><div class="card-label">${l}</div><div class="card-value" style="color:${a}">${v}</div>${s ? `<div class="card-sub">${s}</div>` : ''}</div>`; }
+
+document.getElementById('resumo-cards').innerHTML =
+    makeCard('Saldo Atual', '€' + saldo, 'caixa líquida disponível', '#0D3B66') +
+    makeCard('Caixa Transitada', '€' + SALDO_INICIAL, 'época anterior', '#1A6FB5') +
+    makeCard('Receita Esperada', '€' + receitaMensalEsperada + '/mês', inscritos.length + '×€' + QUOTA + ' + ' + naoInscritos.length + '×€' + QUOTA_NI, '#64748b') +
+    makeCard('Plantel', inscritos.length + ' + ' + naoInscritos.length, inscritos.length + ' inscritos · ' + naoInscritos.length + ' não inscritos', '#0D3B66');
+
+// ─── DECOMPOSIÇÃO DO SALDO ───
+let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
+sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0D3B66;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
+sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
+sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
+sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
+sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
+sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
+sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
+sd += `<tr><td>Garrafões de água</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAgua}</td></tr>`;
+sd += `<tr style="background:#f0f6ff"><td style="font-weight:700;color:#0D3B66">Saldo atual dos veteranos</td><td class="center" style="font-weight:800;color:#0D3B66;font-size:15px">€${saldo}</td></tr>`;
+sd += `</tbody></table></div>`;
+sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) são entregues ao clube principal — não afetam este saldo.</p>`;
+document.getElementById('saldo-decomposicao').innerHTML = sd;
+
+document.getElementById('quotas-cards').innerHTML =
+    makeCard('Inscritos', inscritos.length, '€20/mês', '#0D3B66') +
+    makeCard('Não Inscritos', naoInscritos.length, '€10/mês', '#1A6FB5') +
+    makeCard('Recebido', recebidoReal ? '€' + recebidoReal : '€0', 'até à data', '#16a34a') +
+    makeCard('Quota Não Inscrito', '€10/mês', 'quando comparecem', '#0D3B66');
+
+// ─── CHARTS ───
+const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
+const chartOpts = { responsive: true, maintainAspectRatio: true, ...animOpts, plugins: { legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 } } } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 12 } } }, y: { grid: { color: '#f0f3f7' }, ticks: { font: { size: 11 }, callback: v => '€' + v } } } };
+function initResumoCharts() {
+    const prevRec = MESES.map(() => receitaMensalEsperada);
+    const prevDesp = [1540, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+    chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
+        type: 'bar', data: { labels: MESES, datasets: [
+            { label: 'Receita Esperada', data: prevRec, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .45 },
+            { label: 'Despesas Previstas', data: prevDesp, backgroundColor: '#C5D5E4', borderRadius: 4, barPercentage: .45 }
+        ] }, options: chartOpts
+    });
+    let acc = SALDO_INICIAL;
+    const sp = MESES.map((_, i) => { acc += prevRec[i] - prevDesp[i]; return acc; });
+    chartInstances.line = new Chart(freshCanvas('chartSaldo'), {
+        type: 'line', data: { labels: ['Início', ...MESES], datasets: [{ label: 'Saldo Previsto', data: [SALDO_INICIAL, ...sp], borderColor: '#0D3B66', backgroundColor: 'rgba(13,59,102,.08)', fill: true, tension: .3, pointRadius: 5, pointBackgroundColor: '#0D3B66', borderWidth: 2.5 }] },
+        options: { ...chartOpts, plugins: { ...chartOpts.plugins, legend: { display: false } } }
+    });
+}
+function initDespesasChart() {
+    const pd = [
+        { name: 'Campo', value: 1000, color: '#0D3B66' },
+        { name: 'Inscrição AFA', value: 540, color: '#1A6FB5' },
+        { name: 'Galhardetes', value: 200, color: '#5BA4D9' },
+        { name: 'Água', value: 4, color: '#dc6843' }
+    ];
+    chartInstances.pie = new Chart(freshCanvas('chartPie'), {
+        type: 'doughnut', data: { labels: pd.map(c => c.name), datasets: [{ data: pd.map(c => c.value), backgroundColor: pd.map(c => c.color), borderWidth: 2, borderColor: '#fff' }] },
+        options: { responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ctx.label + ': €' + ctx.raw } } } }
+    });
+}
+initResumoCharts();
+
+let dh = '<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Despesas Confirmadas</h3>';
+dh += '<table><thead><tr><th>Despesa</th><th>Valor</th><th>Quando</th></tr></thead><tbody>';
+dh += '<tr><td style="font-weight:600;color:#0D3B66">Campo (anual)</td><td style="font-weight:700">€1.000</td><td>Setembro</td></tr>';
+dh += '<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (27 atletas × €20)</td><td style="font-weight:700">€540</td><td>Setembro</td></tr>';
+dh += '<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
+dh += '<tr><td style="font-weight:600;color:#0D3B66">Galhardetes do clube (20 unidades)</td><td style="font-weight:700">€200</td><td>5 Setembro</td></tr>';
+dh += '<tr><td style="font-weight:600;color:#0D3B66">Garrafões de água (4 × 6L)</td><td style="font-weight:700">€4</td><td>5 Setembro</td></tr>';
+dh += '<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
+dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€1.744</td><td></td></tr></tfoot></table>';
+document.getElementById('tabela-despesas').innerHTML = dh;
+
+function calcIdade(nasc) { if (!nasc) return '—'; const p = nasc.split('/'); const d = new Date(p[2], p[1] - 1, p[0]); const diff = Date.now() - d.getTime(); return Math.floor(diff / 31557600000); }
+const mesMap = { 9: 0, 10: 1, 11: 2, 12: 3, 1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9 };
+const mesNomes = { 1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun', 7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez' };
+function getBirthMonth(nasc) { if (!nasc) return 0; return parseInt(nasc.split('/')[1]); }
+function getBirthMonthIdx(nasc) { const m = getBirthMonth(nasc); return mesMap[m] !== undefined ? mesMap[m] : -1; }
+function isOffSeason(nasc) { const m = getBirthMonth(nasc); return m === 7 || m === 8; }
+function offSeasonTag(nasc) { if (!isOffSeason(nasc)) return ''; const m = getBirthMonth(nasc); return ` <span style="font-size:9px;font-weight:600;background:#fff7ed;color:#92400e;padding:1px 6px;border-radius:4px;white-space:nowrap">🎂 ${mesNomes[m]}</span>`; }
+function monthCell(m, birthIdx, pago) {
+    if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
+    if (m === birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
+    return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
+}
+
+let qh = '<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Inscritos (€20/mês)</h3>';
+qh += '<div class="table-wrap"><table><thead><tr><th style="width:30px">Nº</th><th>Nome</th><th class="center">Nasc.</th><th class="center">Idade</th>';
+MESES.forEach(m => qh += `<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`);
+qh += '<th class="center">Estado</th></tr></thead><tbody>';
+inscritos.forEach(j => {
+    const osTag = offSeasonTag(j.nasc);
+    const bi = getBirthMonthIdx(j.nasc);
+    const pagos = mesesPagos(j.nome);
+    qh += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
+    qh += `<td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${osTag}</td>`;
+    qh += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
+    qh += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
+    for (let m = 0; m < 10; m++) qh += monthCell(m, bi, pagos.includes(m));
+    const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
+    qh += `<td class="center">${estado}</td></tr>`;
+});
+qh += '</tbody></table></div>';
+qh += '<h3 style="font-size:13px;color:#dc6843;font-weight:600;margin:24px 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Não Inscritos (€10/mês)</h3>';
+qh += '<div class="table-wrap"><table><thead><tr><th style="width:30px">Nº</th><th>Nome</th><th class="center">Nasc.</th><th class="center">Idade</th>';
+MESES.forEach(m => qh += `<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`);
+qh += '<th class="center">Estado</th></tr></thead><tbody>';
+naoInscritos.forEach(j => {
+    const bi = getBirthMonthIdx(j.nasc);
+    const osTag = offSeasonTag(j.nasc);
+    const pagos = mesesPagos(j.nome);
+    qh += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
+    qh += `<td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${osTag}</td>`;
+    qh += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
+    qh += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
+    for (let m = 0; m < 10; m++) qh += monthCell(m, bi, pagos.includes(m));
+    const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
+    qh += `<td class="center">${estado}</td></tr>`;
+});
+qh += '</tbody></table></div>';
+qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
+qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário · ✓ Mês pago</p>';
+const todosParaQuotas = [...inscritos.map(j => ({ ...j, ni: false, quota: QUOTA })), ...naoInscritos.map(j => ({ ...j, ni: true, quota: QUOTA_NI }))];
+let maHtml = '';
+MESES.forEach((mNome, mIdx) => {
+    let pagosCount = 0; let rowsHtml = '';
+    todosParaQuotas.forEach(j => {
+        const pago = jaPagou(j.nome, mIdx); if (pago) pagosCount++;
+        const bi = getBirthMonthIdx(j.nasc); const isBday = (bi === mIdx);
+        let statusHtml, statusCls;
+        if (pago) { statusHtml = `✓ Pago (€${j.quota})`; statusCls = 'pago'; }
+        else if (isBday) { statusHtml = '🎂 Aniversário'; statusCls = 'bday'; }
+        else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
+        const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
+        rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
+    });
+    const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? j.quota : 0), 0);
+    const badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge';
+    maHtml += `<div class="mes-acc" id="mesacc-${mIdx}"><div class="mes-acc-head" onclick="toggleMesAcc(${mIdx})"><div class="mes-acc-left"><span class="mes-acc-name">${mNome}</span><span class="${badgeCls}">${pagosCount} pago(s) · €${receitaMes}</span></div><span class="mes-acc-chevron">▾</span></div><div class="mes-acc-body"><div class="mes-acc-inner">${rowsHtml}</div></div></div>`;
+});
+document.getElementById('quotas-por-mes').innerHTML = maHtml;
+function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
+document.getElementById('tabela-quotas').innerHTML = qh;
+
+// ─── ANIVERSÁRIOS ───
+const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const hoje = new Date();
+const mesAtualNum = hoje.getMonth() + 1;
+const porMes = {};
+for (let m = 1; m <= 12; m++) porMes[m] = [];
+todosJogadores.forEach(j => {
+    if (!j.nasc) return;
+    const partes = j.nasc.split('/');
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[0]);
+    porMes[mes].push({ ...j, dia });
+});
+Object.keys(porMes).forEach(m => porMes[m].sort((a, b) => a.dia - b.dia));
+const totalComData = todosJogadores.filter(j => j.nasc).length;
+const aniversariantesMesAtual = porMes[mesAtualNum].length;
+let mesMaisAniversarios = 1, maxCount = 0;
+for (let m = 1; m <= 12; m++) { if (porMes[m].length > maxCount) { maxCount = porMes[m].length; mesMaisAniversarios = m; } }
+document.getElementById('aniversarios-cards').innerHTML =
+    makeCard('Total com Data', totalComData, 'de ' + todosJogadores.length + ' jogadores', '#0D3B66') +
+    makeCard('Este Mês', aniversariantesMesAtual, mesesAno[mesAtualNum - 1], '#1A6FB5') +
+    makeCard('Mês com Mais', mesesAno[mesMaisAniversarios - 1], maxCount + ' aniversariantes', '#64748b') +
+    makeCard('Fora da Época', porMes[7].length + porMes[8].length, 'Julho + Agosto', '#dc6843');
+
+const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
+
+let bmHtml = '<div class="bday-months-grid">';
+for (let m = 1; m <= 12; m++) {
+    const lista = porMes[m];
+    const isOff = (m === 7 || m === 8);
+    const isCurrent = (m === mesAtualNum);
+    let cls = 'bday-month-card';
+    if (isCurrent) cls += ' current';
+    if (isOff) cls += ' offseason';
+    bmHtml += `<div class="${cls}"><div class="bday-month-head"><span class="bday-month-name">${mesesAno[m - 1]}${isCurrent ? ' 📍' : ''}</span><span class="bday-month-count">${lista.length}</span></div><div class="bday-month-body">`;
+    if (lista.length === 0) { bmHtml += '<div class="bday-empty">Sem aniversários</div>'; }
+    else {
+        lista.forEach(j => {
+            const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
+            const merenda = merendaPaga.includes(j.nome) ? ' <span title="Merenda paga" style="font-size:12px;">🍽️</span>' : '';
+            bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
+        });
+    }
+    bmHtml += '</div></div>';
+}
+bmHtml += '</div><div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span><span>🍽️ Merenda paga</span></div>';
+document.getElementById('aniversarios-grid').innerHTML = bmHtml;
+
+// ─── TREINOS ───
+const treinosJogos = [
+    { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
+      extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
+    { data: "9 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Joel Tavares", "Hugo André", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "José Eduardo"],
+      extra: ["Marcelo", "Zé Buraca", "Inácio"] }
+];
+const totalEventos = treinosJogos.length;
+const pendentes = treinosJogos.filter(t => t.estado === 'pendente').length;
+document.getElementById('treinos-cards').innerHTML =
+    makeCard('Treinos Registados', totalEventos, 'sessões registadas', '#0D3B66') +
+    makeCard('Por Definir', pendentes, 'presenças a marcar', '#dc6843') +
+    makeCard('Dia de Treino', 'Quarta 21h', 'todas as semanas', '#1A6FB5');
+
+function calcularPresencasSeparadas() {
+    const presencasPorJogador = {};
+    treinosJogos.forEach(t => {
+        if (t.estado !== 'registado') return;
+        const todos = [...(t.presentes || []), ...(t.extra || [])];
+        todos.forEach(nome => { presencasPorJogador[nome] = (presencasPorJogador[nome] || 0) + 1; });
+    });
+    const processarLista = (lista) => {
+        return lista.map(jogador => {
+            const presencas = presencasPorJogador[jogador.nome] || 0;
+            const percentagem = totalEventos > 0 ? ((presencas / totalEventos) * 100).toFixed(0) + '%' : '0%';
+            return { nome: jogador.nome, presencas, percentagem };
+        }).sort((a, b) => b.presencas - a.presencas);
+    };
+    return { inscritos: processarLista(inscritos), naoInscritos: processarLista(naoInscritos) };
+}
+const listasSeparadas = calcularPresencasSeparadas();
+const totalPresencasInscritos = listasSeparadas.inscritos.reduce((s, j) => s + j.presencas, 0);
+const totalPresencasNaoInscritos = listasSeparadas.naoInscritos.reduce((s, j) => s + j.presencas, 0);
+const totalPresencasGlobal = totalPresencasInscritos + totalPresencasNaoInscritos;
+const mediaPresencasGlobal = totalEventos > 0 ? (totalPresencasGlobal / (inscritos.length + naoInscritos.length)).toFixed(1) : '0';
+
+let statsHtml = '<div class="stats-grid">';
+statsHtml += `<div class="stat-box"><div class="stat-value">${totalEventos}</div><div class="stat-label">Treinos registados</div></div>`;
+statsHtml += `<div class="stat-box"><div class="stat-value">${totalPresencasGlobal}</div><div class="stat-label">Presenças totais</div></div>`;
+statsHtml += `<div class="stat-box"><div class="stat-value">${mediaPresencasGlobal}</div><div class="stat-label">Média por treino</div></div>`;
+statsHtml += '</div>';
+statsHtml += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px;color:#0D3B66">👥 Inscritos</h3><div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
+listasSeparadas.inscritos.forEach(j => { statsHtml += `<tr><td class="clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
+statsHtml += '</tbody></table></div>';
+statsHtml += '<h3 style="font-size:14px;font-weight:600;margin:24px 0 8px;color:#dc6843">📋 Não Inscritos</h3><div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
+listasSeparadas.naoInscritos.forEach(j => { statsHtml += `<tr><td class="clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
+statsHtml += '</tbody></table></div>';
+document.getElementById('treinos-stats').innerHTML = statsHtml;
+
+let ph = '';
+treinosJogos.forEach((t, idx) => {
+    const icon = t.tipo === 'treino' ? '🏃' : '⚽';
+    ph += `<div class="pres-card" id="presacc-${idx}"><div class="pres-head ${t.tipo}" onclick="togglePresAcc(${idx})"><div class="pres-title">${icon} ${t.titulo}<div class="pres-date" style="margin-top:2px">${t.data}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="pres-status ${t.estado === 'pendente' ? 'pending' : 'done'}">${t.estado === 'pendente' ? 'A Definir' : 'Registado'}</span><span class="pres-chevron">▾</span></div></div><div class="pres-body-wrap"><div class="pres-body">`;
+    if (t.estado === 'pendente') { ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>'; }
+    else {
+        const totalPresentes = (t.presentes?.length || 0) + (t.extra?.length || 0);
+        ph += `<div style="font-size:12px;color:#888;margin-bottom:10px">${totalPresentes} presenças registadas</div>`;
+        ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px;margin-bottom:12px">';
+        (t.presentes || []).forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#16a34a;font-weight:700">✓</span> <span class="clickable" onclick="abrirPerfil('${nome.replace(/'/g, "\\'")}')">${nome}</span></div>`; });
+        ph += '</div>';
+        if (t.extra && t.extra.length) {
+            ph += '<div style="font-size:11px;color:#1A6FB5;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px">Atletas Extra</div>';
+            ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px">';
+            t.extra.forEach(nome => { ph += `<div style="font-size:13px;color:#333;display:flex;align-items:center;gap:6px"><span style="color:#1A6FB5;font-weight:700">✓</span> <span class="clickable" onclick="abrirPerfil('${nome.replace(/'/g, "\\'")}')">${nome}</span></div>`; });
+            ph += '</div>';
+        }
+    }
+    ph += '</div></div></div>';
+});
+document.getElementById('treinos-lista').innerHTML = ph;
+function togglePresAcc(i) { document.getElementById('presacc-' + i).classList.toggle('open'); }
+
+// ─── VENDAS ───
+document.getElementById('vendas-cards').innerHTML =
+    makeCard('Itens Vendidos', totalItensVendidos, 'unidades', '#0D3B66') +
+    makeCard('Produtos na lista', Object.keys(listaPrecos).length, 'tipos', '#1A6FB5') +
+    makeCard('Receita', '€' + totalVendasDia6, 'entra na caixa', '#16a34a');
+let precoHtml = '';
+Object.entries(listaPrecos).forEach(([prod, preco]) => { precoHtml += `<tr><td style="font-weight:600;color:#0D3B66">${prod}</td><td style="font-weight:700">€${preco}</td></tr>`; });
+document.getElementById('tabela-precos-body').innerHTML = precoHtml;
+let vendasHtml = '';
+compras6Set.forEach(v => {
+    const itensStr = v.itens.join(', ');
+    const badge = v.pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Pendente</span>';
+    vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod clickable" onclick="abrirPerfil('${v.nome.replace(/'/g, "\\'")}')">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span><div style="margin-top:6px">${badge}</div></div><span class="venda-total">€${v.total}</span></div>`;
+});
+vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:#0D3B66;background:#f0f6ff;padding:10px;border-radius:8px;display:flex;justify-content:space-between;"><span>Total: ${totalItensVendidos} itens</span><span>€${totalVendasDia6}</span></div>`;
+vendasHtml += `<p style="font-size:11px;color:#16a34a;margin-top:8px;text-align:center">✓ Este valor está incluído no saldo da caixa</p>`;
+document.getElementById('vendas-lista').innerHTML = vendasHtml;
+
+// ─── INSCRIÇÕES ───
+function atualizarInscricoes() {
+    const totalInscritos = inscritos.length;
+    const pagos = inscritos.filter(j => jaPagouInscricao(j.nome)).length;
+    const porPagar = totalInscritos - pagos;
+    const recebido = pagos * valorInscricao;
+    document.getElementById('inscricoes-cards').innerHTML =
+        makeCard('Inscritos', totalInscritos, '€30 cada', '#0D3B66') +
+        makeCard('Pagos', pagos, 'até à data', '#16a34a') +
+        makeCard('Recebido', '€' + recebido, 'entra na caixa', '#16a34a') +
+        makeCard('Por pagar', porPagar, 'inscritos', '#dc6843');
+    let tabelaHtml = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
+    inscritos.forEach(j => {
+        const pago = jaPagouInscricao(j.nome);
+        const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
+        tabelaHtml += `<tr><td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">€${valorInscricao}</td><td class="center">${badge}</td></tr>`;
+    });
+    tabelaHtml += '</tbody></table></div>';
+    tabelaHtml += '<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). Os €540 totais (27 × €20) já estão contabilizados nas despesas.</p>';
+    document.getElementById('tabela-inscricoes').innerHTML = tabelaHtml;
+}
+atualizarInscricoes();
+
+// ─── SÓCIOS ───
+function atualizarSocios() {
+    const total = inscritos.length;
+    const pagos = inscritos.filter(j => sociosPagos.includes(j.nome)).length;
+    const porPagar = total - pagos;
+    const recebido = pagos * valorSocio;
+    document.getElementById('socios-cards').innerHTML =
+        makeCard('Total Sócios', total, 'jogadores inscritos', '#0D3B66') +
+        makeCard('Pagos', pagos, 'quota €' + valorSocio, '#16a34a') +
+        makeCard('Recebido', '€' + recebido, 'entregue ao clube', '#dc6843') +
+        makeCard('Por pagar', porPagar, 'sócios pendentes', '#dc6843');
+    let tabelaHtml = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
+    inscritos.forEach(j => {
+        const pago = sociosPagos.includes(j.nome);
+        const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
+        tabelaHtml += `<tr><td class="player-name clickable" onclick="abrirPerfil('${j.nome.replace(/'/g, "\\'")}')">${j.nome}</td><td class="center">€${valorSocio}</td><td class="center">${badge}</td></tr>`;
+    });
+    tabelaHtml += '</tbody></table></div>';
+    document.getElementById('tabela-socios').innerHTML = tabelaHtml;
+}
+atualizarSocios();
+
+// ─── ATAS ───
+const atas = [{
+    data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
+    tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: true,
+    pontos: ["Caixa transitada da época anterior: €2.220.", "Campo — custo anual de €1.000 confirmado.", "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20 (total da caixa: €540 para 27 atletas).", "Massagista — valor a definir em reunião futura.", "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.", "Mensalidade definida em €20/mês a começar em Setembro.", "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.", "Atletas não inscritos pagam €10/mês."],
+    presentes: "Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
+}];
+document.getElementById('atas-cards').innerHTML =
+    makeCard('Total Reuniões', atas.length, 'nesta época', '#0D3B66') +
+    makeCard('Última Reunião', atas[0].data, '', '#1A6FB5') +
+    makeCard('Decisões', 1, 'reunião com deliberações', '#64748b');
+let ah = '';
+atas.forEach(a => {
+    const cls = a.destaque ? 'ata-card destaque' : 'ata-card';
+    let th = a.tags.map(t => `<span class="ata-tag ${t[0]}">${t[1]}</span>`).join('');
+    let ph = a.pontos.map(p => `<li>${p}</li>`).join('');
+    ah += `<div class="${cls}"><div class="ata-header"><div><div style="margin-bottom:6px">${th}</div><div class="ata-title">${a.titulo}</div></div><span class="ata-date">${a.data}</span></div><div class="ata-body"><ul>${ph}</ul></div><div class="ata-presentes">👥 ${a.presentes}</div></div>`;
+});
+document.getElementById('atas-lista').innerHTML = ah;
+
+// ─── HISTÓRICO ───
+const historico = [
+    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€150) e inscrições recebidas (€150). Sócios entregues ao clube principal (não contam)." },
+    { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro — 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
+    { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) — Total €134 (entra na caixa)" },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
+    { data: "4 Set 2026", tipo: "pagamento", desc: "✅ Pedro Costa pagou Setembro — €20/mês." },
+    { data: "2 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 2 de Setembro — 18 atletas presentes + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
+    { data: "2 Set 2026", tipo: "pagamento", desc: "Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
+    { data: "2 Set 2026", tipo: "aviso", desc: "Daniel Dias passou de não inscrito para inscrito (€20/mês); António José Silva passou de inscrito para não inscrito (€10/mês)." },
+    { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
+    { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transitada da época 2025/26: €2.220." },
+    { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
+    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
+];
+let hh = '';
+const tipoInfo = { ata: { cor: '#1A6FB5', icon: '📋', label: 'Ata' }, caixa: { cor: '#0D3B66', icon: '💰', label: 'Caixa' }, despesa: { cor: '#dc6843', icon: '🧾', label: 'Despesa' }, pagamento: { cor: '#16a34a', icon: '✅', label: 'Pagamento' }, aviso: { cor: '#d97706', icon: '⚠️', label: 'Aviso' }, presenca: { cor: '#7c3aed', icon: '🏃', label: 'Treino' }, venda: { cor: '#0ea5e9', icon: '🛍️', label: 'Venda' } };
+historico.forEach((h, i) => {
+    const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
+    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${h.desc}</div></div></div>`;
+});
+document.getElementById('historico-lista').innerHTML = hh;
+
+// ─── SUB-TABS ───
+function showSubTab(id) {
+    document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('sub-' + id).classList.add('active');
+    document.querySelectorAll('.sub-tab').forEach(b => { if (b.textContent.toLowerCase().includes(id.slice(0, 5))) b.classList.add('active'); });
+}
+document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
+const equipas = [{ nome: "Vet. A.D.C. Lobão", us: true }, { nome: "Vet. FC Fiães", us: false }, { nome: "Vet. SC Espinho", us: false }, { nome: "Vet. CD Feira", us: false }, { nome: "Vet. AD Sanjoanense", us: false }, { nome: "Vet. SC Salgueiros", us: false }, { nome: "Vet. FC Arouca", us: false }, { nome: "Vet. AD Oliveirense", us: false }];
+let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
+equipas.forEach((e, i) => { const rc = e.us ? 'class-row-us' : ''; ch += `<tr class="${rc}"><td><span class="class-pos">${i + 1}</span></td><td style="text-align:left;white-space:nowrap">${e.us ? '⚽ ' : ''}<strong>${e.nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`; });
+ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
+document.getElementById('sub-classificacao').innerHTML = ch;
+document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
+
+// ─── TORNEIOS E AMIGÁVEIS ───
+function renderTorneios() {
+    let html = '';
+    html += '<div class="section-card"><h2 class="section-title">🎯 Torneios</h2>';
+    if (torneios.length === 0) {
+        html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🎯</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem torneios registados</div><div style="font-size:13px;color:#999">Os torneios serão adicionados quando forem disputados.</div></div>';
+    } else {
+        torneios.forEach(t => {
+            html += `<div class="match-card"><div class="match-date">${t.data}<span>${t.local || ''}</span></div><div class="match-teams"><div class="match-home us">${t.nome}</div><div class="match-vs">Torneio</div><div class="match-away">${t.resultado || 'Resultado por definir'}</div></div></div>`;
+        });
+    }
+    html += '</div>';
+    html += '<div class="section-card"><h2 class="section-title">🤝 Jogos Amigáveis</h2>';
+    if (amigaveis.length === 0) {
+        html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🤝</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem amigáveis registados</div><div style="font-size:13px;color:#999">Os jogos amigáveis serão adicionados quando forem realizados.</div></div>';
+    } else {
+        amigaveis.forEach(a => {
+            const golosNos = a.golosNos;
+            const golosEles = a.golosEles;
+            let scoreClass = '';
+            let resultadoBadge = '';
+            if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
+            else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
+            else { scoreClass = 'draw'; resultadoBadge = '<span class="match-badge d">Empate</span>'; }
+            const casa = a.casa ? 'Casa' : 'Fora';
+            html += `<div class="match-card">
+                <div class="match-date">${a.data}<span>${casa}</span></div>
+                <div class="match-teams">
+                    <div class="match-home us">Vet. A.D.C. Lobão</div>
+                    <div class="match-vs">vs</div>
+                    <div class="match-away">${a.adversario}</div>
+                    ${a.marcadores && a.marcadores.length ? `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${a.marcadores.join(', ')}</div>` : ''}
+                </div>
+                <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
+                <div>${resultadoBadge}</div>
+            </div>`;
+        });
+    }
+    html += '</div>';
+    const totalAmigaveis = amigaveis.length;
+    const vitorias = amigaveis.filter(a => a.golosNos > a.golosEles).length;
+    const empates = amigaveis.filter(a => a.golosNos === a.golosEles).length;
+    const derrotas = amigaveis.filter(a => a.golosNos < a.golosEles).length;
+    const golosMarcados = amigaveis.reduce((s, a) => s + a.golosNos, 0);
+    const golosSofridos = amigaveis.reduce((s, a) => s + a.golosEles, 0);
+    if (totalAmigaveis > 0) {
+        html += '<div class="section-card"><h2 class="section-title">📊 Estatísticas de Amigáveis</h2><div class="stats-grid">';
+        html += `<div class="stat-box"><div class="stat-value">${totalAmigaveis}</div><div class="stat-label">Jogos</div></div>`;
+        html += `<div class="stat-box"><div class="stat-value" style="color:#16a34a">${vitorias}</div><div class="stat-label">Vitórias</div></div>`;
+        html += `<div class="stat-box"><div class="stat-value" style="color:#d97706">${empates}</div><div class="stat-label">Empates</div></div>`;
+        html += `<div class="stat-box"><div class="stat-value" style="color:#c1121f">${derrotas}</div><div class="stat-label">Derrotas</div></div>`;
+        html += `<div class="stat-box"><div class="stat-value">${golosMarcados}</div><div class="stat-label">Golos marcados</div></div>`;
+        html += `<div class="stat-box"><div class="stat-value">${golosSofridos}</div><div class="stat-label">Golos sofridos</div></div>`;
+        html += '</div></div>';
+    }
+    document.getElementById('sub-torneios').innerHTML = html;
+}
+renderTorneios();
+
+// ─── PERFIL DO JOGADOR ───
+function abrirPerfil(nome) {
+    const jogador = todosJogadores.find(j => j.nome === nome);
+    if (!jogador) return;
+    const modal = document.getElementById('perfilModal');
+    document.getElementById('perfilNome').textContent = nome;
+    let conteudo = '';
+    conteudo += `<div class="modal-section"><h4>📋 Dados</h4>`;
+    conteudo += `<div class="modal-row"><span>Apelido</span><strong>${jogador.apelido || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Número</span><strong>${jogador.num || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Nascimento</span><strong>${jogador.nasc || '—'}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Tipo</span><strong>${jogador.inscrito ? 'Inscrito' : 'Não Inscrito'}</strong></div>`;
+    conteudo += `</div>`;
+    const presencas = treinosJogos.reduce((total, t) => {
+        if (t.estado !== 'registado') return total;
+        return total + ((t.presentes?.includes(nome) || t.extra?.includes(nome)) ? 1 : 0);
+    }, 0);
+    const totalEventosPresenca = treinosJogos.filter(t => t.estado === 'registado').length;
+    const percentagemPresenca = totalEventosPresenca > 0 ? ((presencas / totalEventosPresenca) * 100).toFixed(0) + '%' : '0%';
+    conteudo += `<div class="modal-section"><h4>✅ Treinos</h4>`;
+    conteudo += `<div class="modal-row"><span>Presenças registadas</span><strong>${presencas} de ${totalEventosPresenca}</strong></div>`;
+    conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
+    conteudo += `</div>`;
+    const mesesPagosJogador = mesesPagos(nome);
+    conteudo += `<div class="modal-section"><h4>💰 Mensalidades</h4>`;
+    if (mesesPagosJogador.length === 0) {
+        conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
+    } else {
+        mesesPagosJogador.forEach(mIdx => {
+            conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`;
+        });
+    }
+    conteudo += `</div>`;
+    const inscricaoPaga = jaPagouInscricao(nome);
+    conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4>`;
+    conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
+    conteudo += `</div>`;
+    if (jogador.inscrito) {
+        const socioPago = sociosPagos.includes(nome);
+        conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${socioPago ? 'badge-ok' : 'badge-falta'}">${socioPago ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `</div>`;
+    }
+    const compraJogador = compras6Set.find(c => c.nome === nome);
+    if (compraJogador) {
+        conteudo += `<div class="modal-section"><h4>🛍️ Equipamento</h4>`;
+        conteudo += `<div class="modal-row"><span>Itens</span><strong>${compraJogador.itens.join(', ')}</strong></div>`;
+        conteudo += `<div class="modal-row"><span>Total</span><strong>€${compraJogador.total}</strong></div>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${compraJogador.pago ? 'badge-ok' : 'badge-falta'}">${compraJogador.pago ? 'Pago' : 'Pendente'}</span></div>`;
+        conteudo += `</div>`;
+    }
+    document.getElementById('perfilConteudo').innerHTML = conteudo;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function fecharPerfil() {
+    document.getElementById('perfilModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) {
+        fecharPerfil();
+    }
+});
+
+// ─── PESQUISA GLOBAL ───
+let searchOpen = false;
+function toggleSearch() {
+    searchOpen = !searchOpen;
+    const panel = document.getElementById('searchPanel');
+    const input = document.getElementById('searchInput');
+    if (searchOpen) {
+        panel.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => input.focus(), 100);
+    } else {
+        panel.classList.remove('open');
+        input.blur();
+        document.body.style.overflow = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchResults').innerHTML = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+}
+function normalizarTexto(texto) {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+function buildSearchIndex() {
+    let items = [];
+    todosJogadores.forEach(j => { items.push({ type: 'Jogador', text: j.nome, tab: 'treinos', textNormalizado: normalizarTexto(j.nome) }); });
+    Object.keys(listaPrecos).forEach(prod => { items.push({ type: 'Produto', text: prod, tab: 'vendas', textNormalizado: normalizarTexto(prod) }); });
+    compras6Set.forEach(c => { items.push({ type: 'Compra', text: `${c.nome} (${c.itens.join(', ')})`, tab: 'vendas', textNormalizado: normalizarTexto(`${c.nome} (${c.itens.join(', ')})`) }); });
+    historico.forEach(h => { items.push({ type: 'Histórico', text: h.desc, tab: 'historico', textNormalizado: normalizarTexto(h.desc) }); });
+    treinosJogos.forEach(t => { items.push({ type: 'Treino', text: `${t.titulo} - ${t.data}`, tab: 'treinos', textNormalizado: normalizarTexto(`${t.titulo} - ${t.data}`) }); });
+    atas.forEach(a => { items.push({ type: 'Ata', text: a.titulo, tab: 'atas', textNormalizado: normalizarTexto(a.titulo) }); });
+    inscritos.forEach(j => { items.push({ type: 'Sócio', text: j.nome, tab: 'socios', textNormalizado: normalizarTexto(j.nome) }); });
+    torneios.forEach(t => { items.push({ type: 'Torneio', text: t.nome, tab: 'competicao', textNormalizado: normalizarTexto(t.nome) }); });
+    amigaveis.forEach(a => { items.push({ type: 'Amigável', text: `${a.adversario} (${a.data})`, tab: 'competicao', textNormalizado: normalizarTexto(`${a.adversario} (${a.data})`) }); });
+    return items;
+}
+const searchIndex = buildSearchIndex();
+function handleSearch(query) {
+    const resultsDiv = document.getElementById('searchResults');
+    if (!query || query.trim().length < 2) {
+        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Digite pelo menos 2 caracteres...</p>';
+        return;
+    }
+    const q = normalizarTexto(query);
+    const matches = searchIndex.filter(item => item.textNormalizado.includes(q));
+    if (matches.length === 0) {
+        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>';
+    } else {
+        let html = '';
+        matches.slice(0, 20).forEach(m => {
+            html += `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`;
+        });
+        resultsDiv.innerHTML = html;
+    }
+}
+function goToTab(tab) {
+    if (searchOpen) toggleSearch();
+    setTimeout(() => {
+        showTab(tab);
+        document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.menu-link').forEach(b => { if (b.textContent.toLowerCase().includes(tab.slice(0, 5))) b.classList.add('active'); });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 150);
+}
+</script>
+</body>
+</html>        .search-panel.open { max-height: 400px; }
+        .search-box { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+        .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 14px; outline: none; }
+        .search-box input::placeholder { color: rgba(255,255,255,.5); }
+        .search-results { padding: 0 20px 16px; max-height: 300px; overflow-y: auto; }
+        .search-result { display: block; padding: 10px 12px; border-radius: 6px; color: #fff; text-decoration: none; font-size: 13px; margin-bottom: 2px; transition: background .15s; }
+        .search-result:hover { background: rgba(255,255,255,.1); }
+        .search-result .type { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--azul-light); margin-right: 8px; }
+        .stripe { position: fixed; top: var(--nav-h); left: 0; right: 0; height: 3px; background: linear-gradient(90deg,#fff 0%,#fff 33%,#1A6FB5 33%,#1A6FB5 66%,#fff 66%); z-index: 85; }
+        main { max-width: 940px; margin: 0 auto; padding: 80px 16px 60px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 12px; margin-bottom: 28px; }
+        .card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(13,59,102,.06); border-top: 3px solid var(--azul-medio); }
+        .card-label { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+        .card-value { font-size: 26px; font-weight: 700; color: var(--azul-medio); letter-spacing: -.5px; line-height: 1.2; }
+        .card-sub { font-size: 11px; color: #aaa; margin-top: 3px; }
+        .section-card { background: #fff; border-radius: 10px; padding: 20px 16px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 16px; }
+        .section-title { font-size: 14px; font-weight: 600; margin: 0 0 16px 2px; color: var(--azul-medio); letter-spacing: -.2px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 10px 12px; font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e8eef5; }
+        td { padding: 10px 12px; color: #333; border-bottom: 1px solid #f0f3f7; }
+        th.center, td.center { text-align: center; }
+        tfoot td { border-top: 2px solid var(--azul-medio); border-bottom: none; font-weight: 600; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-ok { background: var(--azul-bg); color: var(--azul-medio); border: 1px solid #bfdbfe; }
+        .badge-falta { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+        .dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; }
+        .dot-ok { background: var(--azul-bg); color: var(--azul-medio); }
+        .dot-falta { background: #fee2e2; color: #991b1b; }
+        .player-name { font-weight: 500; white-space: nowrap; }
+        .player-name.em-falta { color: var(--vermelho); font-weight: 600; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-height: 260px; }
+        .note { font-size: 11px; color: #aaa; text-align: center; margin-top: 20px; }
+        .table-wrap { overflow-x: auto; }
+        .sub-tabs { display: flex; gap: 0; margin-bottom: 20px; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(13,59,102,.06); }
+        .sub-tab { flex: 1; padding: 12px 8px; border: none; background: none; cursor: pointer; font-size: 12px; font-weight: 500; color: #888; font-family: inherit; transition: all .2s; border-bottom: 2px solid transparent; }
+        .sub-tab.active { color: var(--azul-medio); background: #f0f6ff; font-weight: 600; border-bottom-color: var(--azul-claro); }
+        .sub-panel { display: none; }
+        .sub-panel.active { display: block; }
+        .match-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .match-date { font-size: 11px; color: #888; font-weight: 600; min-width: 70px; text-align: center; }
+        .match-date span { display: block; font-size: 9px; color: #aaa; text-transform: uppercase; margin-top: 2px; }
+        .match-teams { flex: 1; min-width: 180px; }
+        .match-home, .match-away { font-size: 13px; color: #333; }
+        .match-home.us, .match-away.us { color: var(--azul-medio); font-weight: 700; }
+        .match-vs { font-size: 10px; color: #bbb; margin: 2px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .match-score { font-size: 20px; font-weight: 700; color: var(--azul-medio); min-width: 60px; text-align: center; letter-spacing: 1px; }
+        .match-score.win { color: #16a34a; }
+        .match-score.loss { color: var(--vermelho); }
+        .match-score.draw { color: #d97706; }
+        .match-score.pending { font-size: 12px; color: #aaa; font-weight: 500; }
+        .match-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; text-transform: uppercase; letter-spacing: .3px; }
+        .match-badge.v { background: #dcfce7; color: #166534; }
+        .match-badge.d { background: #fef3c7; color: #92400e; }
+        .match-badge.e { background: #fee2e2; color: #991b1b; }
+        .match-badge.prox { background: #e0f2fe; color: #0369a1; }
+        .class-table td, .class-table th { padding: 8px 10px; text-align: center; font-size: 13px; }
+        .class-table th { font-size: 10px; }
+        .class-table td:first-child, .class-table th:first-child { text-align: center; width: 30px; }
+        .class-table td:nth-child(2), .class-table th:nth-child(2) { text-align: left; }
+        .class-row-us { background: #f0f6ff !important; }
+        .class-row-us td { color: var(--azul-medio); font-weight: 700; }
+        .class-pos { font-weight: 700; color: var(--azul-medio); }
+        .ata-card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 14px; border-left: 4px solid var(--azul-claro); }
+        .ata-card.destaque { border-left-color: #d4a017; }
+        .ata-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .ata-date { font-size: 12px; color: #fff; background: var(--azul-medio); padding: 3px 10px; border-radius: 12px; font-weight: 600; white-space: nowrap; }
+        .ata-title { font-size: 15px; font-weight: 600; color: var(--azul-medio); }
+        .ata-body { font-size: 13px; color: #444; line-height: 1.7; }
+        .ata-body ul { margin: 8px 0 0 18px; padding: 0; }
+        .ata-body li { margin-bottom: 4px; }
+        .ata-body li::marker { color: var(--azul-claro); }
+        .ata-tag { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-right: 6px; }
+        .ata-tag.decisao { background: #dbeafe; color: #0D3B66; }
+        .ata-tag.info { background: #e0f2fe; color: #0369a1; }
+        .ata-tag.urgente { background: #fef3c7; color: #92400e; }
+        .ata-presentes { font-size: 11px; color: #999; margin-top: 10px; padding-top: 8px; border-top: 1px solid #f0f3f7; }
+        footer { background: #082347; color: rgba(255,255,255,.6); text-align: center; padding: 20px 16px; font-size: 12px; }
+        footer strong { color: rgba(255,255,255,.85); font-weight: 600; }
+        .bday-months-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 14px; }
+        .bday-month-card { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(13,59,102,.06); overflow: hidden; }
+        .bday-month-card.current { box-shadow: 0 0 0 2px var(--azul-claro),0 4px 12px rgba(13,59,102,.15); }
+        .bday-month-card.offseason { opacity: .75; }
+        .bday-month-head { background: linear-gradient(135deg,#0D3B66,#1A6FB5); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .bday-month-card.offseason .bday-month-head { background: linear-gradient(135deg,#94a3b8,#cbd5e1); }
+        .bday-month-name { font-size: 14px; font-weight: 700; letter-spacing: .3px; }
+        .bday-month-count { font-size: 11px; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .bday-month-body { padding: 10px 16px 14px; }
+        .bday-person { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f3f7; font-size: 13px; }
+        .bday-person:last-child { border-bottom: none; }
+        .bday-person-name { color: #333; font-weight: 500; }
+        .bday-person-name.ni { color: #dc6843; }
+        .bday-person-day { color: #999; font-size: 12px; font-weight: 600; background: #f0f4f8; padding: 2px 8px; border-radius: 8px; white-space: nowrap; }
+        .bday-empty { color: #bbb; font-size: 12px; font-style: italic; padding: 8px 0; text-align: center; }
+        .bday-legend { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 16px 0 4px; font-size: 12px; color: #666; }
+        .bday-legend span.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
+        .hist-item { display: flex; gap: 14px; margin-bottom: 4px; }
+        .hist-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 16px; }
+        .hist-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--azul-claro); margin-top: 6px; flex-shrink: 0; }
+        .hist-track { width: 2px; flex: 1; background: #e2e8f0; margin-top: 4px; }
+        .hist-item:last-child .hist-track { display: none; }
+        .hist-content { flex: 1; padding-bottom: 22px; }
+        .hist-date { font-size: 11px; color: #1A6FB5; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+        .hist-desc { font-size: 13px; color: #333; line-height: 1.5; background: #fff; border-radius: 8px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(13,59,102,.05); }
+        .pres-card { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; overflow: hidden; }
+        .pres-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; cursor: pointer; user-select: none; }
+        .pres-head.treino { background: linear-gradient(135deg,#0D3B66,#1A6FB5); }
+        .pres-head.jogo { background: linear-gradient(135deg,#082347,#0D3B66); }
+        .pres-title { color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .pres-date { color: rgba(255,255,255,.75); font-size: 11px; margin-top: 2px; }
+        .pres-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 12px; text-transform: uppercase; letter-spacing: .3px; }
+        .pres-status.pending { background: rgba(255,255,255,.2); color: #fff; }
+        .pres-status.done { background: #dcfce7; color: #166534; }
+        .pres-chevron { color: rgba(255,255,255,.8); font-size: 12px; transition: transform .25s; }
+        .pres-card.open .pres-chevron { transform: rotate(180deg); }
+        .pres-body-wrap { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+        .pres-card.open .pres-body-wrap { max-height: 2000px; }
+        .pres-body { padding: 16px 18px; }
+        .pres-pending-msg { text-align: center; color: #999; font-size: 13px; padding: 12px 0; }
+        .mes-acc { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 8px; overflow: hidden; }
+        .mes-acc-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background .15s; }
+        .mes-acc-head:hover { background: #f8fafc; }
+        .mes-acc-left { display: flex; align-items: center; gap: 12px; }
+        .mes-acc-name { font-size: 14px; font-weight: 700; color: #0D3B66; }
+        .mes-acc-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: #f0f4f8; color: #64748b; }
+        .mes-acc-badge.paid { background: #dcfce7; color: #166534; }
+        .mes-acc-chevron { font-size: 12px; color: #aaa; transition: transform .25s; }
+        .mes-acc.open .mes-acc-chevron { transform: rotate(180deg); }
+        .mes-acc-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+        .mes-acc.open .mes-acc-body { max-height: 2000px; }
+        .mes-acc-inner { padding: 4px 18px 14px; }
+        .mes-player-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f0f3f7; font-size: 13px; }
+        .mes-player-row:last-child { border-bottom: none; }
+        .mes-player-name { color: #333; }
+        .mes-player-name.ni-tag::after { content: 'NI'; font-size: 9px; font-weight: 700; color: #dc6843; background: #fff1e8; padding: 1px 5px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+        .mes-player-status { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
+        .mes-player-status.pago { background: #dcfce7; color: #166534; }
+        .mes-player-status.nao { background: #f1f5f9; color: #94a3b8; }
+        .mes-player-status.bday { background: #fff7ed; color: #92400e; }
+        .venda-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .venda-prod { font-weight: 600; color: var(--azul-medio); }
+        .venda-qtd { font-size: 13px; color: #444; }
+        .venda-total { font-weight: 700; color: #16a34a; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 12px; margin-bottom: 16px; }
+        .stat-box { background: #f8fafc; border-radius: 8px; padding: 14px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: 800; color: var(--azul-medio); line-height: 1.2; }
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: .4px; margin-top: 4px; }
+        .presence-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+        .presence-table th { text-align: left; padding: 10px 12px; font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e8eef5; }
+        .presence-table td { padding: 10px 12px; border-bottom: 1px solid #f0f3f7; color: #333; }
+        .presence-table td:first-child { font-weight: 600; color: #0D3B66; }
+        .presence-table td:last-child { text-align: right; font-weight: 700; color: #1A6FB5; }
+        .clickable { cursor: pointer; transition: color .15s, text-decoration .15s; }
+        .clickable:hover { color: var(--azul-claro); text-decoration: underline; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-sheet { background: var(--bg); width: 100%; max-width: 600px; max-height: 85vh; border-radius: 20px 20px 0 0; overflow-y: auto; padding: 24px 20px 40px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-close { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; padding: 8px; float: right; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: 700; color: var(--azul-medio); }
+        .modal-section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(13,59,102,.06); }
+        .modal-section h4 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
+        .modal-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f3f7; }
+        .modal-row:last-child { border-bottom: none; }
+        .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        @media(max-width:600px) {
+            .cards-grid { grid-template-columns: 1fr 1fr; }
+            .card-value { font-size: 22px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .sub-tab { font-size: 10px; padding: 12px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="nav-brand">Veteranos ADC Lobão</span>
+    <div class="nav-right">
+        <button class="search-btn" id="searchBtn" onclick="toggleSearch()" aria-label="Pesquisar">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        </button>
+        <button class="burger-btn" id="burgerBtn" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+<div class="stripe"></div>
+
+<div class="search-panel" id="searchPanel">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Pesquisar jogadores, produtos, vendas..." oninput="handleSearch(this.value)">
+        <button class="search-btn" onclick="toggleSearch()" style="background:none;border:none;cursor:pointer;padding:10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,.7)"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+</div>
+
+<div class="menu-panel" id="menuPanel">
+    <div class="menu-panel-inner">
+        <button class="menu-link active" onclick="menuNav('resumo')">📊  Resumo</button>
+        <button class="menu-link" onclick="menuNav('despesas')">💰  Despesas</button>
+        <button class="menu-link" onclick="menuNav('quotas')">👥  Quotas</button>
+        <button class="menu-link" onclick="menuNav('inscricoes')">📝  Inscrições</button>
+        <button class="menu-link" onclick="menuNav('socios')">🤝  Sócios</button>
+        <button class="menu-link" onclick="menuNav('aniversarios')">🎂  Aniversários</button>
+        <button class="menu-link" onclick="menuNav('treinos')">✅  Treinos</button>
+        <button class="menu-link" onclick="menuNav('competicao')">🏆  Competição</button>
+        <button class="menu-link" onclick="menuNav('vendas')">🛍️  Vendas</button>
+        <button class="menu-link" onclick="menuNav('atas')">📋  Atas</button>
+        <button class="menu-link" onclick="menuNav('historico')">🕒  Histórico</button>
+    </div>
+</div>
+
+<main>
+    <div id="tab-resumo" class="tab-panel active">
+        <div class="cards-grid" id="resumo-cards"></div>
+        <div class="section-card"><h2 class="section-title">Receitas vs Despesas Previstas por Mês</h2><div class="chart-container"><canvas id="chartBarMensal"></canvas></div><p class="note">Projeção anual — despesas estimadas com base no padrão da época anterior</p></div>
+        <div class="section-card"><h2 class="section-title">Evolução Prevista do Saldo</h2><div class="chart-container"><canvas id="chartSaldo"></canvas></div><p class="note">Projeção — os valores reais serão atualizados mensalmente</p></div>
+        <div class="section-card" style="border-left:4px solid #16a34a">
+            <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
+            <div id="saldo-decomposicao"></div>
+        </div>
+        <p class="note">Última atualização: 10 de Setembro de 2026</p>
+    </div>
+    <div id="tab-despesas" class="tab-panel">
+        <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
+        <div class="section-card"><h2 class="section-title">Detalhe Mensal de Despesas</h2><div class="table-wrap" id="tabela-despesas"></div></div>
+    </div>
+    <div id="tab-quotas" class="tab-panel">
+        <div class="cards-grid" id="quotas-cards"></div>
+        <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
+    </div>
+    <div id="tab-inscricoes" class="tab-panel">
+        <div class="cards-grid" id="inscricoes-cards"></div>
+        <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
+    </div>
+    <div id="tab-socios" class="tab-panel">
+        <div class="cards-grid" id="socios-cards"></div>
+        <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>.</p></div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
+    </div>
+    <div id="tab-aniversarios" class="tab-panel">
+        <div class="cards-grid" id="aniversarios-cards"></div>
+        <div id="aniversarios-grid"></div>
+    </div>
+    <div id="tab-treinos" class="tab-panel">
+        <div class="cards-grid" id="treinos-cards"></div>
+        <div class="section-card"><h2 class="section-title">📊 Estatísticas de Treinos</h2><div id="treinos-stats"></div></div>
+        <div id="treinos-lista"></div>
+    </div>
+    <div id="tab-competicao" class="tab-panel">
+        <div class="sub-tabs">
+            <button class="sub-tab active" onclick="showSubTab('calendario')">📅 Calendário</button>
+            <button class="sub-tab" onclick="showSubTab('classificacao')">🏆 Classificação</button>
+            <button class="sub-tab" onclick="showSubTab('marcadores')">⚽ Marcadores</button>
+            <button class="sub-tab" onclick="showSubTab('torneios')">🎯 Torneios</button>
+        </div>
+        <div id="sub-calendario" class="sub-panel active"></div>
+        <div id="sub-classificacao" class="sub-panel"></div>
+        <div id="sub-marcadores" class="sub-panel"></div>
+        <div id="sub-torneios" class="sub-panel"></div>
+    </div>
+    <div id="tab-vendas" class="tab-panel">
+        <div class="cards-grid" id="vendas-cards"></div>
+        <div class="section-card" style="border-left:4px solid #1A6FB5">
+            <h2 class="section-title">📋 Tabela de Preços</h2>
+            <div class="table-wrap"><table><thead><tr><th>Produto</th><th>Preço</th></tr></thead><tbody id="tabela-precos-body"></tbody></table></div>
+        </div>
+        <div class="section-card"><h2 class="section-title">🧾 Compras de 6 Set 2026</h2><div id="vendas-lista"></div></div>
+    </div>
+    <div id="tab-atas" class="tab-panel">
+        <div class="cards-grid" id="atas-cards"></div>
+        <div id="atas-lista"></div>
+    </div>
+    <div id="tab-historico" class="tab-panel">
+        <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, treinos, atas e vendas.</p></div>
+        <div id="historico-lista"></div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="perfilModal" onclick="if(event.target===this)fecharPerfil()">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <span class="modal-title" id="perfilNome"></span>
+            <button class="modal-close" onclick="fecharPerfil()">✕</button>
+        </div>
+        <div id="perfilConteudo"></div>
+    </div>
+</div>
+
+<footer>
+    <strong>Veteranos A.D.C. Lobão</strong><br>Lobão, Santa Maria da Feira<br>
+    <div style="margin:12px 0 6px;display:flex;justify-content:center;gap:16px">
+        <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
+        <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
+    </div>
+    <span style="font-size:10px;opacity:.6">Última atualização: 10 de Setembro de 2026</span>
+</footer>
+
+<script>
+// ─── MENU LOGIC ───
+let menuOpen = false;
+function toggleMenu() {
+    menuOpen = !menuOpen;
+    document.getElementById('menuPanel').classList.toggle('open', menuOpen);
+    document.getElementById('burgerBtn').classList.toggle('open', menuOpen);
+}
+function menuNav(id) {
+    toggleMenu();
+    showTab(id);
+    document.querySelectorAll('.menu-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.menu-link').forEach(b => {
+        if (b.textContent.toLowerCase().includes(id.slice(0, 5))) b.classList.add('active');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(); });
+
+// ─── DADOS REAIS (Época 26/27) ───
+const MESES = ["Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun"];
+const QUOTA = 20;
+const QUOTA_NI = 10;
+const SALDO_INICIAL = 2220;
+
+const inscritos = [
+    { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
+    { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
+    { nome: "Américo Oliveira", apelido: "AMÉRICO", num: 13, nasc: "10/08/1982" },
+    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
+    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
+    { nome: "Mário Oliveira", apelido: "MÁRIO", num: 18, nasc: "11/11/1970" },
+    { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
+    { nome: "Rui Rocha", apelido: "RUI ROCHA", num: 77, nasc: "12/11/1988" },
+    { nome: "António Rocha", apelido: "ROCHINHA", num: 11, nasc: "08/04/1965" },
+    { nome: "Pedro Cadete", apelido: "CADETE", num: 17, nasc: "10/07/1973" },
+    { nome: "António Oliveira", apelido: "OLIVEIRA", num: 8, nasc: "10/11/1988" },
+    { nome: "Amílcar André", apelido: "AMILCAR", num: 10, nasc: "26/01/1987" },
+    { nome: "Pedro Costa", apelido: "MOCHO", num: 9, nasc: "13/07/1986" },
+    { nome: "Sérgio Freitas", apelido: "FREITAS", num: 79, nasc: "31/10/1986" },
+    { nome: "Pedro Ferreira", apelido: "PEDRO F.", num: 71, nasc: "11/02/1979" },
+    { nome: "Jorge Santos", apelido: "JORGE", num: 23, nasc: "28/09/1989" },
+    { nome: "Américo Silva", apelido: "AMÉRICO SILVA", num: 88, nasc: "12/10/1979" },
+    { nome: "Tiago Mota", apelido: "MOTINHA", num: 98, nasc: "28/02/1990" },
+    { nome: "José Eduardo", apelido: "ZÉ EDUARDO", num: 5, nasc: "01/09/1985" },
+    { nome: "Sergio Rodrigues", apelido: "RODRIGUES", num: 25, nasc: "01/11/1983" },
+    { nome: "Joel Tavares", apelido: "JOEL", num: 3, nasc: "27/09/1981" },
+    { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
+    { nome: "André Lopes", apelido: "ANDRÉ", num: 20, nasc: "15/08/1990" },
+    { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
+    { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" },
+    { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
+    { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" },
+];
+
+const naoInscritos = [
+    { nome: "Inácio", apelido: "INÁCIO", num: 3, nasc: "26/10/1976" },
+    { nome: "Telmo", apelido: "TELMO", num: null, nasc: "23/03/1991" },
+    { nome: "Fábio Oliveira", apelido: "FÁBIO", num: null, nasc: "21/10/2000" },
+    { nome: "Romeu", apelido: "ROMEU", num: 2, nasc: "11/05/1976" },
+    { nome: "Marcelo", apelido: "MARCELO", num: null, nasc: "18/12/1992" },
+    { nome: "Celso Ferreira", apelido: "CELSO", num: null, nasc: null },
+    { nome: "António José Silva", apelido: "TOZE", num: 70, nasc: "16/03/1981" },
+    { nome: "Salvador", apelido: "SALVADOR", num: null, nasc: "13/07/1978" },
+    { nome: "Vitor Leite", apelido: "VITINHA GR", num: null, nasc: "01/06/1992" },
+    { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
+];
+
+const todosJogadores = [...inscritos.map(j => ({ ...j, inscrito: true })), ...naoInscritos.map(j => ({ ...j, inscrito: false }))];
+
+const receitaInscritos = inscritos.length * QUOTA;
+const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
+const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
+
+// ─── PAGAMENTOS REGISTADOS ───
+const pagamentos = {
+    "Pedro Costa": [0],
+    "Telmo": [0, 1],
+    "Mário Oliveira": [0],
+    "Américo Silva": [0],
+    "Sergio Rodrigues": [0],
+    "Américo Oliveira": [0],
+    "Joel Tavares": [0],
+    "Marcelo": [0]
+};
+function mesesPagos(nome) { return pagamentos[nome] || []; }
+function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
+const recebidoReal = Object.entries(pagamentos).reduce((tot, [nome, meses]) => {
+    const isInsc = inscritos.some(j => j.nome === nome);
+    const valor = isInsc ? QUOTA : QUOTA_NI;
+    return tot + meses.length * valor;
+}, 0);
+
+// ─── DESPESAS CONFIRMADAS ───
+const despesaCampo = 1000;
+const despesaAFA = 540;
+const despesaAgua = 4;
+const despesaGalhardetes = 200;
+const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
+
+// ─── VENDAS 6 SET ───
+const listaPrecos = {
+    "Equipamento treino": 20,
+    "T-shirt": 10,
+    "Polo": 17,
+    "Fato treino": 45,
+    "Kispo": 45,
+    "Cachecol": 10,
+    "Meias": 5,
+    "Calções saída": 15,
+    "Camisola equipamento": 15,
+    "Boné": 5
+};
+const compras6Set = [
+    { nome: "Telmo", itens: ["Calções saída", "Boné"], pago: false },
+    { nome: "Mário Oliveira", itens: ["Boné"], pago: false },
+    { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: false },
+    { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
+    { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
+];
+function calcularTotalVenda(itens) { return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0); }
+compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
+const totalVendasDia6 = compras6Set.reduce((s, v) => s + v.total, 0);
+const totalItensVendidos = compras6Set.reduce((s, v) => s + v.itens.length, 0);
+
+// ─── INSCRIÇÕES ───
+const valorInscricao = 30;
+const inscricoesPagas = ["Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira", "Joel Tavares"];
+function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
+const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
+
+// ─── SÓCIOS ───
 const valorSocio = 10;
 const sociosPagos = ["Pedro Cadete"];
 
