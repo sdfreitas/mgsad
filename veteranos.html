@@ -420,7 +420,8 @@ const pagamentos = {
     "Sergio Rodrigues": [0],
     "Américo Oliveira": [0],
     "Joel Tavares": [0],
-    "Marcelo": [0]
+    "Marcelo": [0],
+    "Pedro Cadete": [0]
 };
 function mesesPagos(nome) { return pagamentos[nome] || []; }
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
@@ -840,9 +841,9 @@ document.getElementById('atas-lista').innerHTML = ah;
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€150) e inscrições recebidas (€150). Sócios entregues ao clube principal (não contam)." },
+    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€170) e inscrições recebidas (€150). Sócios entregues ao clube principal (não contam)." },
     { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro — 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
-    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Pedro Cadete (Set €20), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
     { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) — Total €134 (entra na caixa)" },
     { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
     { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
