@@ -140,8 +140,28 @@ const torneios = [
         ]
     }
 ];
+
 const amigaveis = [
-    { data: "12 Set 2026", adversario: "Paços de Ferreira", casa: false, golosNos: 2, golosEles: 3, marcadores: ["Pedro Costa", "José Eduardo"] }
+    {
+        data: "12 Set 2026",
+        adversario: "Paços de Ferreira",
+        casa: false,
+        golosNos: 2,
+        golosEles: 3,
+        marcadores: ["Pedro Costa", "José Eduardo"],
+        arbitro: {
+            valorPorJogador: 5,
+            custoPago: true, // a caixa já pagou ao árbitro
+            participantes: [
+                "Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira",
+                "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Santos",
+                "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira",
+                "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha",
+                "Rui Rocha", "Américo Silva", "Zé Buraca", "Marcelo"
+            ],
+            pagaram: [] // acrescentar nomes à medida que pagam
+        }
+    }
 ];
 
 // ─── ATAS ───
@@ -164,6 +184,7 @@ const atas = [{
 // ─── HISTÓRICO ───
 const historico = [
     { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira — derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
+    { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira — €5 × 20 participantes = €100 (pago pela caixa)." },
     { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Santos pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
@@ -183,7 +204,6 @@ const historico = [
     { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
     { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
 ];
-
 
 // ─── MAPAS AUXILIARES ───
 const mesMap = { 9: 0, 10: 1, 11: 2, 12: 3, 1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9 };
