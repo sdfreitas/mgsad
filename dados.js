@@ -68,7 +68,8 @@ const pagamentos = {
     "Pedro Cadete": [0],
     "António Oliveira": [0],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
-    "António Rocha": [0, 1, 2, 3, 4, 5]
+    "António Rocha": [0, 1, 2, 3, 4, 5],
+    "Jorge Azevedo": [0]
 };
 
 // ─── INSCRIÇÕES PAGAS ───
@@ -201,6 +202,7 @@ const historico = [
     { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira — derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
     { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira — €5 × 20 participantes = €100 (pago pela caixa)." },
     { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Setembro — €20/mês." },
     { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Azevedo pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€190) e inscrições recebidas (€180). Sócios entregues ao clube principal (não contam)." },
@@ -221,6 +223,4 @@ const historico = [
 ];
 
 // ─── MAPAS AUXILIARES ───
-const mesMap = { 9: 0, 10: 1, 11: 2, 12: 3, 1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9 };
-const mesNomes = { 1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun', 7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez' };
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
