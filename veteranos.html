@@ -181,7 +181,6 @@
         .mes-player-status { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
         .mes-player-status.pago { background: #dcfce7; color: #166534; }
         .mes-player-status.nao { background: #f1f5f9; color: #94a3b8; }
-        .mes-player-status.bday { background: #fff7ed; color: #92400e; }
         .venda-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .venda-prod { font-weight: 600; color: var(--azul-medio); }
         .venda-qtd { font-size: 13px; color: #444; }
@@ -465,20 +464,6 @@ function calcIdade(nasc) {
     const diff = Date.now() - d.getTime();
     return Math.floor(diff / 31557600000);
 }
-function getBirthMonth(nasc) { return nasc ? parseInt(nasc.split('/')[1]) : 0; }
-function getBirthMonthIdx(nasc) {
-    const m = getBirthMonth(nasc);
-    return mesMap[m] !== undefined ? mesMap[m] : -1;
-}
-function isOffSeason(nasc) {
-    const m = getBirthMonth(nasc);
-    return m === 7 || m === 8;
-}
-function offSeasonTag(nasc) {
-    if (!isOffSeason(nasc)) return '';
-    const m = getBirthMonth(nasc);
-    return ` <span style="font-size:9px;font-weight:600;background:#fff7ed;color:#92400e;padding:1px 6px;border-radius:4px;white-space:nowrap">🎂 ${mesNomes[m]}</span>`;
-}
 function makeCard(l, v, s, a) {
     return `<div class="card" style="border-top-color:${a}"><div class="card-label">${l}</div><div class="card-value" style="color:${a}">${v}</div>${s ? `<div class="card-sub">${s}</div>` : ''}</div>`;
 }
@@ -590,9 +575,8 @@ dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confir
 document.getElementById('tabela-despesas').innerHTML = dh;
 
 // ─── QUOTAS ───
-function monthCell(m, birthIdx, pago) {
+function monthCell(pago) {
     if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
-    if (m === birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
     return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
 }
 
@@ -602,13 +586,12 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     MESES.forEach(m => { html += `<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`; });
     html += '<th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
-        const bi = getBirthMonthIdx(j.nasc);
         const pagos = mesesPagos(j.nome);
         html += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
-        html += `<td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${offSeasonTag(j.nasc)}</td>`;
+        html += `<td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td>`;
         html += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
         html += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
-        for (let m = 0; m < MESES.length; m++) html += monthCell(m, bi, pagos.includes(m));
+        for (let m = 0; m < MESES.length; m++) html += monthCell(pagos.includes(m));
         const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
         html += `<td class="center">${estado}</td></tr>`;
     });
@@ -619,7 +602,7 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
 let qh = renderTabelaQuotasSecao(inscritos, 'Inscritos (€20/mês)', '#0D3B66');
 qh += renderTabelaQuotasSecao(naoInscritos, 'Não Inscritos (€10/mês)', '#dc6843');
 qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
-qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário · ✓ Mês pago</p>';
+qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · ✓ Mês pago</p>';
 document.getElementById('tabela-quotas').innerHTML = qh;
 
 const todosParaQuotas = [
@@ -633,12 +616,8 @@ MESES.forEach((mNome, mIdx) => {
     todosParaQuotas.forEach(j => {
         const pago = jaPagou(j.nome, mIdx);
         if (pago) pagosCount++;
-        const bi = getBirthMonthIdx(j.nasc);
-        const isBday = (bi === mIdx);
-        let statusHtml, statusCls;
-        if (pago) { statusHtml = `✓ Pago (€${j.quota})`; statusCls = 'pago'; }
-        else if (isBday) { statusHtml = '🎂 Aniversário'; statusCls = 'bday'; }
-        else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
+        const statusHtml = pago ? `✓ Pago (€${j.quota})` : 'Por pagar';
+        const statusCls = pago ? 'pago' : 'nao';
         const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
         rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
     });
@@ -696,6 +675,7 @@ renderEstadoPagamento({
 });
 
 // ─── ANIVERSÁRIOS ───
+const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 const hoje = new Date();
 const mesAtualNum = hoje.getMonth() + 1;
 const porMes = {};
