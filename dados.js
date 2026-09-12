@@ -184,6 +184,7 @@ const historico = [
     { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
 ];
 
+
 // ─── MAPAS AUXILIARES ───
 const mesMap = { 9: 0, 10: 1, 11: 2, 12: 3, 1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9 };
 const mesNomes = { 1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun', 7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez' };
