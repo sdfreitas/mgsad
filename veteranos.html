@@ -92,6 +92,13 @@
         .match-badge.v { background: #dcfce7; color: #166534; }
         .match-badge.d { background: #fef3c7; color: #92400e; }
         .match-badge.e { background: #fee2e2; color: #991b1b; }
+        .amig-arbitro { width: 100%; border-top: 1px solid #f0f3f7; margin-top: 10px; padding-top: 10px; }
+        .amig-arbitro-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .amig-arbitro-label { font-size: 12px; color: #0D3B66; font-weight: 600; }
+        .amig-chevron { font-size: 12px; color: #888; transition: transform .25s; display: inline-block; }
+        .amig-chevron.open { transform: rotate(180deg); }
+        .amig-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+        .amig-body.open { max-height: 1500px; }
         .class-table td, .class-table th { padding: 8px 10px; text-align: center; font-size: 13px; }
         .class-table th { font-size: 10px; }
         .class-table td:first-child, .class-table th:first-child { text-align: center; width: 30px; }
@@ -204,7 +211,6 @@
         .modal-row:last-child { border-bottom: none; }
         .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
-        /* ─── RECIBO (impressão) ─── */
         #reciboContainer { display: none; }
         @media print {
             body > *:not(#reciboContainer) { display: none !important; }
@@ -437,7 +443,19 @@ compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
 const totalVendasDia6 = compras6Set.reduce((s, v) => s + v.total, 0);
 const totalItensVendidos = compras6Set.reduce((s, v) => s + v.itens.length, 0);
 const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
-const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6;
+
+// Árbitros de amigáveis
+let totalArbitroRecebido = 0;
+let totalArbitroCusto = 0;
+amigaveis.forEach(a => {
+    if (!a.arbitro) return;
+    totalArbitroRecebido += (a.arbitro.pagaram || []).length * a.arbitro.valorPorJogador;
+    if (a.arbitro.custoPago) {
+        totalArbitroCusto += (a.arbitro.participantes || []).length * a.arbitro.valorPorJogador;
+    }
+});
+
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
 
 // ─── HELPERS ───
 function calcIdade(nasc) {
@@ -499,6 +517,10 @@ sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0
 sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
 sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
 sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
+if (totalArbitroCusto > 0) {
+    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#dc6843;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+}
 sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
 sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
 sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
@@ -523,7 +545,7 @@ const chartOpts = {
 };
 function initResumoCharts() {
     const prevRec = MESES.map(() => receitaMensalEsperada);
-    const prevDesp = [1540, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+    const prevDesp = [1640, 270, 420, 200, 550, 380, 270, 440, 270, 200];
     chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
         type: 'bar', data: { labels: MESES, datasets: [
             { label: 'Receita Esperada', data: prevRec, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .45 },
@@ -544,6 +566,7 @@ function initDespesasChart() {
         { name: 'Galhardetes', value: despesaGalhardetes, color: '#5BA4D9' },
         { name: 'Água', value: despesaAgua, color: '#dc6843' }
     ];
+    if (totalArbitroCusto > 0) pd.push({ name: 'Árbitros amigáveis', value: totalArbitroCusto, color: '#94a3b8' });
     chartInstances.pie = new Chart(freshCanvas('chartPie'), {
         type: 'doughnut', data: { labels: pd.map(c => c.name), datasets: [{ data: pd.map(c => c.value), backgroundColor: pd.map(c => c.color), borderWidth: 2, borderColor: '#fff' }] },
         options: { responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ctx.label + ': €' + ctx.raw } } } }
@@ -559,8 +582,11 @@ dh += '<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (27 atletas
 dh += '<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Galhardetes do clube (20 unidades)</td><td style="font-weight:700">€200</td><td>5 Setembro</td></tr>';
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Garrafões de água (4 × 6L)</td><td style="font-weight:700">€4</td><td>5 Setembro</td></tr>';
+if (totalArbitroCusto > 0) {
+    dh += `<tr><td style="font-weight:600;color:#0D3B66">Árbitros de amigáveis</td><td style="font-weight:700">€${totalArbitroCusto}</td><td>12 Setembro</td></tr>`;
+}
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
-dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€' + despesasConfirmadas + '</td><td></td></tr></tfoot></table>';
+dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€' + (despesasConfirmadas + totalArbitroCusto) + '</td><td></td></tr></tfoot></table>';
 document.getElementById('tabela-despesas').innerHTML = dh;
 
 // ─── QUOTAS ───
@@ -874,7 +900,76 @@ ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Vet
 document.getElementById('sub-classificacao').innerHTML = ch;
 document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-// ─── TORNEIOS ───
+// ─── TORNEIOS E AMIGÁVEIS ───
+function renderAmigavel(a, idx) {
+    const golosNos = a.golosNos;
+    const golosEles = a.golosEles;
+    let scoreClass = 'draw';
+    let resultadoBadge = '<span class="match-badge d">Empate</span>';
+    if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
+    else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
+    const casa = a.casa ? 'Casa' : 'Fora';
+
+    let marcadoresHtml = '';
+    if (a.marcadores && a.marcadores.length) {
+        const nomes = a.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
+        marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
+    }
+
+    let arbitroHtml = '';
+    if (a.arbitro) {
+        const val = a.arbitro.valorPorJogador;
+        const part = a.arbitro.participantes || [];
+        const pagos = a.arbitro.pagaram || [];
+        const total = part.length;
+        const nPagos = pagos.length;
+        const falta = total - nPagos;
+        const recebido = nPagos * val;
+        const totalDev = total * val;
+        const faltaCor = falta === 0 ? '#16a34a' : '#dc6843';
+        const faltaTexto = falta === 0 ? 'tudo recebido' : `faltam €${falta * val}`;
+
+        arbitroHtml = `<div class="amig-arbitro">
+            <div class="amig-arbitro-head" onclick="toggleAmigavel(${idx})">
+                <span class="amig-arbitro-label">👤 Árbitro €${val}/jogador · <span style="color:${faltaCor}">${nPagos}/${total} pagos</span> · €${recebido}/€${totalDev} · <span style="color:${faltaCor}">${faltaTexto}</span></span>
+                <span class="amig-chevron" id="amigchev-${idx}">▾</span>
+            </div>
+            <div class="amig-body" id="amigbody-${idx}">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 12px;padding-top:10px">
+                    ${part.map(nome => {
+                        const pago = pagos.includes(nome);
+                        const icon = pago ? '<span style="color:#16a34a;font-weight:700">✓</span>' : '<span style="color:#dc6843;font-weight:700">○</span>';
+                        const cor = pago ? '#333' : '#999';
+                        const deco = pago ? '' : 'text-decoration:none';
+                        return `<div style="font-size:13px;color:${cor};display:flex;align-items:center;gap:6px">${icon} <span class="clickable" style="${deco}" onclick="abrirPerfil('${escapeAttr(nome)}')">${nome}</span></div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>`;
+    }
+
+    return `<div class="match-card">
+        <div class="match-date">${a.data}<span>${casa}</span></div>
+        <div class="match-teams">
+            <div class="match-home us">Vet. A.D.C. Lobão</div>
+            <div class="match-vs">vs</div>
+            <div class="match-away">${a.adversario}</div>
+            ${marcadoresHtml}
+        </div>
+        <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
+        <div>${resultadoBadge}</div>
+        ${arbitroHtml}
+    </div>`;
+}
+
+function toggleAmigavel(idx) {
+    const body = document.getElementById('amigbody-' + idx);
+    const chev = document.getElementById('amigchev-' + idx);
+    if (!body) return;
+    body.classList.toggle('open');
+    if (chev) chev.classList.toggle('open');
+}
+
 function renderTorneios() {
     let html = '';
     html += '<div class="section-card"><h2 class="section-title">🎯 Torneios</h2>';
@@ -930,32 +1025,8 @@ function renderTorneios() {
     if (amigaveis.length === 0) {
         html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🤝</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem amigáveis registados</div><div style="font-size:13px;color:#999">Os jogos amigáveis serão adicionados quando forem realizados.</div></div>';
     } else {
-        amigaveis.forEach(a => {
-            const golosNos = a.golosNos;
-            const golosEles = a.golosEles;
-            let scoreClass = 'draw';
-            let resultadoBadge = '<span class="match-badge d">Empate</span>';
-            if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
-            else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
-            const casa = a.casa ? 'Casa' : 'Fora';
-
-            let marcadoresHtml = '';
-            if (a.marcadores && a.marcadores.length) {
-                const nomes = a.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
-                marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
-            }
-
-            html += `<div class="match-card">
-                <div class="match-date">${a.data}<span>${casa}</span></div>
-                <div class="match-teams">
-                    <div class="match-home us">Vet. A.D.C. Lobão</div>
-                    <div class="match-vs">vs</div>
-                    <div class="match-away">${a.adversario}</div>
-                    ${marcadoresHtml}
-                </div>
-                <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
-                <div>${resultadoBadge}</div>
-            </div>`;
+        amigaveis.forEach((a, idx) => {
+            html += renderAmigavel(a, idx);
         });
     }
     html += '</div>';
@@ -1017,6 +1088,17 @@ function abrirPerfil(nome) {
     conteudo += `<div class="modal-row"><span>Presenças registadas</span><strong>${presencas} de ${totalEventosPresenca}</strong></div>`;
     conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
     conteudo += `</div>`;
+
+    // Árbitros pendentes/pagos
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        if (!a.arbitro.participantes.includes(nomeCompleto)) return;
+        const pago = a.arbitro.pagaram.includes(nomeCompleto);
+        conteudo += `<div class="modal-section"><h4>👤 Árbitro — ${a.data}</h4>`;
+        conteudo += `<div class="modal-row"><span>Amigável vs ${a.adversario}</span><span>€${a.arbitro.valorPorJogador}</span></div>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${pago ? 'badge-ok' : 'badge-falta'}">${pago ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `</div>`;
+    });
 
     let golosMarcados = 0;
     const jogosComGolos = [];
@@ -1262,6 +1344,12 @@ function imprimirRecibo(nome) {
         linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
         total += valorSocio;
     }
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        if (!a.arbitro.pagaram.includes(j.nome)) return;
+        linhas.push([`Árbitro — amigável vs ${a.adversario} (${a.data})`, `€${a.arbitro.valorPorJogador}`]);
+        total += a.arbitro.valorPorJogador;
+    });
     if (compra && compra.pago) {
         linhas.push([`Equipamento — ${compra.itens.join(', ')}`, `€${compra.total}`]);
         total += compra.total;
