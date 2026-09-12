@@ -938,13 +938,20 @@ function renderTorneios() {
             if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
             else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
             const casa = a.casa ? 'Casa' : 'Fora';
+
+            let marcadoresHtml = '';
+            if (a.marcadores && a.marcadores.length) {
+                const nomes = a.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
+                marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
+            }
+
             html += `<div class="match-card">
                 <div class="match-date">${a.data}<span>${casa}</span></div>
                 <div class="match-teams">
                     <div class="match-home us">Vet. A.D.C. Lobão</div>
                     <div class="match-vs">vs</div>
                     <div class="match-away">${a.adversario}</div>
-                    ${a.marcadores && a.marcadores.length ? `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${a.marcadores.join(', ')}</div>` : ''}
+                    ${marcadoresHtml}
                 </div>
                 <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
                 <div>${resultadoBadge}</div>
