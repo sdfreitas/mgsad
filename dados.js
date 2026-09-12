@@ -114,14 +114,17 @@ const compras6Set = [
     { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
 ];
 
-// ─── TREINOS ───
+// ─── TREINOS E JOGOS (presenças) ───
 const treinosJogos = [
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
       extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
     { data: "9 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Joel Tavares", "Hugo André", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "José Eduardo"],
-      extra: ["Marcelo", "Zé Buraca", "Inácio"] }
+      extra: ["Marcelo", "Zé Buraca", "Inácio"] },
+    { data: "12 Set 2026", tipo: "jogo", titulo: "Jogo de treino vs Paços de Ferreira", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Santos", "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha", "Rui Rocha", "Américo Silva"],
+      extra: ["Zé Buraca", "Marcelo"] }
 ];
 
 // ─── COMPETIÇÃO ───
@@ -137,7 +140,9 @@ const torneios = [
         ]
     }
 ];
-const amigaveis = [];
+const amigaveis = [
+    { data: "12 Set 2026", adversario: "Paços de Ferreira", casa: false, golosNos: 2, golosEles: 3, marcadores: ["Pedro Costa", "José Eduardo"] }
+];
 
 // ─── ATAS ───
 const atas = [{
@@ -158,6 +163,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira — derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
     { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Santos pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
