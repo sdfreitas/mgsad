@@ -222,5 +222,6 @@ const historico = [
     { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
 ];
 
+
 // ─── MAPAS AUXILIARES ───
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
