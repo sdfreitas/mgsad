@@ -1089,7 +1089,6 @@ function abrirPerfil(nome) {
     conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
     conteudo += `</div>`;
 
-    // Árbitros pendentes/pagos
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
         if (!a.arbitro.participantes.includes(nomeCompleto)) return;
