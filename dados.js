@@ -28,7 +28,7 @@ const inscritos = [
     { nome: "Pedro Costa", apelido: "MOCHO", num: 9, nasc: "13/07/1986" },
     { nome: "Sérgio Freitas", apelido: "FREITAS", num: 79, nasc: "31/10/1986" },
     { nome: "Pedro Ferreira", apelido: "PEDRO F.", num: 71, nasc: "11/02/1979" },
-    { nome: "Jorge Santos", apelido: "JORGE", num: 23, nasc: "28/09/1989" },
+    { nome: "Jorge Azevedo", apelido: "JORGE", num: 23, nasc: "28/09/1989" },
     { nome: "Américo Silva", apelido: "AMÉRICO SILVA", num: 88, nasc: "12/10/1979" },
     { nome: "Tiago Mota", apelido: "MOTINHA", num: 98, nasc: "28/02/1990" },
     { nome: "José Eduardo", apelido: "ZÉ EDUARDO", num: 5, nasc: "01/09/1985" },
@@ -83,7 +83,7 @@ const sociosPagos = [
     "Pedro Cadete",
     "André Pinho",
     "José Eduardo",
-    "Jorge Santos",
+    "Jorge Azevedo",
     "Joel Tavares",
     "Amílcar André",
     "Hugo André"
@@ -123,13 +123,13 @@ const compras6Set = [
 // ─── TREINOS E JOGOS (presenças) ───
 const treinosJogos = [
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
-      presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
+      presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
       extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
     { data: "9 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
-      presentes: ["Joel Tavares", "Hugo André", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Santos", "Sergio Rodrigues", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "José Eduardo"],
+      presentes: ["Joel Tavares", "Hugo André", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "José Eduardo"],
       extra: ["Marcelo", "Zé Buraca", "Inácio"] },
     { data: "12 Set 2026", tipo: "jogo", titulo: "Jogo de treino vs Paços de Ferreira", estado: "registado",
-      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Santos", "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha", "Rui Rocha", "Américo Silva"],
+      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Azevedo", "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha", "Rui Rocha", "Américo Silva"],
       extra: ["Zé Buraca", "Marcelo"] }
 ];
 
@@ -160,7 +160,7 @@ const amigaveis = [
             custoPago: true,
             participantes: [
                 "Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira",
-                "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Santos",
+                "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Azevedo",
                 "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira",
                 "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha",
                 "Rui Rocha", "Américo Silva", "Zé Buraca", "Marcelo"
@@ -168,7 +168,7 @@ const amigaveis = [
             pagaram: [
                 "André Pinho",
                 "Pedro Cadete",
-                "Jorge Santos",
+                "Jorge Azevedo",
                 "Rui Rocha",
                 "António Rocha",
                 "Mário Oliveira"
@@ -197,11 +197,11 @@ const atas = [{
 // ─── HISTÓRICO ───
 const historico = [
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram €300 (€150 cada) — inscrição AFA (€30) + quotas Set a Fev (6 × €20 = €120) por atleta." },
-    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Santos, Rui Rocha, António Rocha e Mário Oliveira pagaram €5 cada (€30 recebidos)." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram €5 cada (€30 recebidos)." },
     { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira — derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
     { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira — €5 × 20 participantes = €100 (pago pela caixa)." },
     { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
-    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Santos pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
+    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Azevedo pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€190) e inscrições recebidas (€180). Sócios entregues ao clube principal (não contam)." },
     { data: "10 Set 2026", tipo: "aviso", desc: "🤝 André Pinho pagou a quota de sócio (€40) diretamente ao clube principal." },
