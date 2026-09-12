@@ -158,8 +158,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Hugo André pagou a quota de sócio (€40) diretamente ao clube principal." },
-    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares e Amílcar André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
+    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Santos pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€190) e inscrições recebidas (€180). Sócios entregues ao clube principal (não contam)." },
