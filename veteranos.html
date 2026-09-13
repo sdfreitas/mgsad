@@ -395,6 +395,7 @@
 <div id="reciboContainer"></div>
 
 <script src="dados.js"></script>
+<script src="_privado.js"></script>
 <script>
 // ─── MENU LOGIC ───
 let menuOpen = false;
@@ -426,13 +427,33 @@ const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
 
-function mesesPagos(nome) { return pagamentos[nome] || []; }
+// ─── AJUSTES INTERNOS (_privado.js) ───
+function isencoesDe(nome) {
+    if (typeof ISENCOES === 'undefined') return [];
+    return ISENCOES[nome] || [];
+}
+function quotasReduzidasDe(nome) {
+    if (typeof QUOTAS_REDUZIDAS === 'undefined') return {};
+    return QUOTAS_REDUZIDAS[nome] || {};
+}
+
+function mesesPagos(nome) {
+    const pag = pagamentos[nome] || [];
+    const isen = isencoesDe(nome);
+    const red = Object.keys(quotasReduzidasDe(nome)).map(Number);
+    return [...new Set([...pag, ...isen, ...red])];
+}
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
-const recebidoReal = Object.entries(pagamentos).reduce((tot, [nome, meses]) => {
-    const isInsc = inscritos.some(j => j.nome === nome);
-    return tot + meses.length * (isInsc ? QUOTA : QUOTA_NI);
+const recebidoReal = todosJogadores.reduce((tot, j) => {
+    const meses = mesesPagos(j.nome);
+    return tot + meses.reduce((s, m) => {
+        if (isencoesDe(j.nome).includes(m)) return s;
+        const red = quotasReduzidasDe(j.nome);
+        if (red[m] !== undefined) return s + red[m];
+        return s + (j.inscrito ? QUOTA : QUOTA_NI);
+    }, 0);
 }, 0);
 
 function calcularTotalVenda(itens) {
@@ -1240,15 +1261,17 @@ function exportarCSV(nomeFicheiro, linhas) {
 
 function exportarQuotasCSV() {
     const linhas = [['Nome', 'Tipo', 'Nº', 'Nascimento', 'Idade', ...MESES, 'Total Pago (€)']];
-    const todos = [
-        ...inscritos.map(j => ({ ...j, tipo: 'Inscrito', quota: QUOTA })),
-        ...naoInscritos.map(j => ({ ...j, tipo: 'Não Inscrito', quota: QUOTA_NI }))
-    ];
-    todos.forEach(j => {
+    todosJogadores.forEach(j => {
         const pagos = mesesPagos(j.nome);
-        const linha = [j.nome, j.tipo, j.num || '', j.nasc || '', calcIdade(j.nasc)];
+        const quota = j.inscrito ? QUOTA : QUOTA_NI;
+        const totalPago = pagos.reduce((s, m) => {
+            if (isencoesDe(j.nome).includes(m)) return s;
+            const red = quotasReduzidasDe(j.nome);
+            return s + (red[m] !== undefined ? red[m] : quota);
+        }, 0);
+        const linha = [j.nome, j.inscrito ? 'Inscrito' : 'Não Inscrito', j.num || '', j.nasc || '', calcIdade(j.nasc)];
         MESES.forEach((_, i) => linha.push(pagos.includes(i) ? 'Pago' : ''));
-        linha.push(pagos.length * j.quota);
+        linha.push(totalPago);
         linhas.push(linha);
     });
     exportarCSV('quotas_veteranos.csv', linhas);
@@ -1311,8 +1334,14 @@ function imprimirRecibo(nome) {
     let total = 0;
 
     mesesPagosJ.forEach(m => {
-        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]);
-        total += quota;
+        let v = quota;
+        if (isencoesDe(j.nome).includes(m)) v = 0;
+        else {
+            const red = quotasReduzidasDe(j.nome);
+            if (red[m] !== undefined) v = red[m];
+        }
+        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${v}`]);
+        total += v;
     });
     if (inscricaoPaga) {
         linhas.push(['Inscrição na AFA', `€${valorInscricao}`]);
