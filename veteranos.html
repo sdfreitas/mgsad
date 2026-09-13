@@ -53,8 +53,6 @@
         .section-title { font-size: 14px; font-weight: 600; margin: 0 0 16px 2px; color: var(--azul-medio); letter-spacing: -.2px; }
         .btn-action { background: var(--azul-medio); color: #fff; border: none; padding: 7px 13px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; letter-spacing: .3px; white-space: nowrap; }
         .btn-action:hover { background: var(--azul-claro); }
-        .btn-action.ghost { background: #f0f4f8; color: var(--azul-medio); }
-        .btn-action.ghost:hover { background: #e0eaf5; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 12px; font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e8eef5; }
         td { padding: 10px 12px; color: #333; border-bottom: 1px solid #f0f3f7; }
@@ -282,7 +280,7 @@
             <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
             <div id="saldo-decomposicao"></div>
         </div>
-        <p class="note">Última atualização: 10 de Setembro de 2026</p>
+        <p class="note">Última atualização: 14 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -360,13 +358,13 @@
         <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 10 de Setembro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 14 de Setembro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
 
 <script src="dados.js"></script>
-<script src="privado.js"></script>
+<script src="config.js"></script>
 <script>
 // ─── MENU LOGIC ───
 let menuOpen = false;
@@ -398,7 +396,7 @@ const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
 
-// ─── AJUSTES INTERNOS (privado.js) ───
+// ─── AJUSTES INTERNOS (config.js) ───
 function isencoesDe(nome) {
     if (typeof ISENCOES === 'undefined') return [];
     return ISENCOES[nome] || [];
