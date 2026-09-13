@@ -3,6 +3,11 @@
    Este ficheiro é lido pelo index.html mas não é referido
    em nenhum sítio da interface. Corrige situações excecionais
    aprovadas pela direção dos veteranos.
+
+   REGRA:
+   - Isenções e quotas reduzidas mostram-se como pagas normais
+     na interface e nos recibos.
+   - Só as contas internas (saldo, CSV) refletem o valor real.
    ========================================================= */
 
 // Isenções — aparece como pago mas não houve entrada na caixa
@@ -14,5 +19,5 @@ const ISENCOES = {
 // Quotas reduzidas — aparece como pago mas entrou valor diferente do padrão
 // { "Nome": { índiceMes: valorEfetivo } }
 const QUOTAS_REDUZIDAS = {
-    "Amílcar André": { 0: 10 }  // Setembro — €10 (excesso da quota de sócio)
+    "Amílcar André": { 0: 10 }  // Setembro — €10 (excesso da quota de sócio, €50 pagos ao clube)
 };
