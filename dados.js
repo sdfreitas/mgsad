@@ -56,6 +56,7 @@ const naoInscritos = [
 ];
 
 // ─── PAGAMENTOS DE QUOTAS (índices = posição em MESES) ───
+// ATENÇÃO: Amílcar André e Zé Buraca NÃO entram aqui — os ajustes estão em _privado.js
 const pagamentos = {
     "Pedro Costa": [0],
     "Telmo": [0, 1],
@@ -221,7 +222,6 @@ const historico = [
     { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
     { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
 ];
-
 
 // ─── MAPAS AUXILIARES ───
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
