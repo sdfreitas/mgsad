@@ -366,7 +366,7 @@
 <div id="reciboContainer"></div>
 
 <script src="dados.js"></script>
-<script src="_privado.js"></script>
+<script src="privado.js"></script>
 <script>
 // ─── MENU LOGIC ───
 let menuOpen = false;
@@ -398,7 +398,7 @@ const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
 
-// ─── AJUSTES INTERNOS (_privado.js) ───
+// ─── AJUSTES INTERNOS (privado.js) ───
 function isencoesDe(nome) {
     if (typeof ISENCOES === 'undefined') return [];
     return ISENCOES[nome] || [];
