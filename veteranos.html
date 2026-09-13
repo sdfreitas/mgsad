@@ -51,8 +51,6 @@
         .card-sub { font-size: 11px; color: #aaa; margin-top: 3px; }
         .section-card { background: #fff; border-radius: 10px; padding: 20px 16px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 16px; }
         .section-title { font-size: 14px; font-weight: 600; margin: 0 0 16px 2px; color: var(--azul-medio); letter-spacing: -.2px; }
-        .section-head-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-        .section-head-row .section-title { margin: 0; }
         .btn-action { background: var(--azul-medio); color: #fff; border: none; padding: 7px 13px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; letter-spacing: .3px; white-space: nowrap; }
         .btn-action:hover { background: var(--azul-claro); }
         .btn-action.ghost { background: #f0f4f8; color: var(--azul-medio); }
@@ -292,35 +290,17 @@
     </div>
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Quotas por Mês</h2>
-                <button class="btn-action" onclick="exportarQuotasCSV()">⬇ CSV</button>
-            </div>
-            <div id="quotas-por-mes"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
     </div>
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2>
-                <button class="btn-action" onclick="exportarInscricoesCSV()">⬇ CSV</button>
-            </div>
-            <div class="table-wrap" id="tabela-inscricoes"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
     </div>
     <div id="tab-socios" class="tab-panel">
         <div class="cards-grid" id="socios-cards"></div>
         <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>.</p></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Estado das Quotas de Sócio</h2>
-                <button class="btn-action" onclick="exportarSociosCSV()">⬇ CSV</button>
-            </div>
-            <div class="table-wrap" id="tabela-socios"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
     <div id="tab-aniversarios" class="tab-panel">
         <div class="cards-grid" id="aniversarios-cards"></div>
@@ -328,13 +308,7 @@
     </div>
     <div id="tab-treinos" class="tab-panel">
         <div class="cards-grid" id="treinos-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">📊 Estatísticas de Treinos</h2>
-                <button class="btn-action" onclick="exportarTreinosCSV()">⬇ CSV</button>
-            </div>
-            <div id="treinos-stats"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">📊 Estatísticas de Treinos</h2><div id="treinos-stats"></div></div>
         <div id="treinos-lista"></div>
     </div>
     <div id="tab-competicao" class="tab-panel">
@@ -352,10 +326,7 @@
     <div id="tab-vendas" class="tab-panel">
         <div class="cards-grid" id="vendas-cards"></div>
         <div class="section-card" style="border-left:4px solid #1A6FB5">
-            <div class="section-head-row">
-                <h2 class="section-title">📋 Tabela de Preços</h2>
-                <button class="btn-action" onclick="exportarVendasCSV()">⬇ CSV</button>
-            </div>
+            <h2 class="section-title">📋 Tabela de Preços</h2>
             <div class="table-wrap"><table><thead><tr><th>Produto</th><th>Preço</th></tr></thead><tbody id="tabela-precos-body"></tbody></table></div>
         </div>
         <div class="section-card"><h2 class="section-title">🧾 Compras de 6 Set 2026</h2><div id="vendas-lista"></div></div>
@@ -1242,83 +1213,6 @@ function goToTab(tab) {
     }, 150);
 }
 
-// ─── EXPORTAR CSV ───
-function exportarCSV(nomeFicheiro, linhas) {
-    const csv = linhas.map(l => l.map(c => {
-        const s = String(c ?? '');
-        return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    }).join(';')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nomeFicheiro;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function exportarQuotasCSV() {
-    const linhas = [['Nome', 'Tipo', 'Nº', 'Nascimento', 'Idade', ...MESES, 'Total Pago (€)']];
-    todosJogadores.forEach(j => {
-        const pagos = mesesPagos(j.nome);
-        const quota = j.inscrito ? QUOTA : QUOTA_NI;
-        const totalPago = pagos.reduce((s, m) => {
-            if (isencoesDe(j.nome).includes(m)) return s;
-            const red = quotasReduzidasDe(j.nome);
-            return s + (red[m] !== undefined ? red[m] : quota);
-        }, 0);
-        const linha = [j.nome, j.inscrito ? 'Inscrito' : 'Não Inscrito', j.num || '', j.nasc || '', calcIdade(j.nasc)];
-        MESES.forEach((_, i) => linha.push(pagos.includes(i) ? 'Pago' : ''));
-        linha.push(totalPago);
-        linhas.push(linha);
-    });
-    exportarCSV('quotas_veteranos.csv', linhas);
-}
-
-function exportarInscricoesCSV() {
-    const linhas = [['Nome', 'Valor (€)', 'Estado']];
-    inscritos.forEach(j => {
-        linhas.push([j.nome, valorInscricao, jaPagouInscricao(j.nome) ? 'Pago' : 'Por pagar']);
-    });
-    exportarCSV('inscricoes_veteranos.csv', linhas);
-}
-
-function exportarSociosCSV() {
-    const linhas = [['Nome', 'Valor (€)', 'Estado']];
-    inscritos.forEach(j => {
-        linhas.push([j.nome, valorSocio, sociosPagos.includes(j.nome) ? 'Pago' : 'Por pagar']);
-    });
-    exportarCSV('socios_veteranos.csv', linhas);
-}
-
-function exportarTreinosCSV() {
-    const linhas = [['Nome', 'Tipo', 'Presenças', 'Total Treinos', 'Percentagem']];
-    const todos = [
-        ...inscritos.map(j => ({ ...j, tipo: 'Inscrito' })),
-        ...naoInscritos.map(j => ({ ...j, tipo: 'Não Inscrito' }))
-    ];
-    todos.forEach(j => {
-        const p = presencasPorJogador[j.nome] || 0;
-        const pc = totalEventos > 0 ? ((p / totalEventos) * 100).toFixed(0) + '%' : '0%';
-        linhas.push([j.nome, j.tipo, p, totalEventos, pc]);
-    });
-    exportarCSV('treinos_veteranos.csv', linhas);
-}
-
-function exportarVendasCSV() {
-    const linhas = [['Data', 'Nome', 'Itens', 'Total (€)', 'Estado']];
-    compras6Set.forEach(v => {
-        linhas.push(['6 Set 2026', v.nome, v.itens.join(', '), v.total, v.pago ? 'Pago' : 'Pendente']);
-    });
-    linhas.push([]);
-    linhas.push(['Tabela de preços']);
-    linhas.push(['Produto', 'Preço (€)']);
-    Object.entries(listaPrecos).forEach(([p, v]) => linhas.push([p, v]));
-    exportarCSV('vendas_veteranos.csv', linhas);
-}
-
 // ─── RECIBO ───
 function imprimirRecibo(nome) {
     const j = encontrarJogador(nome);
@@ -1333,15 +1227,11 @@ function imprimirRecibo(nome) {
     const linhas = [];
     let total = 0;
 
+    // Nota: isenções e quotas reduzidas aparecem no recibo como valor-padrão
+    // (não revelam a exceção interna)
     mesesPagosJ.forEach(m => {
-        let v = quota;
-        if (isencoesDe(j.nome).includes(m)) v = 0;
-        else {
-            const red = quotasReduzidasDe(j.nome);
-            if (red[m] !== undefined) v = red[m];
-        }
-        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${v}`]);
-        total += v;
+        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]);
+        total += quota;
     });
     if (inscricaoPaga) {
         linhas.push(['Inscrição na AFA', `€${valorInscricao}`]);
