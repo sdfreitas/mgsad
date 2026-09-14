@@ -459,6 +459,23 @@ function makeCard(l, v, s, a) {
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
 
+// ─── NOMES CLICÁVEIS EM TEXTO LIVRE ───
+// Constrói uma lista de nomes completos do plantel (ordenada do mais longo para o mais curto)
+// e substitui cada ocorrência por um span clicável que abre o perfil.
+const _termosClicaveis = todosJogadores
+    .map(j => j.nome)
+    .sort((a, b) => b.length - a.length);
+const _regexClicaveis = new RegExp(
+    '(' + _termosClicaveis.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
+    'g'
+);
+function tornarNomesClicaveis(texto) {
+    if (!texto) return texto;
+    return texto.replace(_regexClicaveis, (match) => {
+        return `<span class="clickable" onclick="abrirPerfil('${escapeAttr(match)}')">${match}</span>`;
+    });
+}
+
 // ─── TABS ───
 const chartInstances = {};
 function freshCanvas(id) {
@@ -836,7 +853,8 @@ const tipoInfo = {
 let hh = '';
 historico.forEach(h => {
     const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
-    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${h.desc}</div></div></div>`;
+    const descComLinks = tornarNomesClicaveis(h.desc);
+    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}</div></div></div>`;
 });
 document.getElementById('historico-lista').innerHTML = hh;
 
