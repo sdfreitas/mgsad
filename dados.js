@@ -70,14 +70,16 @@ const pagamentos = {
     "António Oliveira": [0],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
-    "Jorge Azevedo": [0]
+    "Jorge Azevedo": [0],
+    "Pedro Ferreira": [0]
 };
 
 // ─── INSCRIÇÕES PAGAS ───
 const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira",
-    "Rui Rocha", "António Rocha"
+    "Rui Rocha", "António Rocha",
+    "Pedro Ferreira"
 ];
 
 // ─── SÓCIOS PAGOS ───
@@ -88,7 +90,8 @@ const sociosPagos = [
     "Jorge Azevedo",
     "Joel Tavares",
     "Amílcar André",
-    "Hugo André"
+    "Hugo André",
+    "Pedro Ferreira"
 ];
 
 // ─── MERENDAS PAGAS ───
@@ -199,6 +202,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Pedro Ferreira pagou Setembro (€20), inscrição (€30) e quota de sócio (€40) — total €90." },
     { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira — €5." },
     { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André e Zé Buraca pagaram Setembro (€20 e €10)." },
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram €300 (€150 cada) — inscrição AFA (€30) + quotas Set a Fev (6 × €20 = €120) por atleta." },
