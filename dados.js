@@ -173,7 +173,8 @@ const amigaveis = [
                 "Jorge Azevedo",
                 "Rui Rocha",
                 "António Rocha",
-                "Mário Oliveira"
+                "Mário Oliveira",
+                "Sérgio Freitas"
             ]
         }
     }
@@ -198,6 +199,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira — €5." },
     { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André e Zé Buraca pagaram Setembro (€20 e €10)." },
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram €300 (€150 cada) — inscrição AFA (€30) + quotas Set a Fev (6 × €20 = €120) por atleta." },
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram €5 cada (€30 recebidos)." },
