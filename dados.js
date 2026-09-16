@@ -135,7 +135,10 @@ const treinosJogos = [
       extra: ["Marcelo", "Zé Buraca", "Inácio"] },
     { data: "12 Set 2026", tipo: "jogo", titulo: "Jogo de treino vs Paços de Ferreira", estado: "registado",
       presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Azevedo", "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha", "Rui Rocha", "Américo Silva"],
-      extra: ["Zé Buraca", "Marcelo"] }
+      extra: ["Zé Buraca", "Marcelo"] },
+    { data: "16 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Joel Tavares", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho"],
+      extra: ["Fábio Oliveira", "Marcelo", "Zé Buraca", "Telmo"] }
 ];
 
 // ─── COMPETIÇÃO ───
@@ -202,6 +205,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
     { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira (€5) e Pedro Ferreira pagou Setembro (€20), inscrição (€30) e quota de sócio (€40) — total recebido: €95." },
     { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André e Zé Buraca pagaram Setembro (€20 e €10)." },
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram €300 (€150 cada) — inscrição AFA (€30) + quotas Set a Fev (6 × €20 = €120) por atleta." },
