@@ -280,7 +280,7 @@
             <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
             <div id="saldo-decomposicao"></div>
         </div>
-        <p class="note">Última atualização: 14 de Setembro de 2026</p>
+        <p class="note">Última atualização: 16 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -358,7 +358,7 @@
         <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 14 de Setembro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 16 de Setembro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -460,8 +460,6 @@ function makeCard(l, v, s, a) {
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
 
 // ─── NOMES CLICÁVEIS EM TEXTO LIVRE ───
-// Constrói uma lista de nomes completos do plantel (ordenada do mais longo para o mais curto)
-// e substitui cada ocorrência por um span clicável que abre o perfil.
 const _termosClicaveis = todosJogadores
     .map(j => j.nome)
     .sort((a, b) => b.length - a.length);
@@ -1127,7 +1125,9 @@ function abrirPerfil(nome) {
     }
 
     const mesesPagosJogador = mesesPagos(nomeCompleto);
-    conteudo += `<div class="modal-section"><h4>💰 Mensalidades</h4>`;
+    const quotaMensalJogador = jogador.inscrito ? QUOTA : QUOTA_NI;
+    const totalMensalidades = mesesPagosJogador.length * quotaMensalJogador;
+    conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4>`;
     if (mesesPagosJogador.length === 0) {
         conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
     } else {
