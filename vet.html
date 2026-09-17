@@ -64,6 +64,8 @@
         .section-title { font-size: 14px; font-weight: 600; margin: 0 0 16px 2px; color: var(--azul-medio); letter-spacing: -.2px; }
         .btn-action { background: var(--azul-medio); color: #fff; border: none; padding: 7px 13px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; letter-spacing: .3px; white-space: nowrap; }
         .btn-action:hover { background: var(--azul-claro); }
+        .btn-action.ativo { background: #dc6843; }
+        .btn-action.ativo:hover { background: #b8553a; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 12px; font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e8eef5; }
         td { padding: 10px 12px; color: #333; border-bottom: 1px solid #f0f3f7; }
@@ -172,10 +174,11 @@
         .mes-acc { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 8px; overflow: hidden; }
         .mes-acc-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background .15s; }
         .mes-acc-head:hover { background: #f8fafc; }
-        .mes-acc-left { display: flex; align-items: center; gap: 12px; }
+        .mes-acc-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .mes-acc-name { font-size: 14px; font-weight: 700; color: #0D3B66; }
         .mes-acc-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: #f0f4f8; color: #64748b; }
         .mes-acc-badge.paid { background: #dcfce7; color: #166534; }
+        .mes-acc-badge.falta { background: #fff7ed; color: #9a3412; }
         .mes-acc-chevron { font-size: 12px; color: #aaa; transition: transform .25s; }
         .mes-acc.open .mes-acc-chevron { transform: rotate(180deg); }
         .mes-acc-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
@@ -213,7 +216,7 @@
         .modal-actions { display: flex; align-items: center; gap: 4px; }
         .modal-section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(13,59,102,.06); }
         .modal-section h4 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
-        .modal-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f3f7; }
+        .modal-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f3f7; gap: 8px; }
         .modal-row:last-child { border-bottom: none; }
         .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
@@ -247,11 +250,19 @@
         .tema-btn:active { transform: scale(.94); }
         .tema-btn span { display: block; }
 
+        /* ─── BARRA DE FILTRO ─── */
+        .filtro-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+            padding: 10px 14px; background: #f8fafc; border-radius: 8px;
+        }
+        .filtro-bar .filtro-info { font-size: 12px; color: #64748b; }
+        .filtro-bar .filtro-info strong { color: #0D3B66; }
+
         /* ─── MODO ESCURO ─── */
         html[data-tema="escuro"] { --bg: #0b1220; --azul-bg: #1e3a5f; --card: #1e293b; }
         html[data-tema="escuro"] body { background: #0b1220; color: #cbd5e1; }
 
-        /* Superfícies brancas → cinza-escuro */
         html[data-tema="escuro"] .card,
         html[data-tema="escuro"] .section-card,
         html[data-tema="escuro"] .sub-tabs,
@@ -267,17 +278,19 @@
         }
         html[data-tema="escuro"] .modal-sheet { background: #0f172a; }
         html[data-tema="escuro"] .stat-box { background: #0f172a; }
+        html[data-tema="escuro"] .filtro-bar { background: #0f172a; }
+        html[data-tema="escuro"] .filtro-bar .filtro-info { color: #94a3b8; }
+        html[data-tema="escuro"] .filtro-bar .filtro-info strong { color: #93c5fd; }
 
-        /* Estados hover / activos */
         html[data-tema="escuro"] .mes-acc-head:hover { background: #243447; }
         html[data-tema="escuro"] .sub-tab.active { background: #1e3a5f; color: #93c5fd; }
         html[data-tema="escuro"] .mes-acc-badge { background: #0f172a; color: #94a3b8; }
         html[data-tema="escuro"] .mes-acc-badge.paid { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .mes-acc-badge.falta { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .bday-person-day { background: #0f172a; color: #94a3b8; }
         html[data-tema="escuro"] .mes-player-status.nao { background: #1e293b; color: #94a3b8; }
         html[data-tema="escuro"] .mes-player-name.ni-tag::after { background: #422006; }
 
-        /* Tabelas */
         html[data-tema="escuro"] th { color: #94a3b8; border-bottom-color: #334155; }
         html[data-tema="escuro"] td { color: #cbd5e1; border-bottom-color: #1e293b; }
         html[data-tema="escuro"] tfoot td { border-top-color: #475569; }
@@ -286,7 +299,6 @@
         html[data-tema="escuro"] .presence-table td:first-child { color: #93c5fd; }
         html[data-tema="escuro"] .presence-table td:last-child { color: #60a5fa; }
 
-        /* Textos */
         html[data-tema="escuro"] .section-title,
         html[data-tema="escuro"] .card-value,
         html[data-tema="escuro"] .modal-title,
@@ -324,7 +336,6 @@
 
         html[data-tema="escuro"] .hist-track { background: #334155; }
 
-        /* Badges */
         html[data-tema="escuro"] .badge-ok { background: #1e3a5f; color: #93c5fd; border-color: #1e40af; }
         html[data-tema="escuro"] .badge-falta { background: #422006; color: #fcd34d; border-color: #78350f; }
         html[data-tema="escuro"] .match-badge.v { background: #14532d; color: #86efac; }
@@ -336,7 +347,6 @@
         html[data-tema="escuro"] .ata-tag.info { background: #164e63; color: #67e8f9; }
         html[data-tema="escuro"] .ata-tag.urgente { background: #422006; color: #fcd34d; }
 
-        /* Linhas internas de tabelas / acordeões */
         html[data-tema="escuro"] .mes-player-row,
         html[data-tema="escuro"] .bday-person,
         html[data-tema="escuro"] .modal-row { border-bottom-color: #1e293b; }
@@ -345,7 +355,6 @@
         html[data-tema="escuro"] .ata-presentes { border-top-color: #1e293b; }
         html[data-tema="escuro"] .pres-head.jogo { background: linear-gradient(135deg,#020617,#0D3B66); }
 
-        /* Inline styles das secções renderizadas em JS */
         html[data-tema="escuro"] [style*="background:#f0f6ff"] { background: #1e3a5f !important; }
         html[data-tema="escuro"] [style*="background:#f8fafc"] { background: #0f172a !important; }
         html[data-tema="escuro"] [style*="background:#fff7ed"] { background: #422006 !important; }
@@ -353,7 +362,6 @@
         html[data-tema="escuro"] [style*="background:#fff1e8"] { background: #422006 !important; }
         html[data-tema="escuro"] [style*="background:#f0f4f8"] { background: #0f172a !important; }
 
-        /* Botão de tema em modo escuro */
         html[data-tema="escuro"] .tema-btn { background: #334155; }
         html[data-tema="escuro"] .tema-btn:hover { background: #475569; }
 
@@ -362,6 +370,8 @@
             .card-value { font-size: 22px; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .sub-tab { font-size: 10px; padding: 12px 4px; }
+            .filtro-bar { flex-direction: column; align-items: stretch; }
+            .filtro-bar .btn-action { width: 100%; padding: 10px; }
         }
     </style>
 </head>
@@ -424,7 +434,7 @@
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
         <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
-        <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div id="tabela-quotas"></div></div>
     </div>
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
@@ -583,6 +593,35 @@ function mesesPagos(nome) {
 }
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
+
+// ─── MÊS ATUAL NA ÉPOCA (Set=0 … Jun=9) ───
+function mesEpocaAtualIdx() {
+    const m = new Date().getMonth() + 1; // 1-12
+    if (m >= 9) return m - 9;            // Set=0, Out=1, Nov=2, Dez=3
+    if (m <= 6) return m + 3;            // Jan=4, Fev=5, Mar=6, Abr=7, Mai=8, Jun=9
+    return -1;                            // Jul/Ago → fora de época
+}
+// Devedor = falta pelo menos um mês desde o início até ao mês atual
+function eDevedor(nome) {
+    const limite = mesEpocaAtualIdx();
+    const max = limite === -1 ? MESES.length - 1 : limite;
+    const pagos = mesesPagos(nome);
+    for (let i = 0; i <= max; i++) {
+        if (!pagos.includes(i)) return true;
+    }
+    return false;
+}
+
+// ─── ÚLTIMO PAGAMENTO (via histórico) ───
+// Assume que `historico` está ordenado do mais recente para o mais antigo.
+function ultimoPagamentoHistorico(nome) {
+    if (typeof historico === 'undefined' || !historico.length) return null;
+    for (const h of historico) {
+        if (h.tipo !== 'pagamento') continue;
+        if (h.desc && h.desc.includes(nome)) return h.data;
+    }
+    return null;
+}
 
 const recebidoReal = todosJogadores.reduce((tot, j) => {
     const meses = mesesPagos(j.nome);
@@ -761,8 +800,9 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     html += '<th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
         const pagos = mesesPagos(j.nome);
+        const devedor = eDevedor(j.nome);
         html += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
-        html += `<td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td>`;
+        html += `<td class="player-name clickable${devedor ? ' em-falta' : ''}" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td>`;
         html += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
         html += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
         for (let m = 0; m < MESES.length; m++) html += monthCell(pagos.includes(m));
@@ -773,16 +813,44 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     return html;
 }
 
-let qh = renderTabelaQuotasSecao(inscritos, 'Inscritos (€20/mês)', '#0D3B66');
-qh += renderTabelaQuotasSecao(naoInscritos, 'Não Inscritos (€10/mês)', '#dc6843');
-qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
-qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · ✓ Mês pago</p>';
-document.getElementById('tabela-quotas').innerHTML = qh;
+// Filtro "só devedores"
+let quotasSoDevedores = false;
+function toggleFiltroDevedores() {
+    quotasSoDevedores = !quotasSoDevedores;
+    renderQuotas();
+}
+function renderQuotas() {
+    const inscritosFiltrados = quotasSoDevedores ? inscritos.filter(j => eDevedor(j.nome)) : inscritos;
+    const naoInscritosFiltrados = quotasSoDevedores ? naoInscritos.filter(j => eDevedor(j.nome)) : naoInscritos;
+    const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
+
+    let qh = `<div class="filtro-bar">
+        <div class="filtro-info">${quotasSoDevedores
+            ? `A mostrar <strong>${totalDevedores}</strong> jogador(es) com meses em falta`
+            : `A mostrar <strong>todos</strong> os ${inscritos.length + naoInscritos.length} jogadores`}</div>
+        <button class="btn-action${quotasSoDevedores ? ' ativo' : ''}" onclick="toggleFiltroDevedores()">
+            ${quotasSoDevedores ? '👥 Ver todos' : '⚠️ Só devedores'}
+        </button>
+    </div>`;
+
+    if (quotasSoDevedores && inscritosFiltrados.length === 0 && naoInscritosFiltrados.length === 0) {
+        qh += '<p style="text-align:center;color:#16a34a;padding:24px;font-weight:600;font-size:14px">🎉 Ninguém em falta — tudo em ordem!</p>';
+    } else {
+        if (inscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(inscritosFiltrados, 'Inscritos (€20/mês)', '#0D3B66');
+        if (naoInscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(naoInscritosFiltrados, 'Não Inscritos (€10/mês)', '#dc6843');
+    }
+
+    qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
+    qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · ✓ Mês pago</p>';
+    document.getElementById('tabela-quotas').innerHTML = qh;
+}
+renderQuotas();
 
 const todosParaQuotas = [
     ...inscritos.map(j => ({ ...j, ni: false, quota: QUOTA })),
     ...naoInscritos.map(j => ({ ...j, ni: true, quota: QUOTA_NI }))
 ];
+const totalParaQuotas = todosParaQuotas.length;
 let maHtml = '';
 MESES.forEach((mNome, mIdx) => {
     let pagosCount = 0;
@@ -796,8 +864,16 @@ MESES.forEach((mNome, mIdx) => {
         rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
     });
     const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? j.quota : 0), 0);
-    const badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge';
-    maHtml += `<div class="mes-acc" id="mesacc-${mIdx}"><div class="mes-acc-head" onclick="toggleMesAcc(${mIdx})"><div class="mes-acc-left"><span class="mes-acc-name">${mNome}</span><span class="${badgeCls}">${pagosCount} pago(s) · €${receitaMes}</span></div><span class="mes-acc-chevron">▾</span></div><div class="mes-acc-body"><div class="mes-acc-inner">${rowsHtml}</div></div></div>`;
+    const faltam = totalParaQuotas - pagosCount;
+    let badgeCls, badgeTxt;
+    if (faltam === 0) {
+        badgeCls = 'mes-acc-badge paid';
+        badgeTxt = `${pagosCount} pago(s) · ✓ todos · €${receitaMes}`;
+    } else {
+        badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge falta';
+        badgeTxt = `${pagosCount} pago(s) · ${faltam} faltam · €${receitaMes}`;
+    }
+    maHtml += `<div class="mes-acc" id="mesacc-${mIdx}"><div class="mes-acc-head" onclick="toggleMesAcc(${mIdx})"><div class="mes-acc-left"><span class="mes-acc-name">${mNome}</span><span class="${badgeCls}">${badgeTxt}</span></div><span class="mes-acc-chevron">▾</span></div><div class="mes-acc-body"><div class="mes-acc-inner">${rowsHtml}</div></div></div>`;
 });
 document.getElementById('quotas-por-mes').innerHTML = maHtml;
 function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
@@ -1296,7 +1372,9 @@ function abrirPerfil(nome) {
     const mesesPagosJogador = mesesPagos(nomeCompleto);
     const quotaMensalJogador = jogador.inscrito ? QUOTA : QUOTA_NI;
     const totalMensalidades = mesesPagosJogador.length * quotaMensalJogador;
+    const ultPag = ultimoPagamentoHistorico(nomeCompleto);
     conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4>`;
+    conteudo += `<div class="modal-row"><span>Último pagamento registado</span><strong style="font-size:12px;color:#0D3B66">${ultPag || '—'}</strong></div>`;
     if (mesesPagosJogador.length === 0) {
         conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
     } else {
