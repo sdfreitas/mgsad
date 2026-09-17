@@ -430,6 +430,16 @@
     </div>
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
+        <div class="section-card">
+            <h2 class="section-title">🥧 Progresso da Época</h2>
+            <div class="chart-container" style="max-height:300px"><canvas id="chartQuotasBolo"></canvas></div>
+            <p class="note">Recebido até à data vs total teórico da época (Set–Jun)</p>
+        </div>
+        <div class="section-card">
+            <h2 class="section-title">📊 Receita das Quotas por Mês</h2>
+            <div class="chart-container" style="max-height:300px"><canvas id="chartQuotasMes"></canvas></div>
+            <p class="note">Esperado vs recebido em cada mês — o esperado assume todos os meses pagos</p>
+        </div>
         <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div id="tabela-quotas"></div></div>
     </div>
@@ -579,15 +589,17 @@ function ciclarTema() {
     try { localStorage.setItem('tema', prox); } catch (e) {}
     _aplicarTema();
     if (typeof chartInstances !== 'undefined') {
-        // Treinos: redesenhar se algum dos 3 gráficos estiver vivo
         if (chartInstances.treinosPresencas || chartInstances.treinosBolo || chartInstances.treinosTop) {
             destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop');
             setTimeout(initTreinosCharts, 50);
         }
-        // Inscrições: redesenhar se o bolo estiver vivo
         if (chartInstances.inscricoesBolo) {
             destroyCharts('inscricoesBolo');
             setTimeout(initInscricoesChart, 50);
+        }
+        if (chartInstances.quotasBolo || chartInstances.quotasMes) {
+            destroyCharts('quotasBolo', 'quotasMes');
+            setTimeout(initQuotasCharts, 50);
         }
     }
 }
@@ -727,8 +739,9 @@ function showTab(id) {
     document.getElementById('tab-' + id).classList.add('active');
     if (id === 'resumo') { destroyCharts('bar', 'line'); setTimeout(initResumoCharts, 50); }
     if (id === 'despesas') { destroyCharts('pie'); setTimeout(initDespesasChart, 50); }
-    if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
+    if (id === 'quotas') { destroyCharts('quotasBolo', 'quotasMes'); setTimeout(initQuotasCharts, 50); }
     if (id === 'inscricoes') { destroyCharts('inscricoesBolo'); setTimeout(initInscricoesChart, 50); }
+    if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
 }
 
 // ─── RESUMO ───
@@ -835,6 +848,74 @@ function initInscricoesChart() {
                         }
                     }
                 }
+            }
+        }
+    });
+}
+function initQuotasCharts() {
+    if (typeof todosParaQuotas === 'undefined') return;
+    const c = chartThemeColors();
+
+    // Doughnut: progresso da época
+    const totalEsperado = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length;
+    const pago = recebidoReal;
+    const porReceber = Math.max(0, totalEsperado - pago);
+
+    chartInstances.quotasBolo = new Chart(freshCanvas('chartQuotasBolo'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Recebido', 'Por receber'],
+            datasets: [{
+                data: [pago, porReceber],
+                backgroundColor: ['#16a34a', '#dc6843'],
+                borderWidth: 2, borderColor: c.borda
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const tot = pago + porReceber;
+                            const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0;
+                            return `${ctx.label}: €${ctx.raw} (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Barras: receita por mês
+    const esperadoMes = inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI;
+    const esperadoData = MESES.map(() => esperadoMes);
+    const recebidoData = MESES.map((_, mIdx) => {
+        return todosParaQuotas.reduce((s, j) => {
+            if (jaPagou(j.nome, mIdx)) return s + (j.inscrito ? QUOTA : QUOTA_NI);
+            return s;
+        }, 0);
+    });
+
+    chartInstances.quotasMes = new Chart(freshCanvas('chartQuotasMes'), {
+        type: 'bar',
+        data: {
+            labels: MESES,
+            datasets: [
+                { label: 'Esperado', data: esperadoData, backgroundColor: 'rgba(148,163,184,.35)', borderRadius: 4, barPercentage: .7 },
+                { label: 'Recebido', data: recebidoData, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .7 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, ...animOpts,
+            plugins: {
+                legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 }, color: c.legenda } },
+                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': €' + ctx.raw } }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } },
+                y: { grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, callback: v => '€' + v, color: c.texto } }
             }
         }
     });
@@ -1078,7 +1159,6 @@ function initTreinosCharts() {
     if (eventos.length === 0) return;
     const c = chartThemeColors();
 
-    // Gráfico 1: presenças por treino (barras verticais empilhadas)
     const labels1 = eventos.map(t => {
         const base = t.data.replace(' 2026', '');
         return t.tipo === 'jogo' ? base + ' ⚽' : base;
@@ -1108,7 +1188,6 @@ function initTreinosCharts() {
         }
     });
 
-    // Gráfico 2: doughnut inscritos vs não inscritos (total acumulado)
     let totalIns = 0, totalExt = 0;
     eventos.forEach(t => {
         totalIns += (t.presentes || []).length;
@@ -1143,7 +1222,6 @@ function initTreinosCharts() {
         });
     }
 
-    // Gráfico 3: top 10 assíduos (barras horizontais)
     const ranking = todosJogadores
         .map(j => ({ nome: j.nome, presencas: presencasPorJogador[j.nome] || 0 }))
         .filter(r => r.presencas > 0)
