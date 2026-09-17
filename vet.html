@@ -257,6 +257,40 @@
         .filtro-bar .filtro-info { font-size: 12px; color: #64748b; }
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
+        /* ─── RESUMO: HERO ─── */
+        .saldo-hero {
+            background: linear-gradient(135deg, #0D3B66 0%, #1A6FB5 100%);
+            color: #fff; border-radius: 16px; padding: 32px 24px;
+            margin-bottom: 20px; text-align: center;
+            box-shadow: 0 6px 18px rgba(13,59,102,.22);
+        }
+        .saldo-hero-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: .85; font-weight: 600; }
+        .saldo-hero-value { font-size: 56px; font-weight: 800; letter-spacing: -2px; line-height: 1.05; margin: 8px 0 10px; }
+        .saldo-hero-sub { font-size: 12px; opacity: .88; }
+
+        /* ─── RESUMO: ALERTAS ─── */
+        .alertas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .alerta-card {
+            border-radius: 12px; padding: 16px 18px; cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+            display: flex; flex-direction: column; gap: 3px;
+            border: none; text-align: left; font-family: inherit; width: 100%;
+        }
+        .alerta-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.12); }
+        .alerta-card.ok { background: #f0fdf4; border-left: 4px solid #16a34a; }
+        .alerta-card.atencao { background: #fff7ed; border-left: 4px solid #dc6843; }
+        .alerta-num { font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+        .alerta-card.ok .alerta-num { color: #16a34a; }
+        .alerta-card.atencao .alerta-num { color: #dc6843; }
+        .alerta-label { font-size: 11px; font-weight: 700; color: #0D3B66; text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+        .alerta-sub { font-size: 11px; color: #888; }
+
+        /* ─── RESUMO: MOVIMENTOS ─── */
+        .mov-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f3f7; font-size: 13px; align-items: flex-start; }
+        .mov-item:last-child { border-bottom: none; }
+        .mov-data { font-size: 11px; color: #1A6FB5; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; min-width: 62px; padding-top: 1px; }
+        .mov-desc { flex: 1; color: #333; line-height: 1.5; }
+
         html[data-tema="escuro"] { --bg: #0b1220; --azul-bg: #1e3a5f; --card: #1e293b; }
         html[data-tema="escuro"] body { background: #0b1220; color: #cbd5e1; }
 
@@ -278,6 +312,13 @@
         html[data-tema="escuro"] .filtro-bar { background: #0f172a; }
         html[data-tema="escuro"] .filtro-bar .filtro-info { color: #94a3b8; }
         html[data-tema="escuro"] .filtro-bar .filtro-info strong { color: #93c5fd; }
+        html[data-tema="escuro"] .alerta-card.ok { background: #0f2e1c; }
+        html[data-tema="escuro"] .alerta-card.atencao { background: #3a1d0e; }
+        html[data-tema="escuro"] .alerta-label { color: #93c5fd; }
+        html[data-tema="escuro"] .alerta-sub { color: #94a3b8; }
+        html[data-tema="escuro"] .mov-data { color: #60a5fa; }
+        html[data-tema="escuro"] .mov-desc { color: #e2e8f0; }
+        html[data-tema="escuro"] .mov-item { border-bottom-color: #1e293b; }
 
         html[data-tema="escuro"] .mes-acc-head:hover { background: #243447; }
         html[data-tema="escuro"] .sub-tab.active { background: #1e3a5f; color: #93c5fd; }
@@ -369,6 +410,10 @@
             .sub-tab { font-size: 10px; padding: 12px 4px; }
             .filtro-bar { flex-direction: column; align-items: stretch; }
             .filtro-bar .btn-action { width: 100%; padding: 10px; }
+            .saldo-hero { padding: 24px 18px; }
+            .saldo-hero-value { font-size: 44px; }
+            .alertas-grid { grid-template-columns: 1fr; }
+            .alerta-num { font-size: 26px; }
         }
     </style>
 </head>
@@ -415,14 +460,27 @@
 
 <main>
     <div id="tab-resumo" class="tab-panel active">
-        <div class="cards-grid" id="resumo-cards"></div>
-        <div class="section-card"><h2 class="section-title">Receitas vs Despesas Previstas por Mês</h2><div class="chart-container"><canvas id="chartBarMensal"></canvas></div><p class="note">Projeção anual — despesas estimadas com base no padrão da época anterior</p></div>
-        <div class="section-card"><h2 class="section-title">Evolução Prevista do Saldo</h2><div class="chart-container"><canvas id="chartSaldo"></canvas></div><p class="note">Projeção — os valores reais serão atualizados mensalmente</p></div>
+        <div id="saldo-hero"></div>
+        <div class="alertas-grid" id="resumo-alertas"></div>
         <div class="section-card" style="border-left:4px solid #16a34a">
             <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
             <div id="saldo-decomposicao"></div>
         </div>
-        <p class="note">Última atualização: 16 de Setembro de 2026</p>
+        <div class="section-card">
+            <h2 class="section-title">🕒 Últimos Movimentos</h2>
+            <div id="resumo-movimentos"></div>
+        </div>
+        <div class="section-card">
+            <h2 class="section-title">📊 Receitas vs Despesas Previstas por Mês</h2>
+            <div class="chart-container"><canvas id="chartBarMensal"></canvas></div>
+            <p class="note">Projeção anual — despesas estimadas com base no padrão da época anterior</p>
+        </div>
+        <div class="section-card">
+            <h2 class="section-title">📈 Evolução Prevista do Saldo</h2>
+            <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
+            <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
+        </div>
+        <p class="note">Última atualização: 17 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -589,6 +647,10 @@ function ciclarTema() {
     try { localStorage.setItem('tema', prox); } catch (e) {}
     _aplicarTema();
     if (typeof chartInstances !== 'undefined') {
+        if (chartInstances.bar || chartInstances.line) {
+            destroyCharts('bar', 'line');
+            setTimeout(initResumoCharts, 50);
+        }
         if (chartInstances.treinosPresencas || chartInstances.treinosBolo || chartInstances.treinosTop) {
             destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop');
             setTimeout(initTreinosCharts, 50);
@@ -745,29 +807,74 @@ function showTab(id) {
 }
 
 // ─── RESUMO ───
-document.getElementById('resumo-cards').innerHTML =
-    makeCard('Saldo Atual', '€' + saldo, 'caixa líquida disponível', '#0D3B66') +
-    makeCard('Caixa Transitada', '€' + SALDO_INICIAL, 'época anterior', '#1A6FB5') +
-    makeCard('Receita Esperada', '€' + receitaMensalEsperada + '/mês', inscritos.length + '×€' + QUOTA + ' + ' + naoInscritos.length + '×€' + QUOTA_NI, '#64748b') +
-    makeCard('Plantel', inscritos.length + ' + ' + naoInscritos.length, inscritos.length + ' inscritos · ' + naoInscritos.length + ' não inscritos', '#0D3B66');
+function renderResumo() {
+    // Hero do saldo
+    document.getElementById('saldo-hero').innerHTML = `
+        <div class="saldo-hero">
+            <div class="saldo-hero-label">Saldo Atual</div>
+            <div class="saldo-hero-value">€${saldo}</div>
+            <div class="saldo-hero-sub">caixa líquida disponível · ${inscritos.length} inscritos + ${naoInscritos.length} não inscritos</div>
+        </div>`;
 
-let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
-sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0D3B66;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
-sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
-sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
-sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
-if (totalArbitroCusto > 0) {
-    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
-    sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#dc6843;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+    // Alertas
+    const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
+    const inscPorPagar = inscritos.length - inscricoesPagas.length;
+    const inscValor = inscPorPagar * valorInscricao;
+    let faltaArbitroTotal = 0;
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        faltaArbitroTotal += (a.arbitro.participantes.length - a.arbitro.pagaram.length) * a.arbitro.valorPorJogador;
+    });
+
+    document.getElementById('resumo-alertas').innerHTML = `
+        <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="menuNav('quotas')">
+            <div class="alerta-num">${totalDevedores}</div>
+            <div class="alerta-label">Quotas em falta</div>
+            <div class="alerta-sub">${totalDevedores === 0 ? 'tudo em ordem' : 'jogadores com meses por pagar'}</div>
+        </button>
+        <button class="alerta-card ${inscPorPagar === 0 ? 'ok' : 'atencao'}" onclick="menuNav('inscricoes')">
+            <div class="alerta-num">${inscPorPagar}</div>
+            <div class="alerta-label">Inscrições por pagar</div>
+            <div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div>
+        </button>
+        <button class="alerta-card ${faltaArbitroTotal === 0 ? 'ok' : 'atencao'}" onclick="menuNav('competicao')">
+            <div class="alerta-num">€${faltaArbitroTotal}</div>
+            <div class="alerta-label">Árbitro por receber</div>
+            <div class="alerta-sub">${faltaArbitroTotal === 0 ? 'tudo recebido' : 'de amigáveis'}</div>
+        </button>`;
+
+    // Decomposição
+    let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
+    sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0D3B66;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
+    sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
+    sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
+    sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
+    if (totalArbitroCusto > 0) {
+        sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
+        sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#dc6843;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+    }
+    sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
+    sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
+    sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
+    sd += `<tr><td>Garrafões de água</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAgua}</td></tr>`;
+    sd += `<tr style="background:#f0f6ff"><td style="font-weight:700;color:#0D3B66">Saldo atual dos veteranos</td><td class="center" style="font-weight:800;color:#0D3B66;font-size:15px">€${saldo}</td></tr>`;
+    sd += '</tbody></table></div>';
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) são entregues ao clube principal — não afetam este saldo.</p>`;
+    document.getElementById('saldo-decomposicao').innerHTML = sd;
+
+    // Últimos 5 movimentos
+    const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
+    let mvHtml = '';
+    if (ultimos.length === 0) {
+        mvHtml = '<p style="font-size:12px;color:#999;text-align:center;padding:12px 0">Sem movimentos registados.</p>';
+    } else {
+        ultimos.forEach(h => {
+            mvHtml += `<div class="mov-item"><div class="mov-data">${h.data}</div><div class="mov-desc">${tornarNomesClicaveis(h.desc)}</div></div>`;
+        });
+    }
+    document.getElementById('resumo-movimentos').innerHTML = mvHtml;
 }
-sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
-sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
-sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
-sd += `<tr><td>Garrafões de água</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAgua}</td></tr>`;
-sd += `<tr style="background:#f0f6ff"><td style="font-weight:700;color:#0D3B66">Saldo atual dos veteranos</td><td class="center" style="font-weight:800;color:#0D3B66;font-size:15px">€${saldo}</td></tr>`;
-sd += `</tbody></table></div>`;
-sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) são entregues ao clube principal — não afetam este saldo.</p>`;
-document.getElementById('saldo-decomposicao').innerHTML = sd;
+renderResumo();
 
 document.getElementById('quotas-cards').innerHTML =
     makeCard('Inscritos', inscritos.length, '€20/mês', '#0D3B66') +
@@ -856,7 +963,6 @@ function initQuotasCharts() {
     if (typeof todosParaQuotas === 'undefined') return;
     const c = chartThemeColors();
 
-    // Doughnut: progresso da época
     const totalEsperado = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length;
     const pago = recebidoReal;
     const porReceber = Math.max(0, totalEsperado - pago);
@@ -888,7 +994,6 @@ function initQuotasCharts() {
         }
     });
 
-    // Barras: receita por mês
     const esperadoMes = inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI;
     const esperadoData = MESES.map(() => esperadoMes);
     const recebidoData = MESES.map((_, mIdx) => {
