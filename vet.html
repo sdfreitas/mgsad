@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Veteranos ADC Lobão</title>
+    <script>
+    (function () {
+        try {
+            var t = localStorage.getItem('tema') || 'auto';
+            var dark = t === 'escuro' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.setAttribute('data-tema', dark ? 'escuro' : 'claro');
+        } catch (e) {
+            document.documentElement.setAttribute('data-tema', 'claro');
+        }
+    })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -51,12 +62,8 @@
         .card-sub { font-size: 11px; color: #aaa; margin-top: 3px; }
         .section-card { background: #fff; border-radius: 10px; padding: 20px 16px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 16px; }
         .section-title { font-size: 14px; font-weight: 600; margin: 0 0 16px 2px; color: var(--azul-medio); letter-spacing: -.2px; }
-        .section-head-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-        .section-head-row .section-title { margin: 0; }
         .btn-action { background: var(--azul-medio); color: #fff; border: none; padding: 7px 13px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; letter-spacing: .3px; white-space: nowrap; }
         .btn-action:hover { background: var(--azul-claro); }
-        .btn-action.ghost { background: #f0f4f8; color: var(--azul-medio); }
-        .btn-action.ghost:hover { background: #e0eaf5; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 12px; font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e8eef5; }
         td { padding: 10px 12px; color: #333; border-bottom: 1px solid #f0f3f7; }
@@ -92,6 +99,13 @@
         .match-badge.v { background: #dcfce7; color: #166534; }
         .match-badge.d { background: #fef3c7; color: #92400e; }
         .match-badge.e { background: #fee2e2; color: #991b1b; }
+        .amig-arbitro { width: 100%; border-top: 1px solid #f0f3f7; margin-top: 10px; padding-top: 10px; }
+        .amig-arbitro-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .amig-arbitro-label { font-size: 12px; color: #0D3B66; font-weight: 600; }
+        .amig-chevron { font-size: 12px; color: #888; transition: transform .25s; display: inline-block; }
+        .amig-chevron.open { transform: rotate(180deg); }
+        .amig-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+        .amig-body.open { max-height: 1500px; }
         .class-table td, .class-table th { padding: 8px 10px; text-align: center; font-size: 13px; }
         .class-table th { font-size: 10px; }
         .class-table td:first-child, .class-table th:first-child { text-align: center; width: 30px; }
@@ -174,7 +188,6 @@
         .mes-player-status { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; white-space: nowrap; }
         .mes-player-status.pago { background: #dcfce7; color: #166534; }
         .mes-player-status.nao { background: #f1f5f9; color: #94a3b8; }
-        .mes-player-status.bday { background: #fff7ed; color: #92400e; }
         .venda-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .venda-prod { font-weight: 600; color: var(--azul-medio); }
         .venda-qtd { font-size: 13px; color: #444; }
@@ -204,7 +217,6 @@
         .modal-row:last-child { border-bottom: none; }
         .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
-        /* ─── RECIBO (impressão) ─── */
         #reciboContainer { display: none; }
         @media print {
             body > *:not(#reciboContainer) { display: none !important; }
@@ -220,6 +232,130 @@
             .recibo-assinatura { margin-top: 70px; text-align: center; }
             .recibo-assinatura div { border-top: 1px solid #000; width: 260px; margin: 0 auto; padding-top: 6px; font-size: 11px; }
         }
+
+        /* ─── BOTÃO DE TEMA ─── */
+        .tema-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px;
+            border-radius: 50%; background: #0D3B66; color: #fff; border: none;
+            cursor: pointer; font-size: 20px; line-height: 1;
+            box-shadow: 0 4px 14px rgba(0,0,0,.28); z-index: 150;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform .18s ease, background .2s ease;
+            padding: 0; font-family: inherit;
+        }
+        .tema-btn:hover { transform: scale(1.08); background: #1A6FB5; }
+        .tema-btn:active { transform: scale(.94); }
+        .tema-btn span { display: block; }
+
+        /* ─── MODO ESCURO ─── */
+        html[data-tema="escuro"] { --bg: #0b1220; --azul-bg: #1e3a5f; --card: #1e293b; }
+        html[data-tema="escuro"] body { background: #0b1220; color: #cbd5e1; }
+
+        /* Superfícies brancas → cinza-escuro */
+        html[data-tema="escuro"] .card,
+        html[data-tema="escuro"] .section-card,
+        html[data-tema="escuro"] .sub-tabs,
+        html[data-tema="escuro"] .match-card,
+        html[data-tema="escuro"] .ata-card,
+        html[data-tema="escuro"] .hist-desc,
+        html[data-tema="escuro"] .pres-card,
+        html[data-tema="escuro"] .mes-acc,
+        html[data-tema="escuro"] .venda-card,
+        html[data-tema="escuro"] .bday-month-card,
+        html[data-tema="escuro"] .modal-section {
+            background: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.35);
+        }
+        html[data-tema="escuro"] .modal-sheet { background: #0f172a; }
+        html[data-tema="escuro"] .stat-box { background: #0f172a; }
+
+        /* Estados hover / activos */
+        html[data-tema="escuro"] .mes-acc-head:hover { background: #243447; }
+        html[data-tema="escuro"] .sub-tab.active { background: #1e3a5f; color: #93c5fd; }
+        html[data-tema="escuro"] .mes-acc-badge { background: #0f172a; color: #94a3b8; }
+        html[data-tema="escuro"] .mes-acc-badge.paid { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .bday-person-day { background: #0f172a; color: #94a3b8; }
+        html[data-tema="escuro"] .mes-player-status.nao { background: #1e293b; color: #94a3b8; }
+        html[data-tema="escuro"] .mes-player-name.ni-tag::after { background: #422006; }
+
+        /* Tabelas */
+        html[data-tema="escuro"] th { color: #94a3b8; border-bottom-color: #334155; }
+        html[data-tema="escuro"] td { color: #cbd5e1; border-bottom-color: #1e293b; }
+        html[data-tema="escuro"] tfoot td { border-top-color: #475569; }
+        html[data-tema="escuro"] .presence-table th { color: #94a3b8; border-bottom-color: #334155; }
+        html[data-tema="escuro"] .presence-table td { color: #cbd5e1; border-bottom-color: #1e293b; }
+        html[data-tema="escuro"] .presence-table td:first-child { color: #93c5fd; }
+        html[data-tema="escuro"] .presence-table td:last-child { color: #60a5fa; }
+
+        /* Textos */
+        html[data-tema="escuro"] .section-title,
+        html[data-tema="escuro"] .card-value,
+        html[data-tema="escuro"] .modal-title,
+        html[data-tema="escuro"] .ata-title,
+        html[data-tema="escuro"] .mes-acc-name,
+        html[data-tema="escuro"] .venda-prod,
+        html[data-tema="escuro"] .class-pos,
+        html[data-tema="escuro"] .stat-value { color: #93c5fd; }
+
+        html[data-tema="escuro"] .player-name,
+        html[data-tema="escuro"] .mes-player-name,
+        html[data-tema="escuro"] .bday-person-name,
+        html[data-tema="escuro"] .match-home,
+        html[data-tema="escuro"] .match-away,
+        html[data-tema="escuro"] .venda-qtd,
+        html[data-tema="escuro"] .hist-desc,
+        html[data-tema="escuro"] .ata-body,
+        html[data-tema="escuro"] .modal-row { color: #e2e8f0; }
+
+        html[data-tema="escuro"] .match-home.us,
+        html[data-tema="escuro"] .match-away.us { color: #60a5fa; }
+
+        html[data-tema="escuro"] .card-label,
+        html[data-tema="escuro"] .card-sub,
+        html[data-tema="escuro"] .note,
+        html[data-tema="escuro"] .hist-date,
+        html[data-tema="escuro"] .match-date,
+        html[data-tema="escuro"] .match-date span,
+        html[data-tema="escuro"] .ata-presentes,
+        html[data-tema="escuro"] .modal-section h4 { color: #94a3b8; }
+
+        html[data-tema="escuro"] .pres-pending-msg { color: #94a3b8; }
+        html[data-tema="escuro"] .bday-empty { color: #64748b; }
+        html[data-tema="escuro"] .bday-legend { color: #94a3b8; }
+
+        html[data-tema="escuro"] .hist-track { background: #334155; }
+
+        /* Badges */
+        html[data-tema="escuro"] .badge-ok { background: #1e3a5f; color: #93c5fd; border-color: #1e40af; }
+        html[data-tema="escuro"] .badge-falta { background: #422006; color: #fcd34d; border-color: #78350f; }
+        html[data-tema="escuro"] .match-badge.v { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .match-badge.d { background: #422006; color: #fcd34d; }
+        html[data-tema="escuro"] .match-badge.e { background: #450a0a; color: #fca5a5; }
+        html[data-tema="escuro"] .mes-player-status.pago { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .pres-status.done { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .ata-tag.decisao { background: #1e3a5f; color: #93c5fd; }
+        html[data-tema="escuro"] .ata-tag.info { background: #164e63; color: #67e8f9; }
+        html[data-tema="escuro"] .ata-tag.urgente { background: #422006; color: #fcd34d; }
+
+        /* Linhas internas de tabelas / acordeões */
+        html[data-tema="escuro"] .mes-player-row,
+        html[data-tema="escuro"] .bday-person,
+        html[data-tema="escuro"] .modal-row { border-bottom-color: #1e293b; }
+        html[data-tema="escuro"] .amig-arbitro { border-top-color: #1e293b; }
+        html[data-tema="escuro"] .amig-arbitro-label { color: #93c5fd; }
+        html[data-tema="escuro"] .ata-presentes { border-top-color: #1e293b; }
+        html[data-tema="escuro"] .pres-head.jogo { background: linear-gradient(135deg,#020617,#0D3B66); }
+
+        /* Inline styles das secções renderizadas em JS */
+        html[data-tema="escuro"] [style*="background:#f0f6ff"] { background: #1e3a5f !important; }
+        html[data-tema="escuro"] [style*="background:#f8fafc"] { background: #0f172a !important; }
+        html[data-tema="escuro"] [style*="background:#fff7ed"] { background: #422006 !important; }
+        html[data-tema="escuro"] [style*="background:#fff;"] { background: #1e293b !important; }
+        html[data-tema="escuro"] [style*="background:#fff1e8"] { background: #422006 !important; }
+        html[data-tema="escuro"] [style*="background:#f0f4f8"] { background: #0f172a !important; }
+
+        /* Botão de tema em modo escuro */
+        html[data-tema="escuro"] .tema-btn { background: #334155; }
+        html[data-tema="escuro"] .tema-btn:hover { background: #475569; }
 
         @media(max-width:600px) {
             .cards-grid { grid-template-columns: 1fr 1fr; }
@@ -279,7 +415,7 @@
             <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
             <div id="saldo-decomposicao"></div>
         </div>
-        <p class="note">Última atualização: 10 de Setembro de 2026</p>
+        <p class="note">Última atualização: 16 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
@@ -287,35 +423,17 @@
     </div>
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Quotas por Mês</h2>
-                <button class="btn-action" onclick="exportarQuotasCSV()">⬇ CSV</button>
-            </div>
-            <div id="quotas-por-mes"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div class="table-wrap" id="tabela-quotas"></div></div>
     </div>
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2>
-                <button class="btn-action" onclick="exportarInscricoesCSV()">⬇ CSV</button>
-            </div>
-            <div class="table-wrap" id="tabela-inscricoes"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
     </div>
     <div id="tab-socios" class="tab-panel">
         <div class="cards-grid" id="socios-cards"></div>
         <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>.</p></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">Estado das Quotas de Sócio</h2>
-                <button class="btn-action" onclick="exportarSociosCSV()">⬇ CSV</button>
-            </div>
-            <div class="table-wrap" id="tabela-socios"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
     <div id="tab-aniversarios" class="tab-panel">
         <div class="cards-grid" id="aniversarios-cards"></div>
@@ -323,13 +441,7 @@
     </div>
     <div id="tab-treinos" class="tab-panel">
         <div class="cards-grid" id="treinos-cards"></div>
-        <div class="section-card">
-            <div class="section-head-row">
-                <h2 class="section-title">📊 Estatísticas de Treinos</h2>
-                <button class="btn-action" onclick="exportarTreinosCSV()">⬇ CSV</button>
-            </div>
-            <div id="treinos-stats"></div>
-        </div>
+        <div class="section-card"><h2 class="section-title">📊 Estatísticas de Treinos</h2><div id="treinos-stats"></div></div>
         <div id="treinos-lista"></div>
     </div>
     <div id="tab-competicao" class="tab-panel">
@@ -347,10 +459,7 @@
     <div id="tab-vendas" class="tab-panel">
         <div class="cards-grid" id="vendas-cards"></div>
         <div class="section-card" style="border-left:4px solid #1A6FB5">
-            <div class="section-head-row">
-                <h2 class="section-title">📋 Tabela de Preços</h2>
-                <button class="btn-action" onclick="exportarVendasCSV()">⬇ CSV</button>
-            </div>
+            <h2 class="section-title">📋 Tabela de Preços</h2>
             <div class="table-wrap"><table><thead><tr><th>Produto</th><th>Preço</th></tr></thead><tbody id="tabela-precos-body"></tbody></table></div>
         </div>
         <div class="section-card"><h2 class="section-title">🧾 Compras de 6 Set 2026</h2><div id="vendas-lista"></div></div>
@@ -384,12 +493,17 @@
         <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 10 de Setembro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 16 de Setembro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
 
+<button class="tema-btn" id="temaBtn" onclick="ciclarTema()" title="Tema: Automático" aria-label="Alterar tema">
+    <span id="temaIcon">🌓</span>
+</button>
+
 <script src="dados.js"></script>
+<script src="config.js"></script>
 <script>
 // ─── MENU LOGIC ───
 let menuOpen = false;
@@ -411,6 +525,36 @@ function marcarMenuAtivo(id) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(); });
 
+// ─── TEMA (AUTO / CLARO / ESCURO) ───
+const _mediaDark = window.matchMedia('(prefers-color-scheme: dark)');
+function _getTemaPreferido() {
+    try { return localStorage.getItem('tema') || 'auto'; } catch (e) { return 'auto'; }
+}
+function _darkAtivo(t) {
+    if (t === 'escuro') return true;
+    if (t === 'claro') return false;
+    return _mediaDark.matches;
+}
+function _aplicarTema() {
+    const t = _getTemaPreferido();
+    document.documentElement.setAttribute('data-tema', _darkAtivo(t) ? 'escuro' : 'claro');
+    const icon = document.getElementById('temaIcon');
+    const btn = document.getElementById('temaBtn');
+    if (!icon || !btn) return;
+    if (t === 'auto') { icon.textContent = '🌓'; btn.title = 'Tema: Automático (segue o sistema) — clica para mudar'; }
+    else if (t === 'claro') { icon.textContent = '☀️'; btn.title = 'Tema: Claro — clica para mudar'; }
+    else { icon.textContent = '🌙'; btn.title = 'Tema: Escuro — clica para mudar'; }
+}
+function ciclarTema() {
+    const ordem = ['auto', 'claro', 'escuro'];
+    const atual = _getTemaPreferido();
+    const prox = ordem[(ordem.indexOf(atual) + 1) % ordem.length];
+    try { localStorage.setItem('tema', prox); } catch (e) {}
+    _aplicarTema();
+}
+_mediaDark.addEventListener('change', () => { if (_getTemaPreferido() === 'auto') _aplicarTema(); });
+_aplicarTema();
+
 // ─── DERIVADOS ───
 const todosJogadores = [
     ...inscritos.map(j => ({ ...j, inscrito: true })),
@@ -421,13 +565,33 @@ const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
 
-function mesesPagos(nome) { return pagamentos[nome] || []; }
+// ─── AJUSTES INTERNOS (config.js) ───
+function isencoesDe(nome) {
+    if (typeof ISENCOES === 'undefined') return [];
+    return ISENCOES[nome] || [];
+}
+function quotasReduzidasDe(nome) {
+    if (typeof QUOTAS_REDUZIDAS === 'undefined') return {};
+    return QUOTAS_REDUZIDAS[nome] || {};
+}
+
+function mesesPagos(nome) {
+    const pag = pagamentos[nome] || [];
+    const isen = isencoesDe(nome);
+    const red = Object.keys(quotasReduzidasDe(nome)).map(Number);
+    return [...new Set([...pag, ...isen, ...red])];
+}
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
-const recebidoReal = Object.entries(pagamentos).reduce((tot, [nome, meses]) => {
-    const isInsc = inscritos.some(j => j.nome === nome);
-    return tot + meses.length * (isInsc ? QUOTA : QUOTA_NI);
+const recebidoReal = todosJogadores.reduce((tot, j) => {
+    const meses = mesesPagos(j.nome);
+    return tot + meses.reduce((s, m) => {
+        if (isencoesDe(j.nome).includes(m)) return s;
+        const red = quotasReduzidasDe(j.nome);
+        if (red[m] !== undefined) return s + red[m];
+        return s + (j.inscrito ? QUOTA : QUOTA_NI);
+    }, 0);
 }, 0);
 
 function calcularTotalVenda(itens) {
@@ -437,7 +601,19 @@ compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
 const totalVendasDia6 = compras6Set.reduce((s, v) => s + v.total, 0);
 const totalItensVendidos = compras6Set.reduce((s, v) => s + v.itens.length, 0);
 const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
-const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6;
+
+// Árbitros de amigáveis
+let totalArbitroRecebido = 0;
+let totalArbitroCusto = 0;
+amigaveis.forEach(a => {
+    if (!a.arbitro) return;
+    totalArbitroRecebido += (a.arbitro.pagaram || []).length * a.arbitro.valorPorJogador;
+    if (a.arbitro.custoPago) {
+        totalArbitroCusto += (a.arbitro.participantes || []).length * a.arbitro.valorPorJogador;
+    }
+});
+
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
 
 // ─── HELPERS ───
 function calcIdade(nasc) {
@@ -447,24 +623,25 @@ function calcIdade(nasc) {
     const diff = Date.now() - d.getTime();
     return Math.floor(diff / 31557600000);
 }
-function getBirthMonth(nasc) { return nasc ? parseInt(nasc.split('/')[1]) : 0; }
-function getBirthMonthIdx(nasc) {
-    const m = getBirthMonth(nasc);
-    return mesMap[m] !== undefined ? mesMap[m] : -1;
-}
-function isOffSeason(nasc) {
-    const m = getBirthMonth(nasc);
-    return m === 7 || m === 8;
-}
-function offSeasonTag(nasc) {
-    if (!isOffSeason(nasc)) return '';
-    const m = getBirthMonth(nasc);
-    return ` <span style="font-size:9px;font-weight:600;background:#fff7ed;color:#92400e;padding:1px 6px;border-radius:4px;white-space:nowrap">🎂 ${mesNomes[m]}</span>`;
-}
 function makeCard(l, v, s, a) {
     return `<div class="card" style="border-top-color:${a}"><div class="card-label">${l}</div><div class="card-value" style="color:${a}">${v}</div>${s ? `<div class="card-sub">${s}</div>` : ''}</div>`;
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
+
+// ─── NOMES CLICÁVEIS EM TEXTO LIVRE ───
+const _termosClicaveis = todosJogadores
+    .map(j => j.nome)
+    .sort((a, b) => b.length - a.length);
+const _regexClicaveis = new RegExp(
+    '(' + _termosClicaveis.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
+    'g'
+);
+function tornarNomesClicaveis(texto) {
+    if (!texto) return texto;
+    return texto.replace(_regexClicaveis, (match) => {
+        return `<span class="clickable" onclick="abrirPerfil('${escapeAttr(match)}')">${match}</span>`;
+    });
+}
 
 // ─── TABS ───
 const chartInstances = {};
@@ -499,6 +676,10 @@ sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0
 sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
 sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
 sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
+if (totalArbitroCusto > 0) {
+    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#dc6843;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+}
 sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
 sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
 sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
@@ -519,11 +700,11 @@ const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
 const chartOpts = {
     responsive: true, maintainAspectRatio: true, ...animOpts,
     plugins: { legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 } } } },
-    scales: { x: { grid: { display: false }, ticks: { font: { size: 12 } } }, y: { grid: { color: '#f0f3f7' }, ticks: { font: { size: 11 }, callback: v => '€' + v } } }
+    scales: { x: { grid: { display: false }, ticks: { font: { size: 12 } } }, y: { grid: { color: 'rgba(148,163,184,.2)' }, ticks: { font: { size: 11 }, callback: v => '€' + v } } }
 };
 function initResumoCharts() {
     const prevRec = MESES.map(() => receitaMensalEsperada);
-    const prevDesp = [1540, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+    const prevDesp = [1640, 270, 420, 200, 550, 380, 270, 440, 270, 200];
     chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
         type: 'bar', data: { labels: MESES, datasets: [
             { label: 'Receita Esperada', data: prevRec, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .45 },
@@ -544,6 +725,7 @@ function initDespesasChart() {
         { name: 'Galhardetes', value: despesaGalhardetes, color: '#5BA4D9' },
         { name: 'Água', value: despesaAgua, color: '#dc6843' }
     ];
+    if (totalArbitroCusto > 0) pd.push({ name: 'Árbitros amigáveis', value: totalArbitroCusto, color: '#94a3b8' });
     chartInstances.pie = new Chart(freshCanvas('chartPie'), {
         type: 'doughnut', data: { labels: pd.map(c => c.name), datasets: [{ data: pd.map(c => c.value), backgroundColor: pd.map(c => c.color), borderWidth: 2, borderColor: '#fff' }] },
         options: { responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ctx.label + ': €' + ctx.raw } } } }
@@ -559,14 +741,16 @@ dh += '<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (27 atletas
 dh += '<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Galhardetes do clube (20 unidades)</td><td style="font-weight:700">€200</td><td>5 Setembro</td></tr>';
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Garrafões de água (4 × 6L)</td><td style="font-weight:700">€4</td><td>5 Setembro</td></tr>';
+if (totalArbitroCusto > 0) {
+    dh += `<tr><td style="font-weight:600;color:#0D3B66">Árbitros de amigáveis</td><td style="font-weight:700">€${totalArbitroCusto}</td><td>12 Setembro</td></tr>`;
+}
 dh += '<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
-dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€' + despesasConfirmadas + '</td><td></td></tr></tfoot></table>';
+dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€' + (despesasConfirmadas + totalArbitroCusto) + '</td><td></td></tr></tfoot></table>';
 document.getElementById('tabela-despesas').innerHTML = dh;
 
 // ─── QUOTAS ───
-function monthCell(m, birthIdx, pago) {
+function monthCell(pago) {
     if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
-    if (m === birthIdx) return '<td class="center" style="padding:7px 3px;background:#fff7ed"><span style="font-size:13px" title="Mês de aniversário">🎂</span></td>';
     return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
 }
 
@@ -576,13 +760,12 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     MESES.forEach(m => { html += `<th class="center" style="min-width:34px;padding:8px 4px">${m}</th>`; });
     html += '<th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
-        const bi = getBirthMonthIdx(j.nasc);
         const pagos = mesesPagos(j.nome);
         html += `<tr><td class="center" style="color:#999;font-size:12px">${j.num || '—'}</td>`;
-        html += `<td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${offSeasonTag(j.nasc)}</td>`;
+        html += `<td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td>`;
         html += `<td class="center" style="font-size:11px;color:#888">${j.nasc || '—'}</td>`;
         html += `<td class="center" style="font-size:12px">${calcIdade(j.nasc)}</td>`;
-        for (let m = 0; m < MESES.length; m++) html += monthCell(m, bi, pagos.includes(m));
+        for (let m = 0; m < MESES.length; m++) html += monthCell(pagos.includes(m));
         const estado = pagos.length ? `<span class="badge badge-ok">${pagos.length} pago(s)</span>` : '<span style="color:#999;font-size:11px">Inicia Set</span>';
         html += `<td class="center">${estado}</td></tr>`;
     });
@@ -593,7 +776,7 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
 let qh = renderTabelaQuotasSecao(inscritos, 'Inscritos (€20/mês)', '#0D3B66');
 qh += renderTabelaQuotasSecao(naoInscritos, 'Não Inscritos (€10/mês)', '#dc6843');
 qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
-qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · 🎂 Mês de aniversário · ✓ Mês pago</p>';
+qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · ✓ Mês pago</p>';
 document.getElementById('tabela-quotas').innerHTML = qh;
 
 const todosParaQuotas = [
@@ -607,12 +790,8 @@ MESES.forEach((mNome, mIdx) => {
     todosParaQuotas.forEach(j => {
         const pago = jaPagou(j.nome, mIdx);
         if (pago) pagosCount++;
-        const bi = getBirthMonthIdx(j.nasc);
-        const isBday = (bi === mIdx);
-        let statusHtml, statusCls;
-        if (pago) { statusHtml = `✓ Pago (€${j.quota})`; statusCls = 'pago'; }
-        else if (isBday) { statusHtml = '🎂 Aniversário'; statusCls = 'bday'; }
-        else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
+        const statusHtml = pago ? `✓ Pago (€${j.quota})` : 'Por pagar';
+        const statusCls = pago ? 'pago' : 'nao';
         const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
         rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
     });
@@ -841,7 +1020,8 @@ const tipoInfo = {
 let hh = '';
 historico.forEach(h => {
     const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
-    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${h.desc}</div></div></div>`;
+    const descComLinks = tornarNomesClicaveis(h.desc);
+    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}</div></div></div>`;
 });
 document.getElementById('historico-lista').innerHTML = hh;
 
@@ -874,7 +1054,76 @@ ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Vet
 document.getElementById('sub-classificacao').innerHTML = ch;
 document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-// ─── TORNEIOS ───
+// ─── TORNEIOS E AMIGÁVEIS ───
+function renderAmigavel(a, idx) {
+    const golosNos = a.golosNos;
+    const golosEles = a.golosEles;
+    let scoreClass = 'draw';
+    let resultadoBadge = '<span class="match-badge d">Empate</span>';
+    if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
+    else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
+    const casa = a.casa ? 'Casa' : 'Fora';
+
+    let marcadoresHtml = '';
+    if (a.marcadores && a.marcadores.length) {
+        const nomes = a.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
+        marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
+    }
+
+    let arbitroHtml = '';
+    if (a.arbitro) {
+        const val = a.arbitro.valorPorJogador;
+        const part = a.arbitro.participantes || [];
+        const pagos = a.arbitro.pagaram || [];
+        const total = part.length;
+        const nPagos = pagos.length;
+        const falta = total - nPagos;
+        const recebido = nPagos * val;
+        const totalDev = total * val;
+        const faltaCor = falta === 0 ? '#16a34a' : '#dc6843';
+        const faltaTexto = falta === 0 ? 'tudo recebido' : `faltam €${falta * val}`;
+
+        arbitroHtml = `<div class="amig-arbitro">
+            <div class="amig-arbitro-head" onclick="toggleAmigavel(${idx})">
+                <span class="amig-arbitro-label">👤 Árbitro €${val}/jogador · <span style="color:${faltaCor}">${nPagos}/${total} pagos</span> · €${recebido}/€${totalDev} · <span style="color:${faltaCor}">${faltaTexto}</span></span>
+                <span class="amig-chevron" id="amigchev-${idx}">▾</span>
+            </div>
+            <div class="amig-body" id="amigbody-${idx}">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 12px;padding-top:10px">
+                    ${part.map(nome => {
+                        const pago = pagos.includes(nome);
+                        const icon = pago ? '<span style="color:#16a34a;font-weight:700">✓</span>' : '<span style="color:#dc6843;font-weight:700">○</span>';
+                        const cor = pago ? '#333' : '#999';
+                        const deco = pago ? '' : 'text-decoration:none';
+                        return `<div style="font-size:13px;color:${cor};display:flex;align-items:center;gap:6px">${icon} <span class="clickable" style="${deco}" onclick="abrirPerfil('${escapeAttr(nome)}')">${nome}</span></div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>`;
+    }
+
+    return `<div class="match-card">
+        <div class="match-date">${a.data}<span>${casa}</span></div>
+        <div class="match-teams">
+            <div class="match-home us">Vet. A.D.C. Lobão</div>
+            <div class="match-vs">vs</div>
+            <div class="match-away">${a.adversario}</div>
+            ${marcadoresHtml}
+        </div>
+        <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
+        <div>${resultadoBadge}</div>
+        ${arbitroHtml}
+    </div>`;
+}
+
+function toggleAmigavel(idx) {
+    const body = document.getElementById('amigbody-' + idx);
+    const chev = document.getElementById('amigchev-' + idx);
+    if (!body) return;
+    body.classList.toggle('open');
+    if (chev) chev.classList.toggle('open');
+}
+
 function renderTorneios() {
     let html = '';
     html += '<div class="section-card"><h2 class="section-title">🎯 Torneios</h2>';
@@ -930,25 +1179,8 @@ function renderTorneios() {
     if (amigaveis.length === 0) {
         html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🤝</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem amigáveis registados</div><div style="font-size:13px;color:#999">Os jogos amigáveis serão adicionados quando forem realizados.</div></div>';
     } else {
-        amigaveis.forEach(a => {
-            const golosNos = a.golosNos;
-            const golosEles = a.golosEles;
-            let scoreClass = 'draw';
-            let resultadoBadge = '<span class="match-badge d">Empate</span>';
-            if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
-            else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
-            const casa = a.casa ? 'Casa' : 'Fora';
-            html += `<div class="match-card">
-                <div class="match-date">${a.data}<span>${casa}</span></div>
-                <div class="match-teams">
-                    <div class="match-home us">Vet. A.D.C. Lobão</div>
-                    <div class="match-vs">vs</div>
-                    <div class="match-away">${a.adversario}</div>
-                    ${a.marcadores && a.marcadores.length ? `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${a.marcadores.join(', ')}</div>` : ''}
-                </div>
-                <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
-                <div>${resultadoBadge}</div>
-            </div>`;
+        amigaveis.forEach((a, idx) => {
+            html += renderAmigavel(a, idx);
         });
     }
     html += '</div>';
@@ -1011,6 +1243,16 @@ function abrirPerfil(nome) {
     conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
     conteudo += `</div>`;
 
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        if (!a.arbitro.participantes.includes(nomeCompleto)) return;
+        const pago = a.arbitro.pagaram.includes(nomeCompleto);
+        conteudo += `<div class="modal-section"><h4>👤 Árbitro — ${a.data}</h4>`;
+        conteudo += `<div class="modal-row"><span>Amigável vs ${a.adversario}</span><span>€${a.arbitro.valorPorJogador}</span></div>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${pago ? 'badge-ok' : 'badge-falta'}">${pago ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `</div>`;
+    });
+
     let golosMarcados = 0;
     const jogosComGolos = [];
     torneios.forEach(t => {
@@ -1052,7 +1294,9 @@ function abrirPerfil(nome) {
     }
 
     const mesesPagosJogador = mesesPagos(nomeCompleto);
-    conteudo += `<div class="modal-section"><h4>💰 Mensalidades</h4>`;
+    const quotaMensalJogador = jogador.inscrito ? QUOTA : QUOTA_NI;
+    const totalMensalidades = mesesPagosJogador.length * quotaMensalJogador;
+    conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4>`;
     if (mesesPagosJogador.length === 0) {
         conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
     } else {
@@ -1154,81 +1398,6 @@ function goToTab(tab) {
     }, 150);
 }
 
-// ─── EXPORTAR CSV ───
-function exportarCSV(nomeFicheiro, linhas) {
-    const csv = linhas.map(l => l.map(c => {
-        const s = String(c ?? '');
-        return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    }).join(';')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nomeFicheiro;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function exportarQuotasCSV() {
-    const linhas = [['Nome', 'Tipo', 'Nº', 'Nascimento', 'Idade', ...MESES, 'Total Pago (€)']];
-    const todos = [
-        ...inscritos.map(j => ({ ...j, tipo: 'Inscrito', quota: QUOTA })),
-        ...naoInscritos.map(j => ({ ...j, tipo: 'Não Inscrito', quota: QUOTA_NI }))
-    ];
-    todos.forEach(j => {
-        const pagos = mesesPagos(j.nome);
-        const linha = [j.nome, j.tipo, j.num || '', j.nasc || '', calcIdade(j.nasc)];
-        MESES.forEach((_, i) => linha.push(pagos.includes(i) ? 'Pago' : ''));
-        linha.push(pagos.length * j.quota);
-        linhas.push(linha);
-    });
-    exportarCSV('quotas_veteranos.csv', linhas);
-}
-
-function exportarInscricoesCSV() {
-    const linhas = [['Nome', 'Valor (€)', 'Estado']];
-    inscritos.forEach(j => {
-        linhas.push([j.nome, valorInscricao, jaPagouInscricao(j.nome) ? 'Pago' : 'Por pagar']);
-    });
-    exportarCSV('inscricoes_veteranos.csv', linhas);
-}
-
-function exportarSociosCSV() {
-    const linhas = [['Nome', 'Valor (€)', 'Estado']];
-    inscritos.forEach(j => {
-        linhas.push([j.nome, valorSocio, sociosPagos.includes(j.nome) ? 'Pago' : 'Por pagar']);
-    });
-    exportarCSV('socios_veteranos.csv', linhas);
-}
-
-function exportarTreinosCSV() {
-    const linhas = [['Nome', 'Tipo', 'Presenças', 'Total Treinos', 'Percentagem']];
-    const todos = [
-        ...inscritos.map(j => ({ ...j, tipo: 'Inscrito' })),
-        ...naoInscritos.map(j => ({ ...j, tipo: 'Não Inscrito' }))
-    ];
-    todos.forEach(j => {
-        const p = presencasPorJogador[j.nome] || 0;
-        const pc = totalEventos > 0 ? ((p / totalEventos) * 100).toFixed(0) + '%' : '0%';
-        linhas.push([j.nome, j.tipo, p, totalEventos, pc]);
-    });
-    exportarCSV('treinos_veteranos.csv', linhas);
-}
-
-function exportarVendasCSV() {
-    const linhas = [['Data', 'Nome', 'Itens', 'Total (€)', 'Estado']];
-    compras6Set.forEach(v => {
-        linhas.push(['6 Set 2026', v.nome, v.itens.join(', '), v.total, v.pago ? 'Pago' : 'Pendente']);
-    });
-    linhas.push([]);
-    linhas.push(['Tabela de preços']);
-    linhas.push(['Produto', 'Preço (€)']);
-    Object.entries(listaPrecos).forEach(([p, v]) => linhas.push([p, v]));
-    exportarCSV('vendas_veteranos.csv', linhas);
-}
-
 // ─── RECIBO ───
 function imprimirRecibo(nome) {
     const j = encontrarJogador(nome);
@@ -1243,6 +1412,8 @@ function imprimirRecibo(nome) {
     const linhas = [];
     let total = 0;
 
+    // Nota: isenções e quotas reduzidas aparecem no recibo como valor-padrão
+    // (não revelam a exceção interna)
     mesesPagosJ.forEach(m => {
         linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]);
         total += quota;
@@ -1255,6 +1426,12 @@ function imprimirRecibo(nome) {
         linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
         total += valorSocio;
     }
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        if (!a.arbitro.pagaram.includes(j.nome)) return;
+        linhas.push([`Árbitro — amigável vs ${a.adversario} (${a.data})`, `€${a.arbitro.valorPorJogador}`]);
+        total += a.arbitro.valorPorJogador;
+    });
     if (compra && compra.pago) {
         linhas.push([`Equipamento — ${compra.itens.join(', ')}`, `€${compra.total}`]);
         total += compra.total;
