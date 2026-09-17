@@ -103,6 +103,16 @@ const despesaAFA = 540;
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
+// ─── ESTADO DAS DESPESAS ───
+// true  = já paga (saiu da caixa)
+// false = ainda por pagar (está reservada, mas ainda tens o dinheiro)
+const DESPESAS_PAGAS = {
+    campo: false,
+    afa: false,
+    galhardetes: true,
+    agua: true
+};
+
 // ─── LISTA DE PREÇOS E VENDAS ───
 const listaPrecos = {
     "Equipamento treino": 20,
