@@ -756,18 +756,13 @@ amigaveis.forEach(a => {
 
 const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
 
-// ─── PROJEÇÃO FIM DE ÉPOCA (teórica) ───
-// Caixa atual + quotas por receber + inscrições por receber + árbitro por receber.
-// NÃO subtrai despesas confirmadas (já contabilizadas no saldo atual).
-// Massagista ainda "a definir" — fica de fora.
-const quotasPorReceberTeorico = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length - recebidoReal;
-const inscricoesPorReceber = (inscritos.length - inscricoesPagas.length) * valorInscricao;
-let arbitroPorReceber = 0;
-amigaveis.forEach(a => {
-    if (!a.arbitro) return;
-    arbitroPorReceber += (a.arbitro.participantes.length - a.arbitro.pagaram.length) * a.arbitro.valorPorJogador;
-});
-const saldoProjetado = saldo + quotasPorReceberTeorico + inscricoesPorReceber + arbitroPorReceber;
+// ─── BRUTO vs LÍQUIDO ───
+// Bruto = tudo o que entrou (incluindo a caixa inicial transitada)
+// Saídas = despesas confirmadas + árbitro pago
+// Líquido = Bruto − Saídas (é o saldo atual)
+const saldoBruto = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasDia6 + totalArbitroRecebido;
+const totalSaidas = despesasConfirmadas + totalArbitroCusto;
+const saldoLiquido = saldoBruto - totalSaidas; // deve ser igual a `saldo`
 
 // ─── HELPERS ───
 function calcIdade(nasc) {
@@ -823,16 +818,16 @@ function showTab(id) {
 
 // ─── RESUMO ───
 function renderResumo() {
-    // Hero do saldo: caixa atual + projeção fim de época
+    // Hero: Líquido (destaque) + Bruto (referência)
     document.getElementById('saldo-hero').innerHTML = `
         <div class="saldo-hero">
-            <div class="saldo-hero-label">Saldo Atual</div>
-            <div class="saldo-hero-value">€${saldo}</div>
-            <div class="saldo-hero-sub">caixa líquida disponível · ${inscritos.length} inscritos + ${naoInscritos.length} não inscritos</div>
+            <div class="saldo-hero-label">Saldo Líquido</div>
+            <div class="saldo-hero-value">€${saldoLiquido}</div>
+            <div class="saldo-hero-sub">o que tens agora, após despesas pagas · ${inscritos.length} inscritos + ${naoInscritos.length} não inscritos</div>
             <div class="saldo-hero-divider"></div>
-            <div class="saldo-hero-proj-label">Projeção fim de época</div>
-            <div class="saldo-hero-proj-value">≈ €${saldoProjetado}</div>
-            <div class="saldo-hero-proj-sub">se todos pagarem tudo até Jun · inclui €${quotasPorReceberTeorico} de quotas e €${inscricoesPorReceber} de inscrições por receber</div>
+            <div class="saldo-hero-proj-label">Total entrado (bruto)</div>
+            <div class="saldo-hero-proj-value">€${saldoBruto}</div>
+            <div class="saldo-hero-proj-sub">inclui €${SALDO_INICIAL} transitados · antes de €${totalSaidas} de despesas e árbitros pagos</div>
         </div>`;
 
     // Alertas
