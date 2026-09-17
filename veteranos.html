@@ -74,6 +74,8 @@
         .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .badge-ok { background: var(--azul-bg); color: var(--azul-medio); border: 1px solid #bfdbfe; }
         .badge-falta { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+        .badge-pago { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .badge-porpagar { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .player-name { font-weight: 500; white-space: nowrap; }
         .player-name.em-falta { color: var(--vermelho); font-weight: 600; }
         .tab-panel { display: none; }
@@ -295,6 +297,9 @@
         .mov-data { font-size: 11px; color: #1A6FB5; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; min-width: 62px; padding-top: 1px; }
         .mov-desc { flex: 1; color: #333; line-height: 1.5; }
 
+        .linha-total { font-weight: 700; color: #0D3B66; }
+        .linha-sep { background: #f8fafc; }
+
         html[data-tema="escuro"] { --bg: #0b1220; --azul-bg: #1e3a5f; --card: #1e293b; }
         html[data-tema="escuro"] body { background: #0b1220; color: #cbd5e1; }
 
@@ -323,6 +328,7 @@
         html[data-tema="escuro"] .mov-data { color: #60a5fa; }
         html[data-tema="escuro"] .mov-desc { color: #e2e8f0; }
         html[data-tema="escuro"] .mov-item { border-bottom-color: #1e293b; }
+        html[data-tema="escuro"] .linha-sep { background: #243447 !important; }
 
         html[data-tema="escuro"] .mes-acc-head:hover { background: #243447; }
         html[data-tema="escuro"] .sub-tab.active { background: #1e3a5f; color: #93c5fd; }
@@ -380,6 +386,8 @@
 
         html[data-tema="escuro"] .badge-ok { background: #1e3a5f; color: #93c5fd; border-color: #1e40af; }
         html[data-tema="escuro"] .badge-falta { background: #422006; color: #fcd34d; border-color: #78350f; }
+        html[data-tema="escuro"] .badge-pago { background: #1e293b; color: #94a3b8; border-color: #334155; }
+        html[data-tema="escuro"] .badge-porpagar { background: #422006; color: #fcd34d; border-color: #78350f; }
         html[data-tema="escuro"] .match-badge.v { background: #14532d; color: #86efac; }
         html[data-tema="escuro"] .match-badge.d { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .match-badge.e { background: #450a0a; color: #fca5a5; }
@@ -468,7 +476,7 @@
         <div id="saldo-hero"></div>
         <div class="alertas-grid" id="resumo-alertas"></div>
         <div class="section-card" style="border-left:4px solid #16a34a">
-            <h2 class="section-title">🧮 Decomposição do Saldo Atual</h2>
+            <h2 class="section-title">🧮 Decomposição do Saldo</h2>
             <div id="saldo-decomposicao"></div>
         </div>
         <div class="section-card">
@@ -488,8 +496,9 @@
         <p class="note">Última atualização: 17 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
+        <div class="cards-grid" id="despesas-cards"></div>
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
-        <div class="section-card"><h2 class="section-title">Detalhe Mensal de Despesas</h2><div class="table-wrap" id="tabela-despesas"></div></div>
+        <div class="section-card"><h2 class="section-title">Detalhe de Despesas</h2><div class="table-wrap" id="tabela-despesas"></div></div>
     </div>
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
@@ -652,22 +661,10 @@ function ciclarTema() {
     try { localStorage.setItem('tema', prox); } catch (e) {}
     _aplicarTema();
     if (typeof chartInstances !== 'undefined') {
-        if (chartInstances.bar || chartInstances.line) {
-            destroyCharts('bar', 'line');
-            setTimeout(initResumoCharts, 50);
-        }
-        if (chartInstances.treinosPresencas || chartInstances.treinosBolo || chartInstances.treinosTop) {
-            destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop');
-            setTimeout(initTreinosCharts, 50);
-        }
-        if (chartInstances.inscricoesBolo) {
-            destroyCharts('inscricoesBolo');
-            setTimeout(initInscricoesChart, 50);
-        }
-        if (chartInstances.quotasBolo || chartInstances.quotasMes) {
-            destroyCharts('quotasBolo', 'quotasMes');
-            setTimeout(initQuotasCharts, 50);
-        }
+        if (chartInstances.bar || chartInstances.line) { destroyCharts('bar', 'line'); setTimeout(initResumoCharts, 50); }
+        if (chartInstances.treinosPresencas || chartInstances.treinosBolo || chartInstances.treinosTop) { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
+        if (chartInstances.inscricoesBolo) { destroyCharts('inscricoesBolo'); setTimeout(initInscricoesChart, 50); }
+        if (chartInstances.quotasBolo || chartInstances.quotasMes) { destroyCharts('quotasBolo', 'quotasMes'); setTimeout(initQuotasCharts, 50); }
     }
 }
 _mediaDark.addEventListener('change', () => { if (_getTemaPreferido() === 'auto') _aplicarTema(); });
@@ -682,6 +679,18 @@ const receitaInscritos = inscritos.length * QUOTA;
 const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
+
+// ─── DESPESAS PAGAS vs POR PAGAR ───
+// Lê DESPESAS_PAGAS do dados.js. Se não existir, assume tudo pago (compatível com o estado anterior).
+function despesaPaga(chave) {
+    if (typeof DESPESAS_PAGAS === 'undefined') return true;
+    return DESPESAS_PAGAS[chave] === true;
+}
+const despesasJaPagas = (despesaPaga('campo') ? despesaCampo : 0)
+                       + (despesaPaga('afa') ? despesaAFA : 0)
+                       + (despesaPaga('agua') ? despesaAgua : 0)
+                       + (despesaPaga('galhardetes') ? despesaGalhardetes : 0);
+const despesasPorPagar = despesasConfirmadas - despesasJaPagas;
 
 // ─── AJUSTES INTERNOS (config.js) ───
 function isencoesDe(nome) {
@@ -719,7 +728,6 @@ function eDevedor(nome) {
     return false;
 }
 
-// ─── ÚLTIMO PAGAMENTO (via histórico) ───
 function ultimoPagamentoHistorico(nome) {
     if (typeof historico === 'undefined' || !historico.length) return null;
     for (const h of historico) {
@@ -757,20 +765,19 @@ amigaveis.forEach(a => {
     }
 });
 
-// Saldo "oficial" (assumindo todas as despesas como pagas — para a decomposição)
+// Saldo "contabilístico": assume que TODAS as despesas (mesmo por pagar) já saíram.
+// É este o número que responde a "quanto é que os veteranos têm, no fim de contas".
 const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
 
-// ─── DINHEIRO REAL EM MÃOS ───
-// O que já foi efetivamente pago: galhardetes + água + árbitro
-const despesasPagas = despesaGalhardetes + despesaAgua;
-// Saldo em caixa dos veteranos (físico + banco), após o que já saiu
-const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasDia6 + totalArbitroRecebido - despesasPagas - totalArbitroCusto;
+// Saldo em mãos (físico + banco): só desconta o que EFETIVAMENTE já saiu.
+const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasDia6 + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
+
 // Sócios contigo, a entregar ao clube
 const sociosEmMaos = sociosPagos.length * valorSocio;
 // Total físico + banco
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
-// Compromissos por pagar (campo + AFA)
-const compromissosPorPagar = despesaCampo + despesaAFA;
+// Compromissos por pagar (campo + AFA + o que mais estiver marcado como não pago)
+const compromissosPorPagar = despesasPorPagar;
 // Livre (veteranos, após compromissos)
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
 
@@ -787,22 +794,13 @@ function makeCard(l, v, s, a) {
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
 
-// ─── NOMES CLICÁVEIS EM TEXTO LIVRE ───
-const _termosClicaveis = todosJogadores
-    .map(j => j.nome)
-    .sort((a, b) => b.length - a.length);
-const _regexClicaveis = new RegExp(
-    '(' + _termosClicaveis.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
-    'g'
-);
+const _termosClicaveis = todosJogadores.map(j => j.nome).sort((a, b) => b.length - a.length);
+const _regexClicaveis = new RegExp('(' + _termosClicaveis.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
 function tornarNomesClicaveis(texto) {
     if (!texto) return texto;
-    return texto.replace(_regexClicaveis, (match) => {
-        return `<span class="clickable" onclick="abrirPerfil('${escapeAttr(match)}')">${match}</span>`;
-    });
+    return texto.replace(_regexClicaveis, (match) => `<span class="clickable" onclick="abrirPerfil('${escapeAttr(match)}')">${match}</span>`);
 }
 
-// ─── TABS ───
 const chartInstances = {};
 function freshCanvas(id) {
     const o = document.getElementById(id);
@@ -828,7 +826,6 @@ function showTab(id) {
 
 // ─── RESUMO ───
 function renderResumo() {
-    // Hero: total em mãos + breakdown
     document.getElementById('saldo-hero').innerHTML = `
         <div class="saldo-hero">
             <div class="saldo-hero-label">Total em mãos</div>
@@ -837,11 +834,11 @@ function renderResumo() {
             <div class="saldo-hero-divider"></div>
             <div class="saldo-hero-lines">
                 <div class="saldo-hero-line">
-                    <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#4ade80"></span>Livre (veteranos, após campo e AFA)</span>
+                    <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#4ade80"></span>Livre (veteranos)</span>
                     <span class="saldo-hero-line-value">€${livreVeteranos}</span>
                 </div>
                 <div class="saldo-hero-line">
-                    <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#fbbf24"></span>Reservado (campo + AFA por pagar)</span>
+                    <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#fbbf24"></span>Reservado (despesas por pagar)</span>
                     <span class="saldo-hero-line-value">€${compromissosPorPagar}</span>
                 </div>
                 <div class="saldo-hero-line">
@@ -851,7 +848,6 @@ function renderResumo() {
             </div>
         </div>`;
 
-    // Alertas
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
     const inscPorPagar = inscritos.length - inscricoesPagas.length;
     const inscValor = inscPorPagar * valorInscricao;
@@ -880,24 +876,25 @@ function renderResumo() {
 
     // Decomposição
     let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
-    sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#0D3B66;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
+    sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#16a34a;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
     sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
     sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
     sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
-    if (totalArbitroCusto > 0) {
-        sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
-        sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#dc6843;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — pago (${amigaveis.reduce((s,a)=>s+(a.arbitro?.participantes?.length||0),0)} × €5)</td><td class="center" style="color:#c1121f;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
+    sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(galhardetes + água)</span></td><td class="center" style="color:#c1121f;font-weight:600">−€${despesasJaPagas}</td></tr>`;
+    sd += `<tr class="linha-sep"><td class="linha-total">Saldo em mãos (físico + banco)</td><td class="center linha-total" style="font-size:14px">€${saldoEmMaosVeteranos}</td></tr>`;
+    if (despesasPorPagar > 0) {
+        if (!despesaPaga('campo')) sd += `<tr><td>Campo <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaCampo}</td></tr>`;
+        if (!despesaPaga('afa')) sd += `<tr><td>Inscrição AFA <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaAFA}</td></tr>`;
+        if (!despesaPaga('galhardetes')) sd += `<tr><td>Galhardetes <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
+        if (!despesaPaga('agua')) sd += `<tr><td>Água <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaAgua}</td></tr>`;
     }
-    sd += `<tr><td>Campo</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaCampo}</td></tr>`;
-    sd += `<tr><td>Inscrição AFA (27 × €20)</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAFA}</td></tr>`;
-    sd += `<tr><td>Galhardetes do clube</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
-    sd += `<tr><td>Garrafões de água</td><td class="center" style="color:#dc6843;font-weight:600">−€${despesaAgua}</td></tr>`;
-    sd += `<tr style="background:#f0f6ff"><td style="font-weight:700;color:#0D3B66">Saldo atual dos veteranos</td><td class="center" style="font-weight:800;color:#0D3B66;font-size:15px">€${saldo}</td></tr>`;
+    sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">€${livreVeteranos}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) são entregues ao clube principal — não afetam este saldo.<br>ℹ️ O saldo dos veteranos assume que campo (€${despesaCampo}) e AFA (€${despesaAFA}) serão pagos.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) estão contigo mas são para entregar ao clube — não contam para o saldo dos veteranos.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
-    // Últimos 5 movimentos
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
     let mvHtml = '';
     if (ultimos.length === 0) {
@@ -916,6 +913,13 @@ document.getElementById('quotas-cards').innerHTML =
     makeCard('Não Inscritos', naoInscritos.length, '€10/mês', '#1A6FB5') +
     makeCard('Recebido', recebidoReal ? '€' + recebidoReal : '€0', 'até à data', '#16a34a') +
     makeCard('Quota Não Inscrito', '€10/mês', 'quando comparecem', '#0D3B66');
+
+// ─── CARDS DE DESPESAS ───
+document.getElementById('despesas-cards').innerHTML =
+    makeCard('Total Despesas', '€' + despesasConfirmadas, 'orçamento da época', '#0D3B66') +
+    makeCard('Já Pagas', '€' + despesasJaPagas, 'saíram da caixa', '#16a34a') +
+    makeCard('Por Pagar', '€' + despesasPorPagar, 'ainda não saíram', '#d97706') +
+    makeCard('Árbitros Amigáveis', '€' + totalArbitroCusto, 'pago · ' + totalArbitroRecebido + ' recebido', '#64748b');
 
 // ─── CHARTS ───
 const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
@@ -969,27 +973,12 @@ function initInscricoesChart() {
     const c = chartThemeColors();
     chartInstances.inscricoesBolo = new Chart(freshCanvas('chartInscricoesBolo'), {
         type: 'doughnut',
-        data: {
-            labels: ['Pagas', 'Por pagar'],
-            datasets: [{
-                data: [pagas, porPagar],
-                backgroundColor: ['#16a34a', '#dc6843'],
-                borderWidth: 2, borderColor: c.borda
-            }]
-        },
+        data: { labels: ['Pagas', 'Por pagar'], datasets: [{ data: [pagas, porPagar], backgroundColor: ['#16a34a', '#dc6843'], borderWidth: 2, borderColor: c.borda }] },
         options: {
             responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
             plugins: {
                 legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => {
-                            const v = ctx.raw;
-                            const pct = total > 0 ? Math.round((v / total) * 100) : 0;
-                            return `${ctx.label}: ${v} (${pct}%) · €${v * valorInscricao}`;
-                        }
-                    }
-                }
+                tooltip: { callbacks: { label: ctx => { const v = ctx.raw; const pct = total > 0 ? Math.round((v / total) * 100) : 0; return `${ctx.label}: ${v} (${pct}%) · €${v * valorInscricao}`; } } }
             }
         }
     });
@@ -997,56 +986,29 @@ function initInscricoesChart() {
 function initQuotasCharts() {
     if (typeof todosParaQuotas === 'undefined') return;
     const c = chartThemeColors();
-
     const totalEsperado = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length;
     const pago = recebidoReal;
     const porReceber = Math.max(0, totalEsperado - pago);
-
     chartInstances.quotasBolo = new Chart(freshCanvas('chartQuotasBolo'), {
         type: 'doughnut',
-        data: {
-            labels: ['Recebido', 'Por receber'],
-            datasets: [{
-                data: [pago, porReceber],
-                backgroundColor: ['#16a34a', '#dc6843'],
-                borderWidth: 2, borderColor: c.borda
-            }]
-        },
+        data: { labels: ['Recebido', 'Por receber'], datasets: [{ data: [pago, porReceber], backgroundColor: ['#16a34a', '#dc6843'], borderWidth: 2, borderColor: c.borda }] },
         options: {
             responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
             plugins: {
                 legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => {
-                            const tot = pago + porReceber;
-                            const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0;
-                            return `${ctx.label}: €${ctx.raw} (${pct}%)`;
-                        }
-                    }
-                }
+                tooltip: { callbacks: { label: ctx => { const tot = pago + porReceber; const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0; return `${ctx.label}: €${ctx.raw} (${pct}%)`; } } }
             }
         }
     });
-
     const esperadoMes = inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI;
     const esperadoData = MESES.map(() => esperadoMes);
-    const recebidoData = MESES.map((_, mIdx) => {
-        return todosParaQuotas.reduce((s, j) => {
-            if (jaPagou(j.nome, mIdx)) return s + (j.inscrito ? QUOTA : QUOTA_NI);
-            return s;
-        }, 0);
-    });
-
+    const recebidoData = MESES.map((_, mIdx) => todosParaQuotas.reduce((s, j) => jaPagou(j.nome, mIdx) ? s + (j.inscrito ? QUOTA : QUOTA_NI) : s, 0));
     chartInstances.quotasMes = new Chart(freshCanvas('chartQuotasMes'), {
         type: 'bar',
-        data: {
-            labels: MESES,
-            datasets: [
-                { label: 'Esperado', data: esperadoData, backgroundColor: 'rgba(148,163,184,.35)', borderRadius: 4, barPercentage: .7 },
-                { label: 'Recebido', data: recebidoData, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .7 }
-            ]
-        },
+        data: { labels: MESES, datasets: [
+            { label: 'Esperado', data: esperadoData, backgroundColor: 'rgba(148,163,184,.35)', borderRadius: 4, barPercentage: .7 },
+            { label: 'Recebido', data: recebidoData, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .7 }
+        ] },
         options: {
             responsive: true, maintainAspectRatio: true, ...animOpts,
             plugins: {
@@ -1063,18 +1025,25 @@ function initQuotasCharts() {
 initResumoCharts();
 
 // ─── DESPESAS ───
-let dh = '<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Despesas Confirmadas</h3>';
-dh += '<table><thead><tr><th>Despesa</th><th>Valor</th><th>Quando</th></tr></thead><tbody>';
-dh += '<tr><td style="font-weight:600;color:#0D3B66">Campo (anual)</td><td style="font-weight:700">€1.000</td><td>Setembro</td></tr>';
-dh += '<tr><td style="font-weight:600;color:#0D3B66">Inscrição AFA (27 atletas × €20)</td><td style="font-weight:700">€540</td><td>Setembro</td></tr>';
-dh += '<tr><td style="color:#888;font-size:12px;padding-left:24px">↳ Custo total: €50/atleta (atleta paga €30 + caixa €20)</td><td></td><td></td></tr>';
-dh += '<tr><td style="font-weight:600;color:#0D3B66">Galhardetes do clube (20 unidades)</td><td style="font-weight:700">€200</td><td>5 Setembro</td></tr>';
-dh += '<tr><td style="font-weight:600;color:#0D3B66">Garrafões de água (4 × 6L)</td><td style="font-weight:700">€4</td><td>5 Setembro</td></tr>';
-if (totalArbitroCusto > 0) {
-    dh += `<tr><td style="font-weight:600;color:#0D3B66">Árbitros de amigáveis</td><td style="font-weight:700">€${totalArbitroCusto}</td><td>12 Setembro</td></tr>`;
+let dh = '<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Despesas da Época</h3>';
+dh += '<table><thead><tr><th>Despesa</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
+function linhaDespesa(nome, valor, chave, sub) {
+    const pago = despesaPaga(chave);
+    const badge = pago ? '<span class="badge badge-pago">Pago</span>' : '<span class="badge badge-porpagar">Por pagar</span>';
+    let tr = `<tr><td><strong style="color:#0D3B66">${nome}</strong>`;
+    if (sub) tr += `<br><span style="font-size:11px;color:#888">${sub}</span>`;
+    tr += `</td><td class="center" style="font-weight:700">€${valor}</td><td class="center">${badge}</td></tr>`;
+    return tr;
 }
-dh += '<tr><td style="font-weight:600;color:#0D3B66">Massagista</td><td style="color:#999">A definir</td><td>A definir</td></tr>';
-dh += '</tbody><tfoot><tr><td style="font-weight:700;color:#0D3B66">Total Confirmado</td><td style="font-weight:700;color:#0D3B66;font-size:14px">€' + (despesasConfirmadas + totalArbitroCusto) + '</td><td></td></tr></tfoot></table>';
+dh += linhaDespesa('Campo (anual)', despesaCampo, 'campo');
+dh += linhaDespesa('Inscrição AFA (27 atletas × €20)', despesaAFA, 'afa', 'Custo total: €50/atleta (atleta paga €30 + caixa €20)');
+dh += linhaDespesa('Galhardetes do clube (20 unid.)', despesaGalhardetes, 'galhardetes');
+dh += linhaDespesa('Garrafões de água (4 × 6L)', despesaAgua, 'agua');
+if (totalArbitroCusto > 0) {
+    dh += `<tr><td><strong style="color:#0D3B66">Árbitros de amigáveis</strong></td><td class="center" style="font-weight:700">€${totalArbitroCusto}</td><td class="center"><span class="badge badge-pago">Pago</span></td></tr>`;
+}
+dh += '<tr><td><strong style="color:#0D3B66">Massagista</strong></td><td class="center" style="color:#999">A definir</td><td class="center"></td></tr>';
+dh += '</tbody><tfoot><tr><td>Total (despesas + árbitros)</td><td class="center" style="font-size:14px">€' + (despesasConfirmadas + totalArbitroCusto) + '</td><td class="center"><span style="color:#16a34a">pago €' + (despesasJaPagas + totalArbitroCusto) + '</span> · <span style="color:#d97706">por pagar €' + despesasPorPagar + '</span></td></tr></tfoot></table>';
 document.getElementById('tabela-despesas').innerHTML = dh;
 
 // ─── QUOTAS ───
@@ -1082,7 +1051,6 @@ function monthCell(pago) {
     if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
     return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
 }
-
 function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     let html = `<h3 style="font-size:13px;color:${cor};font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">${titulo}</h3>`;
     html += '<div class="table-wrap"><table><thead><tr><th style="width:30px">Nº</th><th>Nome</th><th class="center">Nasc.</th><th class="center">Idade</th>';
@@ -1102,33 +1070,22 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     html += '</tbody></table></div>';
     return html;
 }
-
 let quotasSoDevedores = false;
-function toggleFiltroDevedores() {
-    quotasSoDevedores = !quotasSoDevedores;
-    renderQuotas();
-}
+function toggleFiltroDevedores() { quotasSoDevedores = !quotasSoDevedores; renderQuotas(); }
 function renderQuotas() {
     const inscritosFiltrados = quotasSoDevedores ? inscritos.filter(j => eDevedor(j.nome)) : inscritos;
     const naoInscritosFiltrados = quotasSoDevedores ? naoInscritos.filter(j => eDevedor(j.nome)) : naoInscritos;
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
-
     let qh = `<div class="filtro-bar">
-        <div class="filtro-info">${quotasSoDevedores
-            ? `A mostrar <strong>${totalDevedores}</strong> jogador(es) com meses em falta`
-            : `A mostrar <strong>todos</strong> os ${inscritos.length + naoInscritos.length} jogadores`}</div>
-        <button class="btn-action${quotasSoDevedores ? ' ativo' : ''}" onclick="toggleFiltroDevedores()">
-            ${quotasSoDevedores ? '👥 Ver todos' : '⚠️ Só devedores'}
-        </button>
+        <div class="filtro-info">${quotasSoDevedores ? `A mostrar <strong>${totalDevedores}</strong> jogador(es) com meses em falta` : `A mostrar <strong>todos</strong> os ${inscritos.length + naoInscritos.length} jogadores`}</div>
+        <button class="btn-action${quotasSoDevedores ? ' ativo' : ''}" onclick="toggleFiltroDevedores()">${quotasSoDevedores ? '👥 Ver todos' : '⚠️ Só devedores'}</button>
     </div>`;
-
     if (quotasSoDevedores && inscritosFiltrados.length === 0 && naoInscritosFiltrados.length === 0) {
         qh += '<p style="text-align:center;color:#16a34a;padding:24px;font-weight:600;font-size:14px">🎉 Ninguém em falta — tudo em ordem!</p>';
     } else {
         if (inscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(inscritosFiltrados, 'Inscritos (€20/mês)', '#0D3B66');
         if (naoInscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(naoInscritosFiltrados, 'Não Inscritos (€10/mês)', '#dc6843');
     }
-
     qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
     qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a treino nem jogo não paga · ✓ Mês pago</p>';
     document.getElementById('tabela-quotas').innerHTML = qh;
@@ -1155,13 +1112,8 @@ MESES.forEach((mNome, mIdx) => {
     const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? j.quota : 0), 0);
     const faltam = totalParaQuotas - pagosCount;
     let badgeCls, badgeTxt;
-    if (faltam === 0) {
-        badgeCls = 'mes-acc-badge paid';
-        badgeTxt = `${pagosCount} pago(s) · ✓ todos · €${receitaMes}`;
-    } else {
-        badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge falta';
-        badgeTxt = `${pagosCount} pago(s) · ${faltam} faltam · €${receitaMes}`;
-    }
+    if (faltam === 0) { badgeCls = 'mes-acc-badge paid'; badgeTxt = `${pagosCount} pago(s) · ✓ todos · €${receitaMes}`; }
+    else { badgeCls = pagosCount > 0 ? 'mes-acc-badge paid' : 'mes-acc-badge falta'; badgeTxt = `${pagosCount} pago(s) · ${faltam} faltam · €${receitaMes}`; }
     maHtml += `<div class="mes-acc" id="mesacc-${mIdx}"><div class="mes-acc-head" onclick="toggleMesAcc(${mIdx})"><div class="mes-acc-left"><span class="mes-acc-name">${mNome}</span><span class="${badgeCls}">${badgeTxt}</span></div><span class="mes-acc-chevron">▾</span></div><div class="mes-acc-body"><div class="mes-acc-inner">${rowsHtml}</div></div></div>`;
 });
 document.getElementById('quotas-por-mes').innerHTML = maHtml;
@@ -1178,7 +1130,6 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
         makeCard(labels.pagos, numPagos, 'até à data', '#16a34a') +
         makeCard(labels.recebido, '€' + recebido, sublabelRecebido || 'entra na caixa', '#16a34a') +
         makeCard(labels.porPagar, porPagar, sublabelPorPagar || '', '#dc6843');
-
     let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
         const pago = pagos.includes(j.nome);
@@ -1191,26 +1142,15 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
 }
 
 renderEstadoPagamento({
-    cardsId: 'inscricoes-cards',
-    tabelaId: 'tabela-inscricoes',
-    jogadores: inscritos,
-    pagos: inscricoesPagas,
-    valor: valorInscricao,
+    cardsId: 'inscricoes-cards', tabelaId: 'tabela-inscricoes', jogadores: inscritos, pagos: inscricoesPagas, valor: valorInscricao,
     labels: { total: 'Inscritos', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
     sublabelTotal: '€' + valorInscricao + ' cada',
     nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). Os €540 totais (27 × €20) já estão contabilizados nas despesas.'
 });
-
 renderEstadoPagamento({
-    cardsId: 'socios-cards',
-    tabelaId: 'tabela-socios',
-    jogadores: inscritos,
-    pagos: sociosPagos,
-    valor: valorSocio,
+    cardsId: 'socios-cards', tabelaId: 'tabela-socios', jogadores: inscritos, pagos: sociosPagos, valor: valorSocio,
     labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
-    sublabelTotal: 'jogadores inscritos',
-    sublabelRecebido: 'entregue ao clube',
-    sublabelPorPagar: 'sócios pendentes'
+    sublabelTotal: 'jogadores inscritos', sublabelRecebido: 'entregue ao clube', sublabelPorPagar: 'sócios pendentes'
 });
 
 // ─── ANIVERSÁRIOS ───
@@ -1235,7 +1175,6 @@ document.getElementById('aniversarios-cards').innerHTML =
     makeCard('Este Mês', aniversariantesMesAtual, mesesAno[mesAtualNum - 1], '#1A6FB5') +
     makeCard('Mês com Mais', mesesAno[mesMaisAniversarios - 1], maxCount + ' aniversariantes', '#64748b') +
     makeCard('Fora da Época', porMes[7].length + porMes[8].length, 'Julho + Agosto', '#dc6843');
-
 let bmHtml = '<div class="bday-months-grid">';
 for (let m = 1; m <= 12; m++) {
     const lista = porMes[m];
@@ -1245,15 +1184,12 @@ for (let m = 1; m <= 12; m++) {
     if (isCurrent) cls += ' current';
     if (isOff) cls += ' offseason';
     bmHtml += `<div class="${cls}"><div class="bday-month-head"><span class="bday-month-name">${mesesAno[m - 1]}${isCurrent ? ' 📍' : ''}</span><span class="bday-month-count">${lista.length}</span></div><div class="bday-month-body">`;
-    if (lista.length === 0) {
-        bmHtml += '<div class="bday-empty">Sem aniversários</div>';
-    } else {
-        lista.forEach(j => {
-            const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
-            const merenda = merendaPaga.includes(j.nome) ? ' <span title="Merenda paga" style="font-size:12px;">🍽️</span>' : '';
-            bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
-        });
-    }
+    if (lista.length === 0) bmHtml += '<div class="bday-empty">Sem aniversários</div>';
+    else lista.forEach(j => {
+        const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
+        const merenda = merendaPaga.includes(j.nome) ? ' <span title="Merenda paga" style="font-size:12px;">🍽️</span>' : '';
+        bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
+    });
     bmHtml += '</div></div>';
 }
 bmHtml += '</div><div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span><span>🍽️ Merenda paga</span></div>';
@@ -1266,19 +1202,15 @@ document.getElementById('treinos-cards').innerHTML =
     makeCard('Treinos Registados', totalEventos, 'sessões registadas', '#0D3B66') +
     makeCard('Por Definir', pendentes, 'presenças a marcar', '#dc6843') +
     makeCard('Dia de Treino', 'Quarta 21h', 'todas as semanas', '#1A6FB5');
-
 function calcularPresencasPorJogador() {
     const presencas = {};
     treinosJogos.forEach(t => {
         if (t.estado !== 'registado') return;
-        [...(t.presentes || []), ...(t.extra || [])].forEach(nome => {
-            presencas[nome] = (presencas[nome] || 0) + 1;
-        });
+        [...(t.presentes || []), ...(t.extra || [])].forEach(nome => { presencas[nome] = (presencas[nome] || 0) + 1; });
     });
     return presencas;
 }
 const presencasPorJogador = calcularPresencasPorJogador();
-
 function processarListaPresencas(lista) {
     return lista.map(j => {
         const p = presencasPorJogador[j.nome] || 0;
@@ -1286,107 +1218,56 @@ function processarListaPresencas(lista) {
         return { nome: j.nome, presencas: p, percentagem: pc };
     }).sort((a, b) => b.presencas - a.presencas);
 }
-const listasSeparadas = {
-    inscritos: processarListaPresencas(inscritos),
-    naoInscritos: processarListaPresencas(naoInscritos)
-};
+const listasSeparadas = { inscritos: processarListaPresencas(inscritos), naoInscritos: processarListaPresencas(naoInscritos) };
 const totalPresencasGlobal = listasSeparadas.inscritos.reduce((s, j) => s + j.presencas, 0) + listasSeparadas.naoInscritos.reduce((s, j) => s + j.presencas, 0);
 const mediaPresencasGlobal = totalEventos > 0 ? (totalPresencasGlobal / (inscritos.length + naoInscritos.length)).toFixed(1) : '0';
 
-// ─── GRÁFICOS DE TREINOS ───
 function initTreinosCharts() {
     const eventos = treinosJogos.filter(t => t.estado === 'registado');
     if (eventos.length === 0) return;
     const c = chartThemeColors();
-
     const labels1 = eventos.map(t => {
         const base = t.data.replace(' 2026', '');
         return t.tipo === 'jogo' ? base + ' ⚽' : base;
     });
     const dataIns = eventos.map(t => (t.presentes || []).length);
     const dataExt = eventos.map(t => (t.extra || []).length);
-
     chartInstances.treinosPresencas = new Chart(freshCanvas('chartTreinosPresencas'), {
         type: 'bar',
-        data: {
-            labels: labels1,
-            datasets: [
-                { label: 'Inscritos', data: dataIns, backgroundColor: '#1A6FB5', borderRadius: 4, stack: 'p' },
-                { label: 'Não inscritos (extra)', data: dataExt, backgroundColor: '#dc6843', borderRadius: 4, stack: 'p' }
-            ]
-        },
+        data: { labels: labels1, datasets: [
+            { label: 'Inscritos', data: dataIns, backgroundColor: '#1A6FB5', borderRadius: 4, stack: 'p' },
+            { label: 'Não inscritos (extra)', data: dataExt, backgroundColor: '#dc6843', borderRadius: 4, stack: 'p' }
+        ] },
         options: {
             responsive: true, maintainAspectRatio: true, ...animOpts,
-            plugins: {
-                legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 }, color: c.legenda } },
-                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw } }
-            },
-            scales: {
-                x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } },
-                y: { stacked: true, grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, precision: 0, color: c.texto } }
-            }
+            plugins: { legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 }, color: c.legenda } }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw } } },
+            scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } }, y: { stacked: true, grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, precision: 0, color: c.texto } } }
         }
     });
-
     let totalIns = 0, totalExt = 0;
-    eventos.forEach(t => {
-        totalIns += (t.presentes || []).length;
-        totalExt += (t.extra || []).length;
-    });
+    eventos.forEach(t => { totalIns += (t.presentes || []).length; totalExt += (t.extra || []).length; });
     if (totalIns + totalExt > 0) {
         chartInstances.treinosBolo = new Chart(freshCanvas('chartTreinosBolo'), {
             type: 'doughnut',
-            data: {
-                labels: ['Inscritos', 'Não inscritos (extra)'],
-                datasets: [{
-                    data: [totalIns, totalExt],
-                    backgroundColor: ['#1A6FB5', '#dc6843'],
-                    borderWidth: 2, borderColor: c.borda
-                }]
-            },
+            data: { labels: ['Inscritos', 'Não inscritos (extra)'], datasets: [{ data: [totalIns, totalExt], backgroundColor: ['#1A6FB5', '#dc6843'], borderWidth: 2, borderColor: c.borda }] },
             options: {
                 responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
                 plugins: {
                     legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => {
-                                const tot = totalIns + totalExt;
-                                const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0;
-                                return `${ctx.label}: ${ctx.raw} (${pct}%)`;
-                            }
-                        }
-                    }
+                    tooltip: { callbacks: { label: ctx => { const tot = totalIns + totalExt; const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0; return `${ctx.label}: ${ctx.raw} (${pct}%)`; } } }
                 }
             }
         });
     }
-
-    const ranking = todosJogadores
-        .map(j => ({ nome: j.nome, presencas: presencasPorJogador[j.nome] || 0 }))
-        .filter(r => r.presencas > 0)
-        .sort((a, b) => b.presencas - a.presencas)
-        .slice(0, 10);
-
+    const ranking = todosJogadores.map(j => ({ nome: j.nome, presencas: presencasPorJogador[j.nome] || 0 })).filter(r => r.presencas > 0).sort((a, b) => b.presencas - a.presencas).slice(0, 10);
     if (ranking.length === 0) return;
-
     chartInstances.treinosTop = new Chart(freshCanvas('chartTreinosTop'), {
         type: 'bar',
-        data: {
-            labels: ranking.map(r => r.nome),
-            datasets: [{ label: 'Presenças', data: ranking.map(r => r.presencas), backgroundColor: '#0D3B66', borderRadius: 4, barPercentage: .8 }]
-        },
+        data: { labels: ranking.map(r => r.nome), datasets: [{ label: 'Presenças', data: ranking.map(r => r.presencas), backgroundColor: '#0D3B66', borderRadius: 4, barPercentage: .8 }] },
         options: {
-            responsive: true, maintainAspectRatio: false, ...animOpts,
-            indexAxis: 'y',
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: ctx => ctx.raw + ' presenças' } }
-            },
-            scales: {
-                x: { grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, precision: 0, color: c.texto } },
-                y: { grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } }
-            }
+            responsive: true, maintainAspectRatio: false, ...animOpts, indexAxis: 'y',
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw + ' presenças' } } },
+            scales: { x: { grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, precision: 0, color: c.texto } }, y: { grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } } }
         }
     });
 }
@@ -1394,13 +1275,10 @@ function initTreinosCharts() {
 function renderBlocoPresencas(titulo, cor, lista) {
     let html = `<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px;color:${cor}">${titulo}</h3>`;
     html += '<div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
-    lista.forEach(j => {
-        html += `<tr><td class="clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`;
-    });
+    lista.forEach(j => { html += `<tr><td class="clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td><td class="center">${j.presencas}</td><td class="center" style="font-weight:700;color:#1A6FB5">${j.percentagem}</td></tr>`; });
     html += '</tbody></table></div>';
     return html;
 }
-
 let statsHtml = '<div class="stats-grid">';
 statsHtml += `<div class="stat-box"><div class="stat-value">${totalEventos}</div><div class="stat-label">Treinos registados</div></div>`;
 statsHtml += `<div class="stat-box"><div class="stat-value">${totalPresencasGlobal}</div><div class="stat-label">Presenças totais</div></div>`;
@@ -1414,9 +1292,8 @@ let ph = '';
 treinosJogos.forEach((t, idx) => {
     const icon = t.tipo === 'treino' ? '🏃' : '⚽';
     ph += `<div class="pres-card" id="presacc-${idx}"><div class="pres-head ${t.tipo}" onclick="togglePresAcc(${idx})"><div class="pres-title">${icon} ${t.titulo}<div class="pres-date" style="margin-top:2px">${t.data}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="pres-status ${t.estado === 'pendente' ? 'pending' : 'done'}">${t.estado === 'pendente' ? 'A Definir' : 'Registado'}</span><span class="pres-chevron">▾</span></div></div><div class="pres-body-wrap"><div class="pres-body">`;
-    if (t.estado === 'pendente') {
-        ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>';
-    } else {
+    if (t.estado === 'pendente') ph += '<div class="pres-pending-msg">As presenças ainda não foram registadas para este evento.</div>';
+    else {
         const totalPresentes = (t.presentes?.length || 0) + (t.extra?.length || 0);
         ph += `<div style="font-size:12px;color:#888;margin-bottom:10px">${totalPresentes} presenças registadas</div>`;
         ph += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 12px;margin-bottom:12px">';
@@ -1439,13 +1316,9 @@ document.getElementById('vendas-cards').innerHTML =
     makeCard('Itens Vendidos', totalItensVendidos, 'unidades', '#0D3B66') +
     makeCard('Produtos na lista', Object.keys(listaPrecos).length, 'tipos', '#1A6FB5') +
     makeCard('Receita', '€' + totalVendasDia6, 'entra na caixa', '#16a34a');
-
 let precoHtml = '';
-Object.entries(listaPrecos).forEach(([prod, preco]) => {
-    precoHtml += `<tr><td style="font-weight:600;color:#0D3B66">${prod}</td><td style="font-weight:700">€${preco}</td></tr>`;
-});
+Object.entries(listaPrecos).forEach(([prod, preco]) => { precoHtml += `<tr><td style="font-weight:600;color:#0D3B66">${prod}</td><td style="font-weight:700">€${preco}</td></tr>`; });
 document.getElementById('tabela-precos-body').innerHTML = precoHtml;
-
 let vendasHtml = '';
 compras6Set.forEach(v => {
     const itensStr = v.itens.join(', ');
@@ -1493,20 +1366,13 @@ function showSubTab(id) {
     document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
     document.getElementById('sub-' + id).classList.add('active');
-    document.querySelectorAll('.sub-tab').forEach(b => {
-        if (b.textContent.toLowerCase().includes(id.slice(0, 5))) b.classList.add('active');
-    });
+    document.querySelectorAll('.sub-tab').forEach(b => { if (b.textContent.toLowerCase().includes(id.slice(0, 5))) b.classList.add('active'); });
 }
 document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
 const equipas = [
-    { nome: "Vet. A.D.C. Lobão", us: true },
-    { nome: "Vet. FC Fiães", us: false },
-    { nome: "Vet. SC Espinho", us: false },
-    { nome: "Vet. CD Feira", us: false },
-    { nome: "Vet. AD Sanjoanense", us: false },
-    { nome: "Vet. SC Salgueiros", us: false },
-    { nome: "Vet. FC Arouca", us: false },
-    { nome: "Vet. AD Oliveirense", us: false }
+    { nome: "Vet. A.D.C. Lobão", us: true }, { nome: "Vet. FC Fiães", us: false }, { nome: "Vet. SC Espinho", us: false },
+    { nome: "Vet. CD Feira", us: false }, { nome: "Vet. AD Sanjoanense", us: false }, { nome: "Vet. SC Salgueiros", us: false },
+    { nome: "Vet. FC Arouca", us: false }, { nome: "Vet. AD Oliveirense", us: false }
 ];
 let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
 equipas.forEach((e, i) => {
@@ -1519,66 +1385,30 @@ document.getElementById('sub-marcadores').innerHTML = '<div class="section-card"
 
 // ─── TORNEIOS E AMIGÁVEIS ───
 function renderAmigavel(a, idx) {
-    const golosNos = a.golosNos;
-    const golosEles = a.golosEles;
+    const golosNos = a.golosNos, golosEles = a.golosEles;
     let scoreClass = 'draw';
     let resultadoBadge = '<span class="match-badge d">Empate</span>';
     if (golosNos > golosEles) { scoreClass = 'win'; resultadoBadge = '<span class="match-badge v">Vitória</span>'; }
     else if (golosNos < golosEles) { scoreClass = 'loss'; resultadoBadge = '<span class="match-badge e">Derrota</span>'; }
     const casa = a.casa ? 'Casa' : 'Fora';
-
     let marcadoresHtml = '';
     if (a.marcadores && a.marcadores.length) {
         const nomes = a.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
         marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
     }
-
     let arbitroHtml = '';
     if (a.arbitro) {
         const val = a.arbitro.valorPorJogador;
         const part = a.arbitro.participantes || [];
         const pagos = a.arbitro.pagaram || [];
-        const total = part.length;
-        const nPagos = pagos.length;
-        const falta = total - nPagos;
-        const recebido = nPagos * val;
-        const totalDev = total * val;
+        const total = part.length, nPagos = pagos.length, falta = total - nPagos;
+        const recebido = nPagos * val, totalDev = total * val;
         const faltaCor = falta === 0 ? '#16a34a' : '#dc6843';
         const faltaTexto = falta === 0 ? 'tudo recebido' : `faltam €${falta * val}`;
-
-        arbitroHtml = `<div class="amig-arbitro">
-            <div class="amig-arbitro-head" onclick="toggleAmigavel(${idx})">
-                <span class="amig-arbitro-label">👤 Árbitro €${val}/jogador · <span style="color:${faltaCor}">${nPagos}/${total} pagos</span> · €${recebido}/€${totalDev} · <span style="color:${faltaCor}">${faltaTexto}</span></span>
-                <span class="amig-chevron" id="amigchev-${idx}">▾</span>
-            </div>
-            <div class="amig-body" id="amigbody-${idx}">
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 12px;padding-top:10px">
-                    ${part.map(nome => {
-                        const pago = pagos.includes(nome);
-                        const icon = pago ? '<span style="color:#16a34a;font-weight:700">✓</span>' : '<span style="color:#dc6843;font-weight:700">○</span>';
-                        const cor = pago ? '#333' : '#999';
-                        const deco = pago ? '' : 'text-decoration:none';
-                        return `<div style="font-size:13px;color:${cor};display:flex;align-items:center;gap:6px">${icon} <span class="clickable" style="${deco}" onclick="abrirPerfil('${escapeAttr(nome)}')">${nome}</span></div>`;
-                    }).join('')}
-                </div>
-            </div>
-        </div>`;
+        arbitroHtml = `<div class="amig-arbitro"><div class="amig-arbitro-head" onclick="toggleAmigavel(${idx})"><span class="amig-arbitro-label">👤 Árbitro €${val}/jogador · <span style="color:${faltaCor}">${nPagos}/${total} pagos</span> · €${recebido}/€${totalDev} · <span style="color:${faltaCor}">${faltaTexto}</span></span><span class="amig-chevron" id="amigchev-${idx}">▾</span></div><div class="amig-body" id="amigbody-${idx}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 12px;padding-top:10px">${part.map(nome => { const pago = pagos.includes(nome); const icon = pago ? '<span style="color:#16a34a;font-weight:700">✓</span>' : '<span style="color:#dc6843;font-weight:700">○</span>'; const cor = pago ? '#333' : '#999'; const deco = pago ? '' : 'text-decoration:none'; return `<div style="font-size:13px;color:${cor};display:flex;align-items:center;gap:6px">${icon} <span class="clickable" style="${deco}" onclick="abrirPerfil('${escapeAttr(nome)}')">${nome}</span></div>`; }).join('')}</div></div></div>`;
     }
-
-    return `<div class="match-card">
-        <div class="match-date">${a.data}<span>${casa}</span></div>
-        <div class="match-teams">
-            <div class="match-home us">Vet. A.D.C. Lobão</div>
-            <div class="match-vs">vs</div>
-            <div class="match-away">${a.adversario}</div>
-            ${marcadoresHtml}
-        </div>
-        <div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div>
-        <div>${resultadoBadge}</div>
-        ${arbitroHtml}
-    </div>`;
+    return `<div class="match-card"><div class="match-date">${a.data}<span>${casa}</span></div><div class="match-teams"><div class="match-home us">Vet. A.D.C. Lobão</div><div class="match-vs">vs</div><div class="match-away">${a.adversario}</div>${marcadoresHtml}</div><div class="match-score ${scoreClass}">${golosNos} - ${golosEles}</div><div>${resultadoBadge}</div>${arbitroHtml}</div>`;
 }
-
 function toggleAmigavel(idx) {
     const body = document.getElementById('amigbody-' + idx);
     const chev = document.getElementById('amigchev-' + idx);
@@ -1586,68 +1416,46 @@ function toggleAmigavel(idx) {
     body.classList.toggle('open');
     if (chev) chev.classList.toggle('open');
 }
-
 function renderTorneios() {
     let html = '';
     html += '<div class="section-card"><h2 class="section-title">🎯 Torneios</h2>';
-    if (torneios.length === 0) {
-        html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🎯</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem torneios registados</div><div style="font-size:13px;color:#999">Os torneios serão adicionados quando forem disputados.</div></div>';
-    } else {
-        torneios.forEach(t => {
-            const vitorias = t.jogos.filter(j => j.golosNos > j.golosEles).length;
-            const empates = t.jogos.filter(j => j.golosNos === j.golosEles).length;
-            const derrotas = t.jogos.filter(j => j.golosNos < j.golosEles).length;
-            const golosMarcados = t.jogos.reduce((s, j) => s + j.golosNos, 0);
-            const golosSofridos = t.jogos.reduce((s, j) => s + j.golosEles, 0);
-
-            html += `<div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px;border-left:4px solid #1A6FB5">`;
-            html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">`;
-            html += `<div><div style="font-size:16px;font-weight:700;color:#0D3B66">🏆 ${t.nome}</div><div style="font-size:11px;color:#888;margin-top:3px">📍 ${t.local} · ${t.data}</div></div>`;
-            html += `<div style="display:flex;gap:6px;font-size:11px">`;
-            html += `<span style="background:#dcfce7;color:#166534;padding:3px 9px;border-radius:8px;font-weight:600">${vitorias}V</span>`;
-            html += `<span style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:8px;font-weight:600">${empates}E</span>`;
-            html += `<span style="background:#fee2e2;color:#991b1b;padding:3px 9px;border-radius:8px;font-weight:600">${derrotas}D</span>`;
-            html += `<span style="background:#e0f2fe;color:#0369a1;padding:3px 9px;border-radius:8px;font-weight:600">${golosMarcados}-${golosSofridos}</span>`;
-            html += `</div></div>`;
-
-            t.jogos.forEach(j => {
-                let scoreClass = 'draw';
-                if (j.golosNos > j.golosEles) scoreClass = 'win';
-                else if (j.golosNos < j.golosEles) scoreClass = 'loss';
-
-                let marcadoresHtml = '';
-                if (j.marcadores && j.marcadores.length) {
-                    const nomes = j.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
-                    marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
-                }
-
-                html += `<div style="background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">`;
-                html += `<div style="font-size:11px;color:#888;font-weight:600;min-width:60px;text-align:center">${j.data.replace(' 2026', '')}<div style="font-size:9px;color:#aaa;text-transform:uppercase;margin-top:2px">Torneio</div></div>`;
-                html += `<div style="flex:1;min-width:180px">`;
-                html += `<div style="font-size:13px;color:#0D3B66;font-weight:700">Vet. A.D.C. Lobão</div>`;
-                html += `<div style="font-size:10px;color:#bbb;margin:2px 0;text-transform:uppercase;letter-spacing:1px">vs</div>`;
-                html += `<div style="font-size:13px;color:#333">${j.adversario}</div>`;
-                html += marcadoresHtml;
-                html += `</div>`;
-                html += `<div class="match-score ${scoreClass}">${j.golosNos} - ${j.golosEles}</div>`;
-                html += `</div>`;
-            });
-
-            html += `</div>`;
+    if (torneios.length === 0) html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🎯</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem torneios registados</div><div style="font-size:13px;color:#999">Os torneios serão adicionados quando forem disputados.</div></div>';
+    else torneios.forEach(t => {
+        const vitorias = t.jogos.filter(j => j.golosNos > j.golosEles).length;
+        const empates = t.jogos.filter(j => j.golosNos === j.golosEles).length;
+        const derrotas = t.jogos.filter(j => j.golosNos < j.golosEles).length;
+        const golosMarcados = t.jogos.reduce((s, j) => s + j.golosNos, 0);
+        const golosSofridos = t.jogos.reduce((s, j) => s + j.golosEles, 0);
+        html += `<div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px;border-left:4px solid #1A6FB5">`;
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">`;
+        html += `<div><div style="font-size:16px;font-weight:700;color:#0D3B66">🏆 ${t.nome}</div><div style="font-size:11px;color:#888;margin-top:3px">📍 ${t.local} · ${t.data}</div></div>`;
+        html += `<div style="display:flex;gap:6px;font-size:11px">`;
+        html += `<span style="background:#dcfce7;color:#166534;padding:3px 9px;border-radius:8px;font-weight:600">${vitorias}V</span>`;
+        html += `<span style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:8px;font-weight:600">${empates}E</span>`;
+        html += `<span style="background:#fee2e2;color:#991b1b;padding:3px 9px;border-radius:8px;font-weight:600">${derrotas}D</span>`;
+        html += `<span style="background:#e0f2fe;color:#0369a1;padding:3px 9px;border-radius:8px;font-weight:600">${golosMarcados}-${golosSofridos}</span>`;
+        html += `</div></div>`;
+        t.jogos.forEach(j => {
+            let scoreClass = 'draw';
+            if (j.golosNos > j.golosEles) scoreClass = 'win';
+            else if (j.golosNos < j.golosEles) scoreClass = 'loss';
+            let marcadoresHtml = '';
+            if (j.marcadores && j.marcadores.length) {
+                const nomes = j.marcadores.map(m => m === "Auto Golo" ? `<span style="color:#888;font-style:italic">${m}</span>` : `<span class="clickable" onclick="abrirPerfil('${escapeAttr(m)}')">${m}</span>`).join(', ');
+                marcadoresHtml = `<div style="font-size:11px;color:#888;margin-top:4px">⚽ ${nomes}</div>`;
+            }
+            html += `<div style="background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">`;
+            html += `<div style="font-size:11px;color:#888;font-weight:600;min-width:60px;text-align:center">${j.data.replace(' 2026', '')}<div style="font-size:9px;color:#aaa;text-transform:uppercase;margin-top:2px">Torneio</div></div>`;
+            html += `<div style="flex:1;min-width:180px"><div style="font-size:13px;color:#0D3B66;font-weight:700">Vet. A.D.C. Lobão</div><div style="font-size:10px;color:#bbb;margin:2px 0;text-transform:uppercase;letter-spacing:1px">vs</div><div style="font-size:13px;color:#333">${j.adversario}</div>${marcadoresHtml}</div>`;
+            html += `<div class="match-score ${scoreClass}">${j.golosNos} - ${j.golosEles}</div></div>`;
         });
-    }
+        html += `</div>`;
+    });
     html += '</div>';
-
     html += '<div class="section-card"><h2 class="section-title">🤝 Jogos Amigáveis</h2>';
-    if (amigaveis.length === 0) {
-        html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🤝</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem amigáveis registados</div><div style="font-size:13px;color:#999">Os jogos amigáveis serão adicionados quando forem realizados.</div></div>';
-    } else {
-        amigaveis.forEach((a, idx) => {
-            html += renderAmigavel(a, idx);
-        });
-    }
+    if (amigaveis.length === 0) html += '<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🤝</div><div style="font-size:15px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem amigáveis registados</div><div style="font-size:13px;color:#999">Os jogos amigáveis serão adicionados quando forem realizados.</div></div>';
+    else amigaveis.forEach((a, idx) => { html += renderAmigavel(a, idx); });
     html += '</div>';
-
     const totalAmigaveis = amigaveis.length;
     if (totalAmigaveis > 0) {
         const vitorias = amigaveis.filter(a => a.golosNos > a.golosEles).length;
@@ -1678,7 +1486,6 @@ function encontrarJogador(termo) {
         || todosJogadores.find(j => (j.apelido || '').toLowerCase() === t)
         || todosJogadores.find(j => j.nome.split(' ')[0].toLowerCase() === t);
 }
-
 let nomeAtualPerfil = null;
 function abrirPerfil(nome) {
     const jogador = encontrarJogador(nome);
@@ -1694,18 +1501,13 @@ function abrirPerfil(nome) {
     conteudo += `<div class="modal-row"><span>Nascimento</span><strong>${jogador.nasc || '—'}</strong></div>`;
     conteudo += `<div class="modal-row"><span>Tipo</span><strong>${jogador.inscrito ? 'Inscrito' : 'Não Inscrito'}</strong></div>`;
     conteudo += `</div>`;
-
-    const presencas = treinosJogos.reduce((total, t) => {
-        if (t.estado !== 'registado') return total;
-        return total + ((t.presentes?.includes(nomeCompleto) || t.extra?.includes(nomeCompleto)) ? 1 : 0);
-    }, 0);
+    const presencas = treinosJogos.reduce((total, t) => { if (t.estado !== 'registado') return total; return total + ((t.presentes?.includes(nomeCompleto) || t.extra?.includes(nomeCompleto)) ? 1 : 0); }, 0);
     const totalEventosPresenca = treinosJogos.filter(t => t.estado === 'registado').length;
     const percentagemPresenca = totalEventosPresenca > 0 ? ((presencas / totalEventosPresenca) * 100).toFixed(0) + '%' : '0%';
     conteudo += `<div class="modal-section"><h4>✅ Treinos</h4>`;
     conteudo += `<div class="modal-row"><span>Presenças registadas</span><strong>${presencas} de ${totalEventosPresenca}</strong></div>`;
     conteudo += `<div class="modal-row"><span>Percentagem</span><strong>${percentagemPresenca}</strong></div>`;
     conteudo += `</div>`;
-
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
         if (!a.arbitro.participantes.includes(nomeCompleto)) return;
@@ -1715,31 +1517,24 @@ function abrirPerfil(nome) {
         conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${pago ? 'badge-ok' : 'badge-falta'}">${pago ? 'Pago' : 'Por pagar'}</span></div>`;
         conteudo += `</div>`;
     });
-
     let golosMarcados = 0;
     const jogosComGolos = [];
-    torneios.forEach(t => {
-        t.jogos.forEach(j => {
-            if (j.marcadores) {
-                j.marcadores.forEach(m => {
-                    if (m === nomeCompleto || m === jogador.apelido || m === nome) {
-                        golosMarcados++;
-                        jogosComGolos.push({ torneio: t.nome, data: j.data, adversario: j.adversario, resultado: `${j.golosNos}-${j.golosEles}` });
-                    }
-                });
+    torneios.forEach(t => t.jogos.forEach(j => {
+        if (j.marcadores) j.marcadores.forEach(m => {
+            if (m === nomeCompleto || m === jogador.apelido || m === nome) {
+                golosMarcados++;
+                jogosComGolos.push({ torneio: t.nome, data: j.data, adversario: j.adversario, resultado: `${j.golosNos}-${j.golosEles}` });
             }
         });
-    });
+    }));
     let golosAmigaveis = 0;
     amigaveis.forEach(a => {
-        if (a.marcadores) {
-            a.marcadores.forEach(m => {
-                if (m === nomeCompleto || m === jogador.apelido || m === nome) {
-                    golosAmigaveis++;
-                    jogosComGolos.push({ torneio: 'Amigável', data: a.data, adversario: a.adversario, resultado: `${a.golosNos}-${a.golosEles}` });
-                }
-            });
-        }
+        if (a.marcadores) a.marcadores.forEach(m => {
+            if (m === nomeCompleto || m === jogador.apelido || m === nome) {
+                golosAmigaveis++;
+                jogosComGolos.push({ torneio: 'Amigável', data: a.data, adversario: a.adversario, resultado: `${a.golosNos}-${a.golosEles}` });
+            }
+        });
     });
     const totalGolos = golosMarcados + golosAmigaveis;
     conteudo += `<div class="modal-section"><h4>⚽ Jogos e Golos</h4>`;
@@ -1747,42 +1542,30 @@ function abrirPerfil(nome) {
     if (golosAmigaveis > 0) conteudo += `<div class="modal-row"><span>Golos marcados (amigáveis)</span><strong>${golosAmigaveis}</strong></div>`;
     conteudo += `<div class="modal-row"><span style="font-weight:700;color:#0D3B66">Total de golos</span><strong style="color:#0D3B66;font-size:15px">${totalGolos}</strong></div>`;
     conteudo += `</div>`;
-
     if (jogosComGolos.length > 0) {
         conteudo += `<div class="modal-section"><h4>📋 Jogos onde marcou</h4>`;
-        jogosComGolos.forEach(j => {
-            conteudo += `<div class="modal-row"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#888">${j.data} · ${j.torneio}</span><span style="font-size:13px;font-weight:500">${j.adversario}</span></div><span style="font-weight:700;color:#0D3B66">${j.resultado} ⚽</span></div>`;
-        });
+        jogosComGolos.forEach(j => { conteudo += `<div class="modal-row"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;color:#888">${j.data} · ${j.torneio}</span><span style="font-size:13px;font-weight:500">${j.adversario}</span></div><span style="font-weight:700;color:#0D3B66">${j.resultado} ⚽</span></div>`; });
         conteudo += `</div>`;
     }
-
     const mesesPagosJogador = mesesPagos(nomeCompleto);
     const quotaMensalJogador = jogador.inscrito ? QUOTA : QUOTA_NI;
     const totalMensalidades = mesesPagosJogador.length * quotaMensalJogador;
     const ultPag = ultimoPagamentoHistorico(nomeCompleto);
     conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4>`;
     conteudo += `<div class="modal-row"><span>Último pagamento registado</span><strong style="font-size:12px;color:#0D3B66">${ultPag || '—'}</strong></div>`;
-    if (mesesPagosJogador.length === 0) {
-        conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
-    } else {
-        mesesPagosJogador.forEach(mIdx => {
-            conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`;
-        });
-    }
+    if (mesesPagosJogador.length === 0) conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
+    else mesesPagosJogador.forEach(mIdx => { conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`; });
     conteudo += `</div>`;
-
     const inscricaoPaga = jaPagouInscricao(nomeCompleto);
     conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4>`;
     conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
     conteudo += `</div>`;
-
     if (jogador.inscrito) {
         const socioPago = sociosPagos.includes(nomeCompleto);
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4>`;
         conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${socioPago ? 'badge-ok' : 'badge-falta'}">${socioPago ? 'Pago' : 'Por pagar'}</span></div>`;
         conteudo += `</div>`;
     }
-
     const compraJogador = compras6Set.find(c => c.nome === nomeCompleto);
     if (compraJogador) {
         conteudo += `<div class="modal-section"><h4>🛍️ Equipamento</h4>`;
@@ -1791,18 +1574,12 @@ function abrirPerfil(nome) {
         conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${compraJogador.pago ? 'badge-ok' : 'badge-falta'}">${compraJogador.pago ? 'Pago' : 'Pendente'}</span></div>`;
         conteudo += `</div>`;
     }
-
     document.getElementById('perfilConteudo').innerHTML = conteudo;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
-function fecharPerfil() {
-    document.getElementById('perfilModal').classList.remove('open');
-    document.body.style.overflow = '';
-}
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) fecharPerfil();
-});
+function fecharPerfil() { document.getElementById('perfilModal').classList.remove('open'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) fecharPerfil(); });
 
 // ─── PESQUISA ───
 let searchOpen = false;
@@ -1810,22 +1587,10 @@ function toggleSearch() {
     searchOpen = !searchOpen;
     const panel = document.getElementById('searchPanel');
     const input = document.getElementById('searchInput');
-    if (searchOpen) {
-        panel.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => input.focus(), 100);
-    } else {
-        panel.classList.remove('open');
-        input.blur();
-        document.body.style.overflow = '';
-        input.value = '';
-        document.getElementById('searchResults').innerHTML = '';
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }
+    if (searchOpen) { panel.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => input.focus(), 100); }
+    else { panel.classList.remove('open'); input.blur(); document.body.style.overflow = ''; input.value = ''; document.getElementById('searchResults').innerHTML = ''; window.scrollTo({ top: 0, behavior: 'instant' }); }
 }
-function normalizarTexto(texto) {
-    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-}
+function normalizarTexto(texto) { return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 function buildSearchIndex() {
     const items = [];
     todosJogadores.forEach(j => items.push({ type: 'Jogador', text: j.nome, tab: 'treinos', n: normalizarTexto(j.nome) }));
@@ -1842,25 +1607,15 @@ function buildSearchIndex() {
 const searchIndex = buildSearchIndex();
 function handleSearch(query) {
     const resultsDiv = document.getElementById('searchResults');
-    if (!query || query.trim().length < 2) {
-        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Digite pelo menos 2 caracteres...</p>';
-        return;
-    }
+    if (!query || query.trim().length < 2) { resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Digite pelo menos 2 caracteres...</p>'; return; }
     const q = normalizarTexto(query);
     const matches = searchIndex.filter(item => item.n.includes(q));
-    if (matches.length === 0) {
-        resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>';
-    } else {
-        resultsDiv.innerHTML = matches.slice(0, 20).map(m => `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`).join('');
-    }
+    if (matches.length === 0) resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>';
+    else resultsDiv.innerHTML = matches.slice(0, 20).map(m => `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`).join('');
 }
 function goToTab(tab) {
     if (searchOpen) toggleSearch();
-    setTimeout(() => {
-        showTab(tab);
-        marcarMenuAtivo(tab);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 150);
+    setTimeout(() => { showTab(tab); marcarMenuAtivo(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 150);
 }
 
 // ─── RECIBO ───
@@ -1873,35 +1628,19 @@ function imprimirRecibo(nome) {
     const inscricaoPaga = jaPagouInscricao(j.nome);
     const socioPago = inscrito && sociosPagos.includes(j.nome);
     const compra = compras6Set.find(c => c.nome === j.nome);
-
     const linhas = [];
     let total = 0;
-
-    mesesPagosJ.forEach(m => {
-        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]);
-        total += quota;
-    });
-    if (inscricaoPaga) {
-        linhas.push(['Inscrição na AFA', `€${valorInscricao}`]);
-        total += valorInscricao;
-    }
-    if (socioPago) {
-        linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
-        total += valorSocio;
-    }
+    mesesPagosJ.forEach(m => { linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]); total += quota; });
+    if (inscricaoPaga) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
+    if (socioPago) { linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]); total += valorSocio; }
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
         if (!a.arbitro.pagaram.includes(j.nome)) return;
         linhas.push([`Árbitro — amigável vs ${a.adversario} (${a.data})`, `€${a.arbitro.valorPorJogador}`]);
         total += a.arbitro.valorPorJogador;
     });
-    if (compra && compra.pago) {
-        linhas.push([`Equipamento — ${compra.itens.join(', ')}`, `€${compra.total}`]);
-        total += compra.total;
-    }
-
+    if (compra && compra.pago) { linhas.push([`Equipamento — ${compra.itens.join(', ')}`, `€${compra.total}`]); total += compra.total; }
     const dataStr = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
-
     let html = `
         <div class="recibo-header">
             <h1>Veteranos A.D.C. Lobão</h1>
@@ -1914,13 +1653,9 @@ function imprimirRecibo(nome) {
             <p><strong>Data:</strong> ${dataStr}</p>
             <table class="recibo-table">
                 <thead><tr><th>Descrição</th><th style="text-align:right">Valor</th></tr></thead>
-                <tbody>
-    `;
-    if (linhas.length === 0) {
-        html += '<tr><td colspan="2" style="text-align:center;color:#999;font-style:italic">Sem pagamentos registados</td></tr>';
-    } else {
-        linhas.forEach(l => { html += `<tr><td>${l[0]}</td><td style="text-align:right">${l[1]}</td></tr>`; });
-    }
+                <tbody>`;
+    if (linhas.length === 0) html += '<tr><td colspan="2" style="text-align:center;color:#999;font-style:italic">Sem pagamentos registados</td></tr>';
+    else linhas.forEach(l => { html += `<tr><td>${l[0]}</td><td style="text-align:right">${l[1]}</td></tr>`; });
     html += `
                 </tbody>
             </table>
@@ -1928,7 +1663,6 @@ function imprimirRecibo(nome) {
             <div class="recibo-assinatura"><div>Tesoureiro</div></div>
         </div>
     `;
-
     document.getElementById('reciboContainer').innerHTML = html;
     setTimeout(() => window.print(), 60);
 }
