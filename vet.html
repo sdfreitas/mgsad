@@ -435,6 +435,11 @@
     </div>
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
+        <div class="section-card">
+            <h2 class="section-title">🥧 Estado das Inscrições</h2>
+            <div class="chart-container" style="max-height:300px"><canvas id="chartInscricoesBolo"></canvas></div>
+            <p class="note">Proporção entre inscrições pagas e por pagar</p>
+        </div>
         <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
     </div>
     <div id="tab-socios" class="tab-panel">
@@ -452,6 +457,11 @@
             <h2 class="section-title">📈 Presenças por Treino</h2>
             <div class="chart-container" style="max-height:300px"><canvas id="chartTreinosPresencas"></canvas></div>
             <p class="note">Evolução das presenças ao longo da época — inscritos vs não inscritos (extra)</p>
+        </div>
+        <div class="section-card">
+            <h2 class="section-title">🥧 Presenças: Inscritos vs Não Inscritos</h2>
+            <div class="chart-container" style="max-height:300px"><canvas id="chartTreinosBolo"></canvas></div>
+            <p class="note">Total acumulado de presenças nos eventos registados</p>
         </div>
         <div class="section-card">
             <h2 class="section-title">🏅 Top 10 — Jogadores Mais Assíduos</h2>
@@ -568,10 +578,17 @@ function ciclarTema() {
     const prox = ordem[(ordem.indexOf(atual) + 1) % ordem.length];
     try { localStorage.setItem('tema', prox); } catch (e) {}
     _aplicarTema();
-    // Redesenhar gráficos de treinos com as cores do tema novo
-    if (typeof chartInstances !== 'undefined' && (chartInstances.treinosPresencas || chartInstances.treinosTop)) {
-        destroyCharts('treinosPresencas', 'treinosTop');
-        setTimeout(initTreinosCharts, 50);
+    if (typeof chartInstances !== 'undefined') {
+        // Treinos: redesenhar se algum dos 3 gráficos estiver vivo
+        if (chartInstances.treinosPresencas || chartInstances.treinosBolo || chartInstances.treinosTop) {
+            destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop');
+            setTimeout(initTreinosCharts, 50);
+        }
+        // Inscrições: redesenhar se o bolo estiver vivo
+        if (chartInstances.inscricoesBolo) {
+            destroyCharts('inscricoesBolo');
+            setTimeout(initInscricoesChart, 50);
+        }
     }
 }
 _mediaDark.addEventListener('change', () => { if (_getTemaPreferido() === 'auto') _aplicarTema(); });
@@ -608,10 +625,10 @@ function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
 // ─── MÊS ATUAL NA ÉPOCA (Set=0 … Jun=9) ───
 function mesEpocaAtualIdx() {
-    const m = new Date().getMonth() + 1; // 1-12
-    if (m >= 9) return m - 9;            // Set=0, Out=1, Nov=2, Dez=3
-    if (m <= 6) return m + 3;            // Jan=4, Fev=5, Mar=6, Abr=7, Mai=8, Jun=9
-    return -1;                            // Jul/Ago → fora de época
+    const m = new Date().getMonth() + 1;
+    if (m >= 9) return m - 9;
+    if (m <= 6) return m + 3;
+    return -1;
 }
 function eDevedor(nome) {
     const limite = mesEpocaAtualIdx();
@@ -710,7 +727,8 @@ function showTab(id) {
     document.getElementById('tab-' + id).classList.add('active');
     if (id === 'resumo') { destroyCharts('bar', 'line'); setTimeout(initResumoCharts, 50); }
     if (id === 'despesas') { destroyCharts('pie'); setTimeout(initDespesasChart, 50); }
-    if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
+    if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
+    if (id === 'inscricoes') { destroyCharts('inscricoesBolo'); setTimeout(initInscricoesChart, 50); }
 }
 
 // ─── RESUMO ───
@@ -756,7 +774,8 @@ function chartThemeColors() {
     return {
         grelha: dark ? 'rgba(148,163,184,.15)' : 'rgba(148,163,184,.25)',
         texto: dark ? '#cbd5e1' : '#64748b',
-        legenda: dark ? '#cbd5e1' : '#64748b'
+        legenda: dark ? '#cbd5e1' : '#64748b',
+        borda: dark ? '#1e293b' : '#fff'
     };
 }
 function initResumoCharts() {
@@ -786,6 +805,38 @@ function initDespesasChart() {
     chartInstances.pie = new Chart(freshCanvas('chartPie'), {
         type: 'doughnut', data: { labels: pd.map(c => c.name), datasets: [{ data: pd.map(c => c.value), backgroundColor: pd.map(c => c.color), borderWidth: 2, borderColor: '#fff' }] },
         options: { responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ctx.label + ': €' + ctx.raw } } } }
+    });
+}
+function initInscricoesChart() {
+    const total = inscritos.length;
+    const pagas = inscricoesPagas.length;
+    const porPagar = total - pagas;
+    const c = chartThemeColors();
+    chartInstances.inscricoesBolo = new Chart(freshCanvas('chartInscricoesBolo'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pagas', 'Por pagar'],
+            datasets: [{
+                data: [pagas, porPagar],
+                backgroundColor: ['#16a34a', '#dc6843'],
+                borderWidth: 2, borderColor: c.borda
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const v = ctx.raw;
+                            const pct = total > 0 ? Math.round((v / total) * 100) : 0;
+                            return `${ctx.label}: ${v} (${pct}%) · €${v * valorInscricao}`;
+                        }
+                    }
+                }
+            }
+        }
     });
 }
 initResumoCharts();
@@ -1057,7 +1108,42 @@ function initTreinosCharts() {
         }
     });
 
-    // Gráfico 2: top 10 assíduos (barras horizontais)
+    // Gráfico 2: doughnut inscritos vs não inscritos (total acumulado)
+    let totalIns = 0, totalExt = 0;
+    eventos.forEach(t => {
+        totalIns += (t.presentes || []).length;
+        totalExt += (t.extra || []).length;
+    });
+    if (totalIns + totalExt > 0) {
+        chartInstances.treinosBolo = new Chart(freshCanvas('chartTreinosBolo'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Inscritos', 'Não inscritos (extra)'],
+                datasets: [{
+                    data: [totalIns, totalExt],
+                    backgroundColor: ['#1A6FB5', '#dc6843'],
+                    borderWidth: 2, borderColor: c.borda
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 }, color: c.legenda } },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const tot = totalIns + totalExt;
+                                const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0;
+                                return `${ctx.label}: ${ctx.raw} (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Gráfico 3: top 10 assíduos (barras horizontais)
     const ranking = todosJogadores
         .map(j => ({ nome: j.nome, presencas: presencasPorJogador[j.nome] || 0 }))
         .filter(r => r.presencas > 0)
