@@ -513,7 +513,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 17 de Setembro de 2026</p>
+        <p class="note">Última atualização: 18 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -645,8 +645,16 @@ function toggleMenu() {
     document.getElementById('menuPanel').classList.toggle('open', menuOpen);
     document.getElementById('burgerBtn').classList.toggle('open', menuOpen);
 }
+// menuNav: usado pelos links do menu hamburger — abre/fecha o menu
 function menuNav(id) {
     toggleMenu();
+    showTab(id);
+    marcarMenuAtivo(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+// irPara: navegação "externa" (alertas, links) — nunca abre o menu
+function irPara(id) {
+    if (menuOpen) toggleMenu();
     showTab(id);
     marcarMenuAtivo(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -743,22 +751,17 @@ function mesEpocaAtualIdx() {
 }
 
 // ─── ISENÇÃO POR FALTA DE PRESENÇA (mês fechado) ───
-// Um mês só fecha quando o seguinte começa.
 function mesFechado(mIdx) {
     const atual = mesEpocaAtualIdx();
     if (atual === -1) return true;
     return mIdx < atual;
 }
-
-// Verifica se um evento (treinosJogos) pertence ao mês mIdx
 function eventoNoMes(dataStr, mIdx) {
     if (!dataStr) return false;
     const partes = dataStr.trim().split(' ');
     if (partes.length < 2) return false;
     return MESES.indexOf(partes[1]) === mIdx;
 }
-
-// Conta presenças (treino ou jogo) de um jogador num mês
 function presencasNoMes(nome, mIdx) {
     let count = 0;
     treinosJogos.forEach(t => {
@@ -768,15 +771,11 @@ function presencasNoMes(nome, mIdx) {
     });
     return count;
 }
-
-// Isento: mês fechado + não pagou + 0 presenças
 function isentoPorFaltaPresenca(nome, mIdx) {
     if (!mesFechado(mIdx)) return false;
     if (jaPagou(nome, mIdx)) return false;
     return presencasNoMes(nome, mIdx) === 0;
 }
-
-// Devedor: tem mês (até ao atual) sem pagar e sem isenção
 function eDevedor(nome) {
     const limite = mesEpocaAtualIdx();
     const max = limite === -1 ? MESES.length - 1 : limite;
@@ -789,7 +788,7 @@ function eDevedor(nome) {
     return false;
 }
 
-// ─── ÚLTIMO PAGAMENTO (via histórico) ───
+// ─── ÚLTIMO PAGAMENTO ───
 function ultimoPagamentoHistorico(nome) {
     if (typeof historico === 'undefined' || !historico.length) return null;
     for (const h of historico) {
@@ -911,17 +910,17 @@ function renderResumo() {
     });
 
     document.getElementById('resumo-alertas').innerHTML = `
-        <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="menuNav('quotas')">
+        <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="irPara('quotas')">
             <div class="alerta-num">${totalDevedores}</div>
             <div class="alerta-label">Quotas em falta</div>
             <div class="alerta-sub">${totalDevedores === 0 ? 'tudo em ordem' : 'jogadores com meses por pagar'}</div>
         </button>
-        <button class="alerta-card ${inscPorPagar === 0 ? 'ok' : 'atencao'}" onclick="menuNav('inscricoes')">
+        <button class="alerta-card ${inscPorPagar === 0 ? 'ok' : 'atencao'}" onclick="irPara('inscricoes')">
             <div class="alerta-num">${inscPorPagar}</div>
             <div class="alerta-label">Inscrições por pagar</div>
             <div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div>
         </button>
-        <button class="alerta-card ${faltaArbitroTotal === 0 ? 'ok' : 'atencao'}" onclick="menuNav('competicao')">
+        <button class="alerta-card ${faltaArbitroTotal === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')">
             <div class="alerta-num">€${faltaArbitroTotal}</div>
             <div class="alerta-label">Árbitro por receber</div>
             <div class="alerta-sub">${faltaArbitroTotal === 0 ? 'tudo recebido' : 'de amigáveis'}</div>
@@ -1103,14 +1102,11 @@ function renderVerificacaoMensal() {
     for (let i = 0; i < MESES.length; i++) {
         if (mesFechado(i)) mesesFechados.push(i);
     }
-
     if (mesesFechados.length === 0) {
-        const proximoMesNome = mesesAno[9] || 'Outubro';
         document.getElementById('verificacao-mensal').innerHTML =
-            `<p class="verif-mes-empty">Ainda não há meses fechados.<br>A primeira verificação será em <strong>${proximoMesNome} 2026</strong> (para Setembro).</p>`;
+            `<p class="verif-mes-empty">Ainda não há meses fechados.<br>A primeira verificação será em <strong>Outubro 2026</strong> (para Setembro).</p>`;
         return;
     }
-
     let html = '';
     mesesFechados.forEach(mIdx => {
         const isentos = [];
@@ -1122,12 +1118,10 @@ function renderVerificacaoMensal() {
             else if (isentoPorFaltaPresenca(j.nome, mIdx)) isentos.push({ nome: j.nome, pres });
             else devedores.push({ nome: j.nome, pres });
         });
-
         const valorIsento = isentos.reduce((s, i) => {
             const j = todosJogadores.find(x => x.nome === i.nome);
             return s + (j && j.inscrito ? QUOTA : QUOTA_NI);
         }, 0);
-
         html += `<div class="verif-mes">
             <div class="verif-mes-header">
                 <span class="verif-mes-titulo">📅 ${mesesAno[mIdx + 8]} 2026</span>
@@ -1157,7 +1151,6 @@ function renderVerificacaoMensal() {
         }
         html += `</div>`;
     });
-
     document.getElementById('verificacao-mensal').innerHTML = html;
 }
 renderVerificacaoMensal();
