@@ -963,7 +963,7 @@ document.getElementById('quotas-cards').innerHTML =
     makeCard('Inscritos', inscritos.length, '€20/mês', '#0D3B66') +
     makeCard('Não Inscritos', naoInscritos.length, '€10/mês', '#1A6FB5') +
     makeCard('Recebido', recebidoReal ? '€' + recebidoReal : '€0', 'até à data', '#16a34a') +
-    makeCard('Quota Não Inscrito', '€10/mês', 'quando comparecem', '#0D3B66');
+    makeCard('Regra de Isenção', '0 presenças', 'sem treinos nem jogos no mês = isento', '#64748b');
 
 document.getElementById('despesas-cards').innerHTML =
     makeCard('Total Despesas', '€' + despesasConfirmadas, 'orçamento da época', '#0D3B66') +
@@ -1134,7 +1134,7 @@ function renderVerificacaoMensal() {
         if (isentos.length === 0) {
             html += `<div style="font-size:12px;color:#888">Ninguém isento por falta de presença.</div>`;
         } else {
-            html += `<div style="font-size:12px;color:#5b21b6;font-weight:600;margin-bottom:4px">Isentos (não treinaram nenhum dia):</div>`;
+            html += `<div style="font-size:12px;color:#5b21b6;font-weight:600;margin-bottom:4px">Isentos (não compareceram a nenhum treino nem jogo):</div>`;
             html += `<div class="verif-mes-lista">`;
             isentos.forEach(p => {
                 html += `<span class="verif-mes-pessoa clickable" onclick="abrirPerfil('${escapeAttr(p.nome)}')">${p.nome}</span>`;
@@ -1142,7 +1142,7 @@ function renderVerificacaoMensal() {
             html += `</div>`;
         }
         if (devedores.length > 0) {
-            html += `<div style="font-size:12px;color:#9a3412;font-weight:600;margin-top:10px;margin-bottom:4px">Treinaram, mas ainda não pagaram:</div>`;
+            html += `<div style="font-size:12px;color:#9a3412;font-weight:600;margin-top:10px;margin-bottom:4px">Compareceram, mas ainda não pagaram:</div>`;
             html += `<div class="verif-mes-lista">`;
             devedores.forEach(p => {
                 html += `<span class="verif-mes-pessoa clickable" onclick="abrirPerfil('${escapeAttr(p.nome)}')" style="border-color:#fed7aa">${p.nome} <span style="font-size:10px;color:#9a3412">(${p.pres})</span></span>`;
@@ -1158,7 +1158,7 @@ renderVerificacaoMensal();
 // ─── QUOTAS ───
 function monthCell(pago, isento) {
     if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
-    if (isento) return '<td class="center" style="padding:7px 3px;background:#faf5ff"><span style="font-size:11px;font-weight:700;color:#8b5cf6" title="Isento (não treinou)">I</span></td>';
+    if (isento) return '<td class="center" style="padding:7px 3px;background:#faf5ff"><span style="font-size:11px;font-weight:700;color:#8b5cf6" title="Isento (não compareceu)">I</span></td>';
     return '<td class="center" style="padding:7px 3px"><span style="color:#ccc;font-size:10px">—</span></td>';
 }
 function renderTabelaQuotasSecao(jogadores, titulo, cor) {
@@ -1202,7 +1202,7 @@ function renderQuotas() {
         if (naoInscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(naoInscritosFiltrados, 'Não Inscritos (€10/mês)', '#dc6843');
     }
     qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
-    qh += '<p class="note" style="margin-top:12px">Inscritos: €20/mês · Não inscritos: €10/mês · Atleta que não compareça a nenhum treino nem jogo num mês fechado não paga esse mês · ✓ Pago · I Isento</p>';
+    qh += '<p class="note" style="margin-top:12px">Quota: €20/mês (inscritos) · €10/mês (não inscritos) · <strong>Válido para todos:</strong> quem não compareça a nenhum treino nem jogo num mês fechado fica isento desse mês · ✓ Pago · I Isento</p>';
     document.getElementById('tabela-quotas').innerHTML = qh;
 }
 renderQuotas();
@@ -1224,7 +1224,7 @@ MESES.forEach((mNome, mIdx) => {
         else if (isento) isentosCount++;
         let statusHtml, statusCls;
         if (pago) { statusHtml = `✓ Pago (€${j.quota})`; statusCls = 'pago'; }
-        else if (isento) { statusHtml = 'Isento (não treinou)'; statusCls = 'isento'; }
+        else if (isento) { statusHtml = 'Isento (não compareceu)'; statusCls = 'isento'; }
         else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
         const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
         rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
@@ -1682,7 +1682,7 @@ function abrirPerfil(nome) {
     else mesesPagosJogador.forEach(mIdx => { conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`; });
     for (let mIdx = 0; mIdx < MESES.length; mIdx++) {
         if (isentoPorFaltaPresenca(nomeCompleto, mIdx)) {
-            conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-isento">Isento (não treinou)</span></div>`;
+            conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-isento">Isento (não compareceu)</span></div>`;
         }
     }
     conteudo += `</div>`;
