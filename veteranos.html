@@ -312,6 +312,26 @@
         .verif-mes-pessoa { font-size: 12px; background: #fff; padding: 3px 10px; border-radius: 12px; color: #333; border: 1px solid #e9d5ff; }
         .verif-mes-empty { font-size: 12px; color: #888; text-align: center; padding: 16px 0; line-height: 1.6; }
 
+        /* ─── NOTÍCIAS ─── */
+        .noticia-card { background: #fff; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(13,59,102,.05); border-left: 4px solid #94a3b8; }
+        .noticia-card:last-child { margin-bottom: 0; }
+        .noticia-card.tipo-jogo { border-left-color: #1A6FB5; }
+        .noticia-card.tipo-treino { border-left-color: #16a34a; }
+        .noticia-card.tipo-aviso { border-left-color: #dc6843; }
+        .noticia-card.tipo-convivio { border-left-color: #d4a017; }
+        .noticia-card.tipo-info { border-left-color: #94a3b8; }
+        .noticia-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+        .noticia-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; text-transform: uppercase; letter-spacing: .3px; }
+        .noticia-tag.tipo-jogo { background: #dbeafe; color: #0D3B66; }
+        .noticia-tag.tipo-treino { background: #dcfce7; color: #166534; }
+        .noticia-tag.tipo-aviso { background: #fff7ed; color: #9a3412; }
+        .noticia-tag.tipo-convivio { background: #fef3c7; color: #92400e; }
+        .noticia-tag.tipo-info { background: #f1f5f9; color: #475569; }
+        .noticia-data { font-size: 11px; color: #1A6FB5; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+        .noticia-titulo { font-size: 14px; font-weight: 600; color: #0D3B66; margin-bottom: 4px; }
+        .noticia-corpo { font-size: 13px; color: #444; line-height: 1.55; }
+        .noticia-empty { font-size: 12px; color: #999; text-align: center; padding: 16px 0; font-style: italic; }
+
         html[data-tema="escuro"] { --bg: #0b1220; --azul-bg: #1e3a5f; --card: #1e293b; }
         html[data-tema="escuro"] body { background: #0b1220; color: #cbd5e1; }
 
@@ -325,9 +345,20 @@
         html[data-tema="escuro"] .mes-acc,
         html[data-tema="escuro"] .venda-card,
         html[data-tema="escuro"] .bday-month-card,
-        html[data-tema="escuro"] .modal-section {
+        html[data-tema="escuro"] .modal-section,
+        html[data-tema="escuro"] .noticia-card {
             background: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.35);
         }
+        html[data-tema="escuro"] .noticia-titulo { color: #93c5fd; }
+        html[data-tema="escuro"] .noticia-corpo { color: #e2e8f0; }
+        html[data-tema="escuro"] .noticia-data { color: #60a5fa; }
+        html[data-tema="escuro"] .noticia-tag.tipo-jogo { background: #1e3a5f; color: #93c5fd; }
+        html[data-tema="escuro"] .noticia-tag.tipo-treino { background: #14532d; color: #86efac; }
+        html[data-tema="escuro"] .noticia-tag.tipo-aviso { background: #422006; color: #fcd34d; }
+        html[data-tema="escuro"] .noticia-tag.tipo-convivio { background: #422006; color: #fcd34d; }
+        html[data-tema="escuro"] .noticia-tag.tipo-info { background: #0f172a; color: #94a3b8; }
+        html[data-tema="escuro"] .noticia-empty { color: #94a3b8; }
+
         html[data-tema="escuro"] .modal-sheet { background: #0f172a; }
         html[data-tema="escuro"] .stat-box { background: #0f172a; }
         html[data-tema="escuro"] .filtro-bar { background: #0f172a; }
@@ -495,6 +526,10 @@
     <div id="tab-resumo" class="tab-panel active">
         <div id="saldo-hero"></div>
         <div class="alertas-grid" id="resumo-alertas"></div>
+        <div class="section-card" id="resumo-noticias-seccao">
+            <h2 class="section-title">📰 Notícias</h2>
+            <div id="resumo-noticias"></div>
+        </div>
         <div class="section-card" style="border-left:4px solid #16a34a">
             <h2 class="section-title">🧮 Decomposição do Saldo</h2>
             <div id="saldo-decomposicao"></div>
@@ -645,14 +680,12 @@ function toggleMenu() {
     document.getElementById('menuPanel').classList.toggle('open', menuOpen);
     document.getElementById('burgerBtn').classList.toggle('open', menuOpen);
 }
-// menuNav: usado pelos links do menu hamburger — abre/fecha o menu
 function menuNav(id) {
     toggleMenu();
     showTab(id);
     marcarMenuAtivo(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-// irPara: navegação "externa" (alertas, links) — nunca abre o menu
 function irPara(id) {
     if (menuOpen) toggleMenu();
     showTab(id);
@@ -875,6 +908,35 @@ function showTab(id) {
     if (id === 'inscricoes') { destroyCharts('inscricoesBolo'); setTimeout(initInscricoesChart, 50); }
     if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
 }
+
+// ─── NOTÍCIAS ───
+function renderNoticias() {
+    const lista = (typeof noticias !== 'undefined' && Array.isArray(noticias)) ? noticias : [];
+    const el = document.getElementById('resumo-noticias');
+    if (!el) return;
+
+    if (lista.length === 0) {
+        el.innerHTML = '<p class="noticia-empty">Sem notícias de momento.</p>';
+        return;
+    }
+
+    let html = '';
+    lista.forEach(n => {
+        const tag = n.tag || 'info';
+        const tagLabel = { jogo: 'Jogo', treino: 'Treino', aviso: 'Aviso', convivio: 'Convívio', info: 'Info' }[tag] || 'Info';
+        const corpoComLinks = tornarNomesClicaveis(n.corpo || '');
+        html += `<div class="noticia-card tipo-${tag}">
+            <div class="noticia-header">
+                <span class="noticia-tag tipo-${tag}">${tagLabel}</span>
+                <span class="noticia-data">${n.data || ''}</span>
+            </div>
+            <div class="noticia-titulo">${n.titulo || ''}</div>
+            ${n.corpo ? `<div class="noticia-corpo">${corpoComLinks}</div>` : ''}
+        </div>`;
+    });
+    el.innerHTML = html;
+}
+renderNoticias();
 
 // ─── RESUMO ───
 function renderResumo() {
