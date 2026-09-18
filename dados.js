@@ -245,5 +245,23 @@ const historico = [
     { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
 ];
 
+// ─── NOTÍCIAS ───
+// Mostradas no Resumo (homepage). Ordem: da mais recente para a mais antiga.
+// tag: "jogo" (azul) · "treino" (verde) · "aviso" (laranja) · "convivio" (dourado) · "info" (cinza)
+const noticias = [
+    {
+        data: "18 Set 2026",
+        tag: "jogo",
+        titulo: "🏆 O campeonato começa a 17 de Outubro",
+        corpo: "Já temos data para o arranque oficial. Vamos com tudo!"
+    },
+    {
+        data: "18 Set 2026",
+        tag: "treino",
+        titulo: "⚽ Jogo de treino a 3 de Outubro em casa com o Sandim",
+        corpo: "Mais um teste antes do campeonato. Contamos com todos."
+    }
+];
+
 // ─── MAPAS AUXILIARES ───
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
