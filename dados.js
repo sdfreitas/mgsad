@@ -35,7 +35,6 @@ const inscritos = [
     { nome: "Sergio Rodrigues", apelido: "RODRIGUES", num: 25, nasc: "01/11/1983" },
     { nome: "Joel Tavares", apelido: "JOEL", num: 3, nasc: "27/09/1981" },
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
-    { nome: "André Lopes", apelido: "ANDRÉ", num: 20, nasc: "15/08/1990" },
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" },
     { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
@@ -103,7 +102,7 @@ const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
 
 // ─── DESPESAS CONFIRMADAS ───
 const despesaCampo = 1000;
-const despesaAFA = 540;
+const despesaAFA = 520;   // 26 atletas × €20 (André Lopes não participa esta época)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -197,7 +196,8 @@ const amigaveis = [
                 "Sérgio Freitas",
                 "Américo Silva",
                 "Pedro Ferreira",
-                "Joel Tavares"
+                "Joel Tavares",
+                "Zé Buraca"
             ]
         }
     }
@@ -222,7 +222,8 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro €5), Pedro Ferreira (árbitro €5), Joel Tavares (árbitro €5), Mário Oliveira (boné €5), Pedro Costa (inscrição €30), Jorge Azevedo (inscrição €30), Pedro Cadete (inscrição €30) — total €108." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época — retirado do plantel. Inscrição AFA ajustada para 26 atletas (€520)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro €5), Pedro Ferreira (árbitro €5), Joel Tavares (árbitro €5), Zé Buraca (árbitro €5), Mário Oliveira (boné €5), Pedro Costa (inscrição €30), Jorge Azevedo (inscrição €30), Pedro Cadete (inscrição €30) — total €113." },
     { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
@@ -250,7 +251,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: €2.220." },
     { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
-    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (27 atletas × €20 da caixa) — €540, a pagar em Setembro." },
+    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (26 atletas × €20 da caixa) — €520, a pagar em Setembro." },
 ];
 
 // ─── NOTÍCIAS ───
