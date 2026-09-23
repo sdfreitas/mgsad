@@ -80,7 +80,8 @@ const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira", "André Pinho",
     "Rui Rocha", "António Rocha",
-    "Pedro Ferreira"
+    "Pedro Ferreira",
+    "Pedro Costa", "Jorge Azevedo"
 ];
 
 // ─── SÓCIOS PAGOS ───
@@ -92,7 +93,9 @@ const sociosPagos = [
     "Joel Tavares",
     "Amílcar André",
     "Hugo André",
-    "Pedro Ferreira"
+    "Pedro Ferreira",
+    "Mário Oliveira",
+    "Américo Oliveira"
 ];
 
 // ─── MERENDAS PAGAS ───
@@ -130,7 +133,7 @@ const listaPrecos = {
 
 const compras6Set = [
     { nome: "Telmo", itens: ["Calções saída", "Boné"], pago: false },
-    { nome: "Mário Oliveira", itens: ["Boné"], pago: false },
+    { nome: "Mário Oliveira", itens: ["Boné"], pago: true },
     { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: false },
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
     { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
@@ -192,7 +195,9 @@ const amigaveis = [
                 "António Rocha",
                 "Mário Oliveira",
                 "Sérgio Freitas",
-                "Américo Silva"
+                "Américo Silva",
+                "Pedro Ferreira",
+                "Joel Tavares"
             ]
         }
     }
@@ -217,6 +222,10 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pedro Costa e Jorge Azevedo pagaram a inscrição na AFA (€30 cada, €60 no total)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pedro Ferreira e Joel Tavares pagaram o árbitro do amigável vs Paços de Ferreira (€5 cada, €10 no total)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Mário Oliveira pagou o boné do equipamento (€5)." },
+    { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Américo Silva pagou o árbitro do amigável vs Paços de Ferreira (€5)." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
