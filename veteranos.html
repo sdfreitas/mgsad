@@ -285,7 +285,7 @@
         .saldo-hero-line-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .saldo-hero-line-value { font-weight: 700; font-size: 15px; }
 
-        .alertas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .alertas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
         .alerta-card {
             border-radius: 12px; padding: 16px 18px; cursor: pointer;
             transition: transform .15s, box-shadow .15s;
@@ -477,6 +477,9 @@
         html[data-tema="escuro"] .seg-btn:hover { color: #93c5fd; }
         html[data-tema="escuro"] .seg-btn.active { background: #1e293b; color: #93c5fd; }
 
+        @media(max-width:900px) {
+            .alertas-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media(max-width:600px) {
             .cards-grid { grid-template-columns: 1fr 1fr; }
             .card-value { font-size: 22px; }
@@ -977,11 +980,29 @@ function renderResumo() {
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
     const inscPorPagar = inscritos.length - inscricoesPagas.length;
     const inscValor = inscPorPagar * valorInscricao;
+
+    // ─── Árbitros: nº de jogadores em falta + valor ───
+    let faltaArbitroJogadores = 0;
     let faltaArbitroTotal = 0;
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
-        faltaArbitroTotal += (a.arbitro.participantes.length - a.arbitro.pagaram.length) * a.arbitro.valorPorJogador;
+        const emFalta = (a.arbitro.participantes || []).filter(n => !(a.arbitro.pagaram || []).includes(n));
+        faltaArbitroJogadores += emFalta.length;
+        faltaArbitroTotal += emFalta.length * a.arbitro.valorPorJogador;
     });
+
+    // ─── Aniversariantes do mês atual ───
+    const _hojeR = new Date();
+    const _mesR = _hojeR.getMonth() + 1;
+    const _aniv = todosJogadores
+        .filter(j => j.nasc && parseInt(j.nasc.split('/')[1]) === _mesR)
+        .sort((a, b) => parseInt(a.nasc.split('/')[0]) - parseInt(b.nasc.split('/')[0]));
+    const _anivSub = _aniv.length === 0
+        ? 'sem aniversários este mês'
+        : _aniv.map(j => j.nome).join(', ');
+    const _anivSubCurto = _aniv.length > 3
+        ? _aniv.slice(0, 3).map(j => j.nome).join(', ') + ' + ' + (_aniv.length - 3) + ' outros'
+        : _anivSub;
 
     document.getElementById('resumo-alertas').innerHTML = `
         <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="irPara('quotas')">
@@ -994,10 +1015,15 @@ function renderResumo() {
             <div class="alerta-label">Inscrições por pagar</div>
             <div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div>
         </button>
-        <button class="alerta-card ${faltaArbitroTotal === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')">
-            <div class="alerta-num">€${faltaArbitroTotal}</div>
+        <button class="alerta-card ${faltaArbitroJogadores === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')">
+            <div class="alerta-num">${faltaArbitroJogadores}</div>
             <div class="alerta-label">Árbitro por receber</div>
-            <div class="alerta-sub">${faltaArbitroTotal === 0 ? 'tudo recebido' : 'de amigáveis'}</div>
+            <div class="alerta-sub">${faltaArbitroJogadores === 0 ? 'tudo recebido' : '€' + faltaArbitroTotal + ' em falta'}</div>
+        </button>
+        <button class="alerta-card ${_aniv.length === 0 ? 'atencao' : 'ok'}" onclick="irPara('aniversarios')" title="${_anivSub}">
+            <div class="alerta-num">${_aniv.length}</div>
+            <div class="alerta-label">🎂 ${mesesAno[_mesR - 1]}</div>
+            <div class="alerta-sub">${_anivSubCurto}</div>
         </button>`;
 
     let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
