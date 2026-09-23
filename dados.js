@@ -81,7 +81,7 @@ const inscricoesPagas = [
     "Joel Tavares", "António Oliveira", "André Pinho",
     "Rui Rocha", "António Rocha",
     "Pedro Ferreira",
-    "Pedro Costa", "Jorge Azevedo"
+    "Pedro Costa", "Jorge Azevedo", "Pedro Cadete"
 ];
 
 // ─── SÓCIOS PAGOS ───
@@ -222,11 +222,8 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pedro Costa e Jorge Azevedo pagaram a inscrição na AFA (€30 cada, €60 no total)." },
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pedro Ferreira e Joel Tavares pagaram o árbitro do amigável vs Paços de Ferreira (€5 cada, €10 no total)." },
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Mário Oliveira pagou o boné do equipamento (€5)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro €5), Pedro Ferreira (árbitro €5), Joel Tavares (árbitro €5), Mário Oliveira (boné €5), Pedro Costa (inscrição €30), Jorge Azevedo (inscrição €30), Pedro Cadete (inscrição €30) — total €108." },
     { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Américo Silva pagou o árbitro do amigável vs Paços de Ferreira (€5)." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
     { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira (€5) e Pedro Ferreira pagou Setembro (€20), inscrição (€30) e quota de sócio (€40) — total recebido: €95." },
