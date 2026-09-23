@@ -225,6 +225,38 @@
         .modal-row:last-child { border-bottom: none; }
         .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
+        /* ─── ESTADO GERAL DO JOGADOR (topo do perfil) ─── */
+        .estado-geral {
+            display: flex; gap: 14px; align-items: flex-start;
+            border-radius: 12px; padding: 16px;
+            margin-bottom: 12px;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(13,59,102,.06);
+            border-left: 4px solid #16a34a;
+        }
+        .estado-geral.falta { border-left-color: #dc6843; }
+        .estado-geral-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800; flex-shrink: 0;
+            color: #fff; line-height: 1;
+        }
+        .estado-geral.ok .estado-geral-icon { background: #16a34a; }
+        .estado-geral.falta .estado-geral-icon { background: #dc6843; }
+        .estado-geral-body { flex: 1; min-width: 0; }
+        .estado-geral-titulo { font-size: 16px; font-weight: 700; line-height: 1.3; }
+        .estado-geral.ok .estado-geral-titulo { color: #166534; }
+        .estado-geral.falta .estado-geral-titulo { color: #9a3412; }
+        .estado-geral-sub { font-size: 12px; color: #888; margin-top: 3px; }
+        .estado-geral-lista { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .estado-geral-item {
+            font-size: 11px; background: #f8fafc;
+            padding: 4px 9px; border-radius: 8px;
+            color: #333; font-weight: 500;
+            border: 1px solid #e2e8f0;
+        }
+        .estado-geral-item strong { color: #dc6843; margin-left: 2px; }
+
         #reciboContainer { display: none; }
         @media print {
             body > *:not(#reciboContainer) { display: none !important; }
@@ -352,7 +384,8 @@
         html[data-tema="escuro"] .venda-card,
         html[data-tema="escuro"] .bday-month-card,
         html[data-tema="escuro"] .modal-section,
-        html[data-tema="escuro"] .noticia-card {
+        html[data-tema="escuro"] .noticia-card,
+        html[data-tema="escuro"] .estado-geral {
             background: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.35);
         }
         html[data-tema="escuro"] .noticia-titulo { color: #93c5fd; }
@@ -364,6 +397,12 @@
         html[data-tema="escuro"] .noticia-tag.tipo-convivio { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .noticia-tag.tipo-info { background: #0f172a; color: #94a3b8; }
         html[data-tema="escuro"] .noticia-empty { color: #94a3b8; }
+
+        html[data-tema="escuro"] .estado-geral.ok .estado-geral-titulo { color: #86efac; }
+        html[data-tema="escuro"] .estado-geral.falta .estado-geral-titulo { color: #fcd34d; }
+        html[data-tema="escuro"] .estado-geral-sub { color: #94a3b8; }
+        html[data-tema="escuro"] .estado-geral-item { background: #0f172a; color: #e2e8f0; border-color: #334155; }
+        html[data-tema="escuro"] .estado-geral-item strong { color: #fcd34d; }
 
         html[data-tema="escuro"] .modal-sheet { background: #0f172a; }
         html[data-tema="escuro"] .stat-box { background: #0f172a; }
@@ -1819,6 +1858,85 @@ function encontrarJogador(termo) {
         || todosJogadores.find(j => (j.apelido || '').toLowerCase() === t)
         || todosJogadores.find(j => j.nome.split(' ')[0].toLowerCase() === t);
 }
+
+// ─── ESTADO GERAL DO JOGADOR (tudo pago / por regularizar) ───
+function calcularEstadoJogador(jogador) {
+    const nomeC = jogador.nome;
+    const inscrito = jogador.inscrito;
+    const limite = mesEpocaAtualIdx();
+    const itens = [];
+
+    // Quotas mensais — desde Set até ao mês atual
+    if (limite !== -1) {
+        for (let m = 0; m <= limite; m++) {
+            if (jaPagou(nomeC, m)) continue;
+            if (isentoPorFaltaPresenca(nomeC, m)) continue;
+            itens.push({
+                tipo: 'quota',
+                label: `Quota ${MESES[m]}`,
+                valor: inscrito ? QUOTA : QUOTA_NI
+            });
+        }
+    }
+
+    // Inscrição AFA — só para inscritos
+    if (inscrito && !jaPagouInscricao(nomeC)) {
+        itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
+    }
+
+    // Quota de sócio — só para inscritos
+    if (inscrito && !sociosPagos.includes(nomeC)) {
+        itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
+    }
+
+    // Equipamento pendente
+    const compra = compras6Set.find(c => c.nome === nomeC);
+    if (compra && !compra.pago) {
+        itens.push({
+            tipo: 'equipamento',
+            label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`,
+            valor: compra.total
+        });
+    }
+
+    // Árbitro(s) de amigáveis por pagar
+    amigaveis.forEach(a => {
+        if (!a.arbitro) return;
+        if (!(a.arbitro.participantes || []).includes(nomeC)) return;
+        if ((a.arbitro.pagaram || []).includes(nomeC)) return;
+        itens.push({
+            tipo: 'arbitro',
+            label: `Árbitro — vs ${a.adversario}`,
+            valor: a.arbitro.valorPorJogador
+        });
+    });
+
+    const total = itens.reduce((s, i) => s + i.valor, 0);
+    return { ok: itens.length === 0, itens, total };
+}
+
+function renderEstadoJogador(estado) {
+    if (estado.ok) {
+        return `<div class="estado-geral ok">
+            <div class="estado-geral-icon">✓</div>
+            <div class="estado-geral-body">
+                <div class="estado-geral-titulo">Tudo em ordem</div>
+                <div class="estado-geral-sub">Sem valores em falta</div>
+            </div>
+        </div>`;
+    }
+    const n = estado.itens.length;
+    const lista = estado.itens.map(i => `<span class="estado-geral-item">${i.label} <strong>€${i.valor}</strong></span>`).join('');
+    return `<div class="estado-geral falta">
+        <div class="estado-geral-icon">!</div>
+        <div class="estado-geral-body">
+            <div class="estado-geral-titulo">Por regularizar — €${estado.total}</div>
+            <div class="estado-geral-sub">${n} ${n === 1 ? 'item em falta' : 'itens em falta'}</div>
+            <div class="estado-geral-lista">${lista}</div>
+        </div>
+    </div>`;
+}
+
 let nomeAtualPerfil = null;
 function abrirPerfil(nome) {
     const jogador = encontrarJogador(nome);
@@ -1828,6 +1946,11 @@ function abrirPerfil(nome) {
     document.getElementById('perfilNome').textContent = jogador.nome;
     const nomeCompleto = jogador.nome;
     let conteudo = '';
+
+    // ─── Estado geral (tudo pago / por regularizar) ───
+    const estado = calcularEstadoJogador(jogador);
+    conteudo += renderEstadoJogador(estado);
+
     conteudo += `<div class="modal-section"><h4>📋 Dados</h4>`;
     conteudo += `<div class="modal-row"><span>Apelido</span><strong>${jogador.apelido || '—'}</strong></div>`;
     conteudo += `<div class="modal-row"><span>Número</span><strong>${jogador.num || '—'}</strong></div>`;
@@ -1894,11 +2017,11 @@ function abrirPerfil(nome) {
         }
     }
     conteudo += `</div>`;
-    const inscricaoPaga = jaPagouInscricao(nomeCompleto);
-    conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4>`;
-    conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
-    conteudo += `</div>`;
     if (jogador.inscrito) {
+        const inscricaoPaga = jaPagouInscricao(nomeCompleto);
+        conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4>`;
+        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `</div>`;
         const socioPago = sociosPagos.includes(nomeCompleto);
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4>`;
         conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${socioPago ? 'badge-ok' : 'badge-falta'}">${socioPago ? 'Pago' : 'Por pagar'}</span></div>`;
