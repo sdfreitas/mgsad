@@ -258,6 +258,12 @@ const historico = [
 // tag: "jogo" (azul) · "treino" (verde) · "aviso" (laranja) · "convivio" (dourado) · "info" (cinza)
 const noticias = [
     {
+        data: "24 Set 2026",
+        tag: "jogo",
+        titulo: "⚽ Jogo com o Bustelo a 10 de Outubro em casa",
+        corpo: "No dia 10 de outubro temos jogo com o Bustelo no nosso estádio. Contamos com todos!"
+    },
+    {
         data: "18 Set 2026",
         tag: "jogo",
         titulo: "🏆 O campeonato começa a 17 de Outubro",
