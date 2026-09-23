@@ -191,7 +191,8 @@ const amigaveis = [
                 "Rui Rocha",
                 "António Rocha",
                 "Mário Oliveira",
-                "Sérgio Freitas"
+                "Sérgio Freitas",
+                "Américo Silva"
             ]
         }
     }
@@ -216,6 +217,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Américo Silva pagou o árbitro do amigável vs Paços de Ferreira (€5)." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
     { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
     { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira (€5) e Pedro Ferreira pagou Setembro (€20), inscrição (€30) e quota de sócio (€40) — total recebido: €95." },
