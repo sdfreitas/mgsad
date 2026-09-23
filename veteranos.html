@@ -262,6 +262,12 @@
         .filtro-bar .filtro-info { font-size: 12px; color: #64748b; }
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
+        /* ─── BOTÕES SEGMENTADOS (filtros/ordenação) ─── */
+        .seg-group { display: inline-flex; flex-wrap: wrap; gap: 3px; background: #e2e8f0; padding: 3px; border-radius: 8px; }
+        .seg-btn { padding: 6px 11px; border: none; background: none; font-family: inherit; font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; border-radius: 6px; transition: color .15s, background .15s; white-space: nowrap; }
+        .seg-btn:hover { color: #0D3B66; }
+        .seg-btn.active { background: #fff; color: #0D3B66; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
         .saldo-hero {
             background: linear-gradient(135deg, #0D3B66 0%, #1A6FB5 100%);
             color: #fff; border-radius: 16px; padding: 32px 24px 26px;
@@ -466,6 +472,11 @@
         html[data-tema="escuro"] .tema-btn { background: #334155; }
         html[data-tema="escuro"] .tema-btn:hover { background: #475569; }
 
+        html[data-tema="escuro"] .seg-group { background: #0f172a; }
+        html[data-tema="escuro"] .seg-btn { color: #94a3b8; }
+        html[data-tema="escuro"] .seg-btn:hover { color: #93c5fd; }
+        html[data-tema="escuro"] .seg-btn.active { background: #1e293b; color: #93c5fd; }
+
         @media(max-width:600px) {
             .cards-grid { grid-template-columns: 1fr 1fr; }
             .card-value { font-size: 22px; }
@@ -638,6 +649,7 @@
     </div>
     <div id="tab-historico" class="tab-panel">
         <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, treinos, atas e vendas.</p></div>
+        <div id="historico-filtros"></div>
         <div id="historico-lista"></div>
     </div>
 </main>
@@ -1247,22 +1259,83 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     html += '</tbody></table></div>';
     return html;
 }
-let quotasSoDevedores = false;
-function toggleFiltroDevedores() { quotasSoDevedores = !quotasSoDevedores; renderQuotas(); }
+
+// ─── FILTROS E ORDENAÇÃO DE QUOTAS ───
+let quotasFiltro = 'todos';       // 'todos' | 'devedores' | 'emDia'
+let quotasOrdem = 'padrao';       // 'padrao' | 'nome' | 'num' | 'maisPagos' | 'menosPagos' | 'idade'
+
+function setQuotasFiltro(f) { quotasFiltro = f; renderQuotas(); }
+function setQuotasOrdem(o) { quotasOrdem = o; renderQuotas(); }
+
+function _aplicarFiltroQuotas(lista) {
+    let l = lista.slice();
+    if (quotasFiltro === 'devedores') l = l.filter(j => eDevedor(j.nome));
+    else if (quotasFiltro === 'emDia') l = l.filter(j => !eDevedor(j.nome));
+    return l;
+}
+function _ordenarQuotas(lista) {
+    const l = lista.slice();
+    if (quotasOrdem === 'nome') {
+        l.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    } else if (quotasOrdem === 'num') {
+        l.sort((a, b) => {
+            const na = a.num == null ? 999 : a.num;
+            const nb = b.num == null ? 999 : b.num;
+            return na - nb;
+        });
+    } else if (quotasOrdem === 'maisPagos') {
+        l.sort((a, b) => mesesPagos(b.nome).length - mesesPagos(a.nome).length);
+    } else if (quotasOrdem === 'menosPagos') {
+        l.sort((a, b) => mesesPagos(a.nome).length - mesesPagos(b.nome).length);
+    } else if (quotasOrdem === 'idade') {
+        // Mais velho primeiro
+        l.sort((a, b) => {
+            const da = a.nasc ? new Date(a.nasc.split('/').reverse().join('-')) : new Date(0);
+            const db = b.nasc ? new Date(b.nasc.split('/').reverse().join('-')) : new Date(0);
+            return da - db;
+        });
+    }
+    return l;
+}
+
 function renderQuotas() {
-    const inscritosFiltrados = quotasSoDevedores ? inscritos.filter(j => eDevedor(j.nome)) : inscritos;
-    const naoInscritosFiltrados = quotasSoDevedores ? naoInscritos.filter(j => eDevedor(j.nome)) : naoInscritos;
+    const inscritosFiltrados = _ordenarQuotas(_aplicarFiltroQuotas(inscritos));
+    const naoInscritosFiltrados = _ordenarQuotas(_aplicarFiltroQuotas(naoInscritos));
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
-    let qh = `<div class="filtro-bar">
-        <div class="filtro-info">${quotasSoDevedores ? `A mostrar <strong>${totalDevedores}</strong> jogador(es) com meses em falta` : `A mostrar <strong>todos</strong> os ${inscritos.length + naoInscritos.length} jogadores`}</div>
-        <button class="btn-action${quotasSoDevedores ? ' ativo' : ''}" onclick="toggleFiltroDevedores()">${quotasSoDevedores ? '👥 Ver todos' : '⚠️ Só devedores'}</button>
+    const totalMostrado = inscritosFiltrados.length + naoInscritosFiltrados.length;
+    const totalGeral = inscritos.length + naoInscritos.length;
+
+    let qh = `<div class="filtro-bar" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div class="filtro-info">
+            A mostrar <strong>${totalMostrado}</strong> de <strong>${totalGeral}</strong> jogadores
+            ${totalDevedores > 0
+                ? `· <strong style="color:#dc6843">${totalDevedores}</strong> com quotas em falta`
+                : `· <strong style="color:#16a34a">tudo em ordem</strong>`}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="seg-group">
+                <button class="seg-btn${quotasFiltro === 'todos' ? ' active' : ''}" onclick="setQuotasFiltro('todos')">👥 Todos</button>
+                <button class="seg-btn${quotasFiltro === 'devedores' ? ' active' : ''}" onclick="setQuotasFiltro('devedores')">⚠️ Devedores</button>
+                <button class="seg-btn${quotasFiltro === 'emDia' ? ' active' : ''}" onclick="setQuotasFiltro('emDia')">✓ Em dia</button>
+            </div>
+            <div class="seg-group">
+                <button class="seg-btn${quotasOrdem === 'padrao' ? ' active' : ''}" onclick="setQuotasOrdem('padrao')">Padrão</button>
+                <button class="seg-btn${quotasOrdem === 'nome' ? ' active' : ''}" onclick="setQuotasOrdem('nome')">A–Z</button>
+                <button class="seg-btn${quotasOrdem === 'num' ? ' active' : ''}" onclick="setQuotasOrdem('num')">Nº</button>
+                <button class="seg-btn${quotasOrdem === 'maisPagos' ? ' active' : ''}" onclick="setQuotasOrdem('maisPagos')">↓ Pagos</button>
+                <button class="seg-btn${quotasOrdem === 'menosPagos' ? ' active' : ''}" onclick="setQuotasOrdem('menosPagos')">↑ Pagos</button>
+                <button class="seg-btn${quotasOrdem === 'idade' ? ' active' : ''}" onclick="setQuotasOrdem('idade')">Idade</button>
+            </div>
+        </div>
     </div>`;
-    if (quotasSoDevedores && inscritosFiltrados.length === 0 && naoInscritosFiltrados.length === 0) {
-        qh += '<p style="text-align:center;color:#16a34a;padding:24px;font-weight:600;font-size:14px">🎉 Ninguém em falta — tudo em ordem!</p>';
+
+    if (totalMostrado === 0) {
+        qh += '<p style="text-align:center;color:#16a34a;padding:24px;font-weight:600;font-size:14px">🎉 Nada para mostrar com estes filtros.</p>';
     } else {
         if (inscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(inscritosFiltrados, 'Inscritos (€20/mês)', '#0D3B66');
         if (naoInscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(naoInscritosFiltrados, 'Não Inscritos (€10/mês)', '#dc6843');
     }
+
     qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
     qh += '<p class="note" style="margin-top:12px">Quota: €20/mês (inscritos) · €10/mês (não inscritos) · <strong>Válido para todos:</strong> quem não compareça a nenhum treino nem jogo num mês fechado fica isento desse mês · ✓ Pago · I Isento</p>';
     document.getElementById('tabela-quotas').innerHTML = qh;
@@ -1530,7 +1603,7 @@ atas.forEach(a => {
 });
 document.getElementById('atas-lista').innerHTML = ah;
 
-// ─── HISTÓRICO ───
+// ─── HISTÓRICO (com filtros e ordenação) ───
 const tipoInfo = {
     ata: { cor: '#1A6FB5', icon: '📋', label: 'Ata' },
     caixa: { cor: '#0D3B66', icon: '💰', label: 'Caixa' },
@@ -1540,13 +1613,60 @@ const tipoInfo = {
     presenca: { cor: '#7c3aed', icon: '🏃', label: 'Treino' },
     venda: { cor: '#0ea5e9', icon: '🛍️', label: 'Venda' }
 };
-let hh = '';
-historico.forEach(h => {
-    const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
-    const descComLinks = tornarNomesClicaveis(h.desc);
-    hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}</div></div></div>`;
-});
-document.getElementById('historico-lista').innerHTML = hh;
+
+let histFiltro = 'todos';
+let histOrdem = 'recente';
+
+function setHistFiltro(f) { histFiltro = f; renderHistorico(); }
+function setHistOrdem(o) { histOrdem = o; renderHistorico(); }
+
+function renderHistorico() {
+    const filtros = [
+        { id: 'todos', label: 'Todos' },
+        { id: 'pagamento', label: '✅ Pagamentos' },
+        { id: 'presenca', label: '🏃 Presenças' },
+        { id: 'despesa', label: '🧾 Despesas' },
+        { id: 'venda', label: '🛍️ Vendas' },
+        { id: 'aviso', label: '⚠️ Avisos' },
+        { id: 'caixa', label: '💰 Caixa' },
+        { id: 'ata', label: '📋 Atas' }
+    ];
+
+    let lista = historico.slice();
+    if (histFiltro !== 'todos') lista = lista.filter(h => h.tipo === histFiltro);
+    if (histOrdem === 'antigo') lista = lista.reverse();
+
+    let fh = `<div class="filtro-bar" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div class="filtro-info">A mostrar <strong>${lista.length}</strong> de <strong>${historico.length}</strong> movimentos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="seg-group">`;
+    filtros.forEach(t => {
+        fh += `<button class="seg-btn${histFiltro === t.id ? ' active' : ''}" onclick="setHistFiltro('${t.id}')">${t.label}</button>`;
+    });
+    fh += `</div>
+            <div class="seg-group">
+                <button class="seg-btn${histOrdem === 'recente' ? ' active' : ''}" onclick="setHistOrdem('recente')">↓ Recentes</button>
+                <button class="seg-btn${histOrdem === 'antigo' ? ' active' : ''}" onclick="setHistOrdem('antigo')">↑ Antigos</button>
+            </div>
+        </div>
+    </div>`;
+    document.getElementById('historico-filtros').innerHTML = fh;
+
+    const el = document.getElementById('historico-lista');
+    if (lista.length === 0) {
+        el.innerHTML = '<div class="section-card" style="text-align:center;color:#999;padding:30px 20px;font-size:13px">Sem movimentos para este filtro.</div>';
+        return;
+    }
+
+    let hh = '';
+    lista.forEach(h => {
+        const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
+        const descComLinks = tornarNomesClicaveis(h.desc);
+        hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}</div></div></div>`;
+    });
+    el.innerHTML = hh;
+}
+renderHistorico();
 
 // ─── SUB-TABS ───
 function showSubTab(id) {
