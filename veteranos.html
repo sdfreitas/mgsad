@@ -1128,7 +1128,7 @@ function chartThemeColors() {
 }
 function initResumoCharts() {
     const prevRec = MESES.map(() => receitaMensalEsperada);
-    const prevDesp = [1640, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+    const prevDesp = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
     chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
         type: 'bar', data: { labels: MESES, datasets: [
             { label: 'Receita Esperada', data: prevRec, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .45 },
@@ -1225,7 +1225,7 @@ function linhaDespesa(nome, valor, chave, sub) {
     return tr;
 }
 dh += linhaDespesa('Campo (anual)', despesaCampo, 'campo');
-dh += linhaDespesa('Inscrição AFA (27 atletas × €20)', despesaAFA, 'afa', 'Custo total: €50/atleta (atleta paga €30 + caixa €20)');
+dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' atletas × €20)', despesaAFA, 'afa', 'Custo total: €50/atleta (atleta paga €30 + caixa €20)');
 dh += linhaDespesa('Galhardetes do clube (20 unid.)', despesaGalhardetes, 'galhardetes');
 dh += linhaDespesa('Garrafões de água (4 × 6L)', despesaAgua, 'agua');
 if (totalArbitroCusto > 0) {
@@ -1473,7 +1473,7 @@ renderEstadoPagamento({
     cardsId: 'inscricoes-cards', tabelaId: 'tabela-inscricoes', jogadores: inscritos, pagos: inscricoesPagas, valor: valorInscricao,
     labels: { total: 'Inscritos', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
     sublabelTotal: '€' + valorInscricao + ' cada',
-    nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). Os €540 totais (27 × €20) já estão contabilizados nas despesas.'
+    nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). O valor total já está contabilizado nas despesas.'
 });
 renderEstadoPagamento({
     cardsId: 'socios-cards', tabelaId: 'tabela-socios', jogadores: inscritos, pagos: sociosPagos, valor: valorSocio,
