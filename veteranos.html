@@ -316,7 +316,7 @@
         .saldo-hero-line-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .saldo-hero-line-value { font-weight: 700; font-size: 15px; }
 
-        .alertas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .alertas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
         .alerta-card {
             border-radius: 12px; padding: 16px 18px; cursor: pointer;
             transition: transform .15s, box-shadow .15s;
@@ -515,7 +515,10 @@
         html[data-tema="escuro"] .seg-btn:hover { color: #93c5fd; }
         html[data-tema="escuro"] .seg-btn.active { background: #1e293b; color: #93c5fd; }
 
-        @media(max-width:900px) {
+        @media(max-width:1000px) {
+            .alertas-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media(max-width:700px) {
             .alertas-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media(max-width:600px) {
@@ -828,7 +831,6 @@ function mesesPagos(nome) {
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
-// ─── SÓCIO PAGO AO CLUBE ───
 function socioPagouAoClube(nome) {
     if (typeof sociosPagoAoClube === 'undefined') return false;
     return sociosPagoAoClube.includes(nome);
@@ -904,7 +906,13 @@ function calcularTotalVenda(itens) {
     return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0);
 }
 compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
-const totalVendasDia6 = compras6Set.reduce((s, v) => s + v.total, 0);
+
+// Vendas — separar pagas das pendentes
+const vendasPagas = compras6Set.filter(v => v.pago);
+const vendasPendentes = compras6Set.filter(v => !v.pago);
+const totalVendasTotal = compras6Set.reduce((s, v) => s + v.total, 0);
+const totalVendasPagas = vendasPagas.reduce((s, v) => s + v.total, 0);
+const totalVendasPendentes = vendasPendentes.reduce((s, v) => s + v.total, 0);
 const totalItensVendidos = compras6Set.reduce((s, v) => s + v.itens.length, 0);
 const inscricoesRecebidas = inscricoesPagas.length * valorInscricao;
 
@@ -918,10 +926,10 @@ amigaveis.forEach(a => {
     }
 });
 
-const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
-const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasDia6 + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
+// ─── SALDO — só conta vendas PAGAS ───
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasPagas + totalArbitroRecebido - totalArbitroCusto;
+const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
 
-// ─── SÓCIOS EM MÃOS (excluindo quem pagou diretamente ao clube) ───
 const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
 const sociosEmMaos = sociosPagosEmMaos.length * valorSocio;
 
@@ -1061,6 +1069,11 @@ function renderResumo() {
             <div class="alerta-label">Inscrições por pagar</div>
             <div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div>
         </button>
+        <button class="alerta-card ${vendasPendentes.length === 0 ? 'ok' : 'atencao'}" onclick="irPara('vendas')">
+            <div class="alerta-num">${vendasPendentes.length}</div>
+            <div class="alerta-label">Vendas por receber</div>
+            <div class="alerta-sub">${vendasPendentes.length === 0 ? 'tudo recebido' : '€' + totalVendasPendentes + ' em falta'}</div>
+        </button>
         <button class="alerta-card ${faltaArbitroJogadores === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')">
             <div class="alerta-num">${faltaArbitroJogadores}</div>
             <div class="alerta-label">Árbitro por receber</div>
@@ -1076,7 +1089,10 @@ function renderResumo() {
     sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#16a34a;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
     sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
     sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
-    sd += `<tr><td>Vendas de equipamento (6 Set)</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasDia6}</td></tr>`;
+    sd += `<tr><td>Vendas de equipamento — recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasPagas}</td></tr>`;
+    if (totalVendasPendentes > 0) {
+        sd += `<tr><td>Vendas de equipamento — por receber <span style="color:#999;font-size:11px">(não conta no saldo)</span></td><td class="center" style="color:#dc6843;font-weight:600">€${totalVendasPendentes}</td></tr>`;
+    }
     sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
     sd += `<tr><td>Árbitros de amigáveis — pago</td><td class="center" style="color:#c1121f;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
     sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(galhardetes + água)</span></td><td class="center" style="color:#c1121f;font-weight:600">−€${despesasJaPagas}</td></tr>`;
@@ -1089,7 +1105,7 @@ function renderResumo() {
     }
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">€${livreVeteranos}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × €${valorSocio} = €${sociosEmMaos}.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — €${totalVendasPendentes} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × €${valorSocio} = €${sociosEmMaos}.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1653,18 +1669,20 @@ function togglePresAcc(i) { document.getElementById('presacc-' + i).classList.to
 document.getElementById('vendas-cards').innerHTML =
     makeCard('Itens Vendidos', totalItensVendidos, 'unidades', '#0D3B66') +
     makeCard('Produtos na lista', Object.keys(listaPrecos).length, 'tipos', '#1A6FB5') +
-    makeCard('Receita', '€' + totalVendasDia6, 'entra na caixa', '#16a34a');
+    makeCard('Recebido', '€' + totalVendasPagas, 'na caixa', '#16a34a') +
+    makeCard('Por receber', '€' + totalVendasPendentes, vendasPendentes.length + ' pessoa(s)', '#dc6843');
 let precoHtml = '';
 Object.entries(listaPrecos).forEach(([prod, preco]) => { precoHtml += `<tr><td style="font-weight:600;color:#0D3B66">${prod}</td><td style="font-weight:700">€${preco}</td></tr>`; });
 document.getElementById('tabela-precos-body').innerHTML = precoHtml;
 let vendasHtml = '';
 compras6Set.forEach(v => {
     const itensStr = v.itens.join(', ');
-    const badge = v.pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Pendente</span>';
-    vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod clickable" onclick="abrirPerfil('${escapeAttr(v.nome)}')">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span><div style="margin-top:6px">${badge}</div></div><span class="venda-total">€${v.total}</span></div>`;
+    const badge = v.pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por receber</span>';
+    const corTotal = v.pago ? '#16a34a' : '#dc6843';
+    vendasHtml += `<div class="venda-card"><div style="flex:1"><span class="venda-prod clickable" onclick="abrirPerfil('${escapeAttr(v.nome)}')">${v.nome}</span><br><span class="venda-qtd">${itensStr}</span><div style="margin-top:6px">${badge}</div></div><span class="venda-total" style="color:${corTotal}">€${v.total}</span></div>`;
 });
-vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:#0D3B66;background:#f0f6ff;padding:10px;border-radius:8px;display:flex;justify-content:space-between;"><span>Total: ${totalItensVendidos} itens</span><span>€${totalVendasDia6}</span></div>`;
-vendasHtml += `<p style="font-size:11px;color:#16a34a;margin-top:8px;text-align:center">✓ Este valor está incluído no saldo da caixa</p>`;
+vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:#0D3B66;background:#f0f6ff;padding:10px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;"><span>Total: ${totalItensVendidos} itens · €${totalVendasTotal}</span><span style="color:#16a34a">Recebido: €${totalVendasPagas}</span><span style="color:#dc6843">Por receber: €${totalVendasPendentes}</span></div>`;
+vendasHtml += `<p style="font-size:11px;color:#16a34a;margin-top:8px;text-align:center">✓ Só a parte recebida (€${totalVendasPagas}) está incluída no saldo da caixa</p>`;
 document.getElementById('vendas-lista').innerHTML = vendasHtml;
 
 // ─── ATAS ───
@@ -2030,7 +2048,10 @@ function abrirPerfil(nome) {
         conteudo += `<div class="modal-section"><h4>🛍️ Equipamento</h4>`;
         conteudo += `<div class="modal-row"><span>Itens</span><strong>${compraJogador.itens.join(', ')}</strong></div>`;
         conteudo += `<div class="modal-row"><span>Total</span><strong>€${compraJogador.total}</strong></div>`;
-        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${compraJogador.pago ? 'badge-ok' : 'badge-falta'}">${compraJogador.pago ? 'Pago' : 'Pendente'}</span></div>`;
+        const estadoCompra = compraJogador.pago
+            ? '<span class="modal-badge badge-ok">Pago</span>'
+            : '<span class="modal-badge badge-falta">Por receber</span>';
+        conteudo += `<div class="modal-row"><span>Estado</span>${estadoCompra}</div>`;
         conteudo += `</div>`;
     }
     document.getElementById('perfilConteudo').innerHTML = conteudo;
