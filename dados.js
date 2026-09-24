@@ -1,4 +1,4 @@
-l/* =========================================================
+/* =========================================================
    dados.js — Todos os dados editáveis do site dos Veteranos
    Basta editar este ficheiro para atualizar o site inteiro.
    ========================================================= */
