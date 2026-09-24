@@ -77,6 +77,7 @@
         .badge-pago { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .badge-porpagar { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .badge-isento { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+        .badge-clube { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .player-name { font-weight: 500; white-space: nowrap; }
         .player-name.em-falta { color: var(--vermelho); font-weight: 600; }
         .tab-panel { display: none; }
@@ -225,7 +226,6 @@
         .modal-row:last-child { border-bottom: none; }
         .modal-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
-        /* ─── ESTADO GERAL DO JOGADOR (topo do perfil) ─── */
         .estado-geral {
             display: flex; gap: 14px; align-items: flex-start;
             border-radius: 12px; padding: 16px;
@@ -294,7 +294,6 @@
         .filtro-bar .filtro-info { font-size: 12px; color: #64748b; }
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
-        /* ─── BOTÕES SEGMENTADOS (filtros/ordenação) ─── */
         .seg-group { display: inline-flex; flex-wrap: wrap; gap: 3px; background: #e2e8f0; padding: 3px; border-radius: 8px; }
         .seg-btn { padding: 6px 11px; border: none; background: none; font-family: inherit; font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; border-radius: 6px; transition: color .15s, background .15s; white-space: nowrap; }
         .seg-btn:hover { color: #0D3B66; }
@@ -350,7 +349,6 @@
         .verif-mes-pessoa { font-size: 12px; background: #fff; padding: 3px 10px; border-radius: 12px; color: #333; border: 1px solid #e9d5ff; }
         .verif-mes-empty { font-size: 12px; color: #888; text-align: center; padding: 16px 0; line-height: 1.6; }
 
-        /* ─── NOTÍCIAS ─── */
         .noticia-card { background: #fff; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(13,59,102,.05); border-left: 4px solid #94a3b8; }
         .noticia-card:last-child { margin-bottom: 0; }
         .noticia-card.tipo-jogo { border-left-color: #1A6FB5; }
@@ -484,6 +482,7 @@
         html[data-tema="escuro"] .badge-pago { background: #1e293b; color: #94a3b8; border-color: #334155; }
         html[data-tema="escuro"] .badge-porpagar { background: #422006; color: #fcd34d; border-color: #78350f; }
         html[data-tema="escuro"] .badge-isento { background: #2e1065; color: #c4b5fd; border-color: #4c1d95; }
+        html[data-tema="escuro"] .badge-clube { background: #164e63; color: #67e8f9; border-color: #155e75; }
         html[data-tema="escuro"] .match-badge.v { background: #14532d; color: #86efac; }
         html[data-tema="escuro"] .match-badge.d { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .match-badge.e { background: #450a0a; color: #fca5a5; }
@@ -638,7 +637,7 @@
     </div>
     <div id="tab-socios" class="tab-panel">
         <div class="cards-grid" id="socios-cards"></div>
-        <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>.</p></div>
+        <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>. Alguns sócios entregaram os €40 diretamente ao clube, sem passar pela caixa dos veteranos.</p></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
     <div id="tab-aniversarios" class="tab-panel">
@@ -829,6 +828,12 @@ function mesesPagos(nome) {
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
 
+// ─── SÓCIO PAGO AO CLUBE ───
+function socioPagouAoClube(nome) {
+    if (typeof sociosPagoAoClube === 'undefined') return false;
+    return sociosPagoAoClube.includes(nome);
+}
+
 // ─── MÊS ATUAL NA ÉPOCA (Set=0 … Jun=9) ───
 function mesEpocaAtualIdx() {
     const m = new Date().getMonth() + 1;
@@ -915,7 +920,11 @@ amigaveis.forEach(a => {
 
 const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasDia6 + totalArbitroRecebido - totalArbitroCusto;
 const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasDia6 + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
-const sociosEmMaos = sociosPagos.length * valorSocio;
+
+// ─── SÓCIOS EM MÃOS (excluindo quem pagou diretamente ao clube) ───
+const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
+const sociosEmMaos = sociosPagosEmMaos.length * valorSocio;
+
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
@@ -1020,7 +1029,6 @@ function renderResumo() {
     const inscPorPagar = inscritos.length - inscricoesPagas.length;
     const inscValor = inscPorPagar * valorInscricao;
 
-    // ─── Árbitros: nº de jogadores em falta + valor ───
     let faltaArbitroJogadores = 0;
     let faltaArbitroTotal = 0;
     amigaveis.forEach(a => {
@@ -1030,7 +1038,6 @@ function renderResumo() {
         faltaArbitroTotal += emFalta.length * a.arbitro.valorPorJogador;
     });
 
-    // ─── Aniversariantes do mês atual ───
     const _hojeR = new Date();
     const _mesR = _hojeR.getMonth() + 1;
     const _aniv = todosJogadores
@@ -1082,7 +1089,7 @@ function renderResumo() {
     }
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">€${livreVeteranos}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ As quotas de sócio (${sociosPagos.length} × €${valorSocio}) estão contigo mas são para entregar ao clube — não contam para o saldo dos veteranos.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × €${valorSocio} = €${sociosEmMaos}.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1325,9 +1332,8 @@ function renderTabelaQuotasSecao(jogadores, titulo, cor) {
     return html;
 }
 
-// ─── FILTROS E ORDENAÇÃO DE QUOTAS ───
-let quotasFiltro = 'todos';       // 'todos' | 'devedores' | 'emDia'
-let quotasOrdem = 'padrao';       // 'padrao' | 'nome' | 'num' | 'maisPagos' | 'menosPagos' | 'idade'
+let quotasFiltro = 'todos';
+let quotasOrdem = 'padrao';
 
 function setQuotasFiltro(f) { quotasFiltro = f; renderQuotas(); }
 function setQuotasOrdem(o) { quotasOrdem = o; renderQuotas(); }
@@ -1353,7 +1359,6 @@ function _ordenarQuotas(lista) {
     } else if (quotasOrdem === 'menosPagos') {
         l.sort((a, b) => mesesPagos(a.nome).length - mesesPagos(b.nome).length);
     } else if (quotasOrdem === 'idade') {
-        // Mais velho primeiro
         l.sort((a, b) => {
             const da = a.nasc ? new Date(a.nasc.split('/').reverse().join('-')) : new Date(0);
             const db = b.nasc ? new Date(b.nasc.split('/').reverse().join('-')) : new Date(0);
@@ -1448,11 +1453,12 @@ document.getElementById('quotas-por-mes').innerHTML = maHtml;
 function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
 
 // ─── RENDER GENÉRICO DE ESTADO DE PAGAMENTO ───
-function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota }) {
+function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota, mostrarAoClube }) {
     const total = jogadores.length;
     const numPagos = jogadores.filter(j => pagos.includes(j.nome)).length;
     const porPagar = total - numPagos;
-    const recebido = numPagos * valor;
+    const numEmMaos = mostrarAoClube ? jogadores.filter(j => pagos.includes(j.nome) && !socioPagouAoClube(j.nome)).length : numPagos;
+    const recebido = numEmMaos * valor;
     document.getElementById(cardsId).innerHTML =
         makeCard(labels.total, total, sublabelTotal || '', '#0D3B66') +
         makeCard(labels.pagos, numPagos, 'até à data', '#16a34a') +
@@ -1461,7 +1467,10 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
     let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
         const pago = pagos.includes(j.nome);
-        const badge = pago ? '<span class="badge badge-ok">Pago</span>' : '<span class="badge badge-falta">Por pagar</span>';
+        let badge;
+        if (!pago) badge = '<span class="badge badge-falta">Por pagar</span>';
+        else if (mostrarAoClube && socioPagouAoClube(j.nome)) badge = '<span class="badge badge-clube">Pago ao clube</span>';
+        else badge = '<span class="badge badge-ok">Pago</span>';
         html += `<tr><td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td><td class="center">€${valor}</td><td class="center">${badge}</td></tr>`;
     });
     html += '</tbody></table></div>';
@@ -1477,8 +1486,12 @@ renderEstadoPagamento({
 });
 renderEstadoPagamento({
     cardsId: 'socios-cards', tabelaId: 'tabela-socios', jogadores: inscritos, pagos: sociosPagos, valor: valorSocio,
-    labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
-    sublabelTotal: 'jogadores inscritos', sublabelRecebido: 'entregue ao clube', sublabelPorPagar: 'sócios pendentes'
+    labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Em mãos', porPagar: 'Por pagar' },
+    sublabelTotal: 'jogadores inscritos',
+    sublabelRecebido: 'na caixa (a entregar)',
+    sublabelPorPagar: 'sócios pendentes',
+    mostrarAoClube: true,
+    nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube.'
 });
 
 // ─── ANIVERSÁRIOS ───
@@ -1859,56 +1872,34 @@ function encontrarJogador(termo) {
         || todosJogadores.find(j => j.nome.split(' ')[0].toLowerCase() === t);
 }
 
-// ─── ESTADO GERAL DO JOGADOR (tudo pago / por regularizar) ───
 function calcularEstadoJogador(jogador) {
     const nomeC = jogador.nome;
     const inscrito = jogador.inscrito;
     const limite = mesEpocaAtualIdx();
     const itens = [];
 
-    // Quotas mensais — desde Set até ao mês atual
     if (limite !== -1) {
         for (let m = 0; m <= limite; m++) {
             if (jaPagou(nomeC, m)) continue;
             if (isentoPorFaltaPresenca(nomeC, m)) continue;
-            itens.push({
-                tipo: 'quota',
-                label: `Quota ${MESES[m]}`,
-                valor: inscrito ? QUOTA : QUOTA_NI
-            });
+            itens.push({ tipo: 'quota', label: `Quota ${MESES[m]}`, valor: inscrito ? QUOTA : QUOTA_NI });
         }
     }
-
-    // Inscrição AFA — só para inscritos
     if (inscrito && !jaPagouInscricao(nomeC)) {
         itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
     }
-
-    // Quota de sócio — só para inscritos
     if (inscrito && !sociosPagos.includes(nomeC)) {
         itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
     }
-
-    // Equipamento pendente
     const compra = compras6Set.find(c => c.nome === nomeC);
     if (compra && !compra.pago) {
-        itens.push({
-            tipo: 'equipamento',
-            label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`,
-            valor: compra.total
-        });
+        itens.push({ tipo: 'equipamento', label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`, valor: compra.total });
     }
-
-    // Árbitro(s) de amigáveis por pagar
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
         if (!(a.arbitro.participantes || []).includes(nomeC)) return;
         if ((a.arbitro.pagaram || []).includes(nomeC)) return;
-        itens.push({
-            tipo: 'arbitro',
-            label: `Árbitro — vs ${a.adversario}`,
-            valor: a.arbitro.valorPorJogador
-        });
+        itens.push({ tipo: 'arbitro', label: `Árbitro — vs ${a.adversario}`, valor: a.arbitro.valorPorJogador });
     });
 
     const total = itens.reduce((s, i) => s + i.valor, 0);
@@ -1947,7 +1938,6 @@ function abrirPerfil(nome) {
     const nomeCompleto = jogador.nome;
     let conteudo = '';
 
-    // ─── Estado geral (tudo pago / por regularizar) ───
     const estado = calcularEstadoJogador(jogador);
     conteudo += renderEstadoJogador(estado);
 
@@ -2023,8 +2013,16 @@ function abrirPerfil(nome) {
         conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div>`;
         conteudo += `</div>`;
         const socioPago = sociosPagos.includes(nomeCompleto);
+        const aoClube = socioPagouAoClube(nomeCompleto);
+        let socioBadge;
+        if (!socioPago) socioBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
+        else if (aoClube) socioBadge = '<span class="modal-badge badge-clube">Pago ao clube</span>';
+        else socioBadge = '<span class="modal-badge badge-ok">Pago</span>';
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4>`;
-        conteudo += `<div class="modal-row"><span>Estado</span><span class="modal-badge ${socioPago ? 'badge-ok' : 'badge-falta'}">${socioPago ? 'Pago' : 'Por pagar'}</span></div>`;
+        conteudo += `<div class="modal-row"><span>Estado</span>${socioBadge}</div>`;
+        if (socioPago && aoClube) {
+            conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Entregue diretamente ao clube principal</span></div>`;
+        }
         conteudo += `</div>`;
     }
     const compraJogador = compras6Set.find(c => c.nome === nomeCompleto);
@@ -2088,12 +2086,20 @@ function imprimirRecibo(nome) {
     const mesesPagosJ = mesesPagos(j.nome);
     const inscricaoPaga = jaPagouInscricao(j.nome);
     const socioPago = inscrito && sociosPagos.includes(j.nome);
+    const socioAoClube = socioPago && socioPagouAoClube(j.nome);
     const compra = compras6Set.find(c => c.nome === j.nome);
     const linhas = [];
     let total = 0;
     mesesPagosJ.forEach(m => { linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]); total += quota; });
     if (inscricaoPaga) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
-    if (socioPago) { linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]); total += valorSocio; }
+    if (socioPago) {
+        if (socioAoClube) {
+            linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
+        } else {
+            linhas.push(['Quota de sócio (entregue ao tesoureiro)', `€${valorSocio}`]);
+        }
+        total += valorSocio;
+    }
     amigaveis.forEach(a => {
         if (!a.arbitro) return;
         if (!a.arbitro.pagaram.includes(j.nome)) return;
