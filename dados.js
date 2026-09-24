@@ -1,4 +1,4 @@
-/* =========================================================
+l/* =========================================================
    dados.js — Todos os dados editáveis do site dos Veteranos
    Basta editar este ficheiro para atualizar o site inteiro.
    ========================================================= */
@@ -94,7 +94,8 @@ const sociosPagos = [
     "Hugo André",
     "Pedro Ferreira",
     "Mário Oliveira",
-    "Américo Oliveira"
+    "Américo Oliveira",
+    "António Oliveira"
 ];
 
 // ─── SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ───
@@ -237,6 +238,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (€40) diretamente ao clube principal — não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época — retirado do plantel. Inscrição AFA ajustada para 26 atletas (€520)." },
     { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro — 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
