@@ -950,11 +950,30 @@ function makeCard(l, v, s, a) {
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
 
+// ─── NOMES CLICÁVEIS (insensível a acentos e a maiúsculas) ───
 const _termosClicaveis = todosJogadores.map(j => j.nome).sort((a, b) => b.length - a.length);
-const _regexClicaveis = new RegExp('(' + _termosClicaveis.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
+const _ACENTOS_MAPA = { a:'aáàâãä', e:'eéèêë', i:'iíìîï', o:'oóòôõö', u:'uúùûü', c:'cç', n:'nñ' };
+function _expandirAcentos(str) {
+    return str.split('').map(ch => {
+        const low = ch.toLowerCase();
+        if (_ACENTOS_MAPA[low]) return '[' + _ACENTOS_MAPA[low] + ']';
+        return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }).join('');
+}
+const _regexClicaveis = new RegExp('(' + _termosClicaveis.map(_expandirAcentos).join('|') + ')', 'gi');
+function _normalizarParaMatch(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+function _nomeCanonico(match) {
+    const norm = _normalizarParaMatch(match);
+    return _termosClicaveis.find(n => _normalizarParaMatch(n) === norm) || match;
+}
 function tornarNomesClicaveis(texto) {
     if (!texto) return texto;
-    return texto.replace(_regexClicaveis, (match) => `<span class="clickable" onclick="abrirPerfil('${escapeAttr(match)}')">${match}</span>`);
+    return texto.replace(_regexClicaveis, (match) => {
+        const canon = _nomeCanonico(match);
+        return `<span class="clickable" onclick="abrirPerfil('${escapeAttr(canon)}')">${match}</span>`;
+    });
 }
 
 const chartInstances = {};
