@@ -151,7 +151,10 @@ const treinosJogos = [
       extra: ["Zé Buraca", "Marcelo"] },
     { data: "16 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Joel Tavares", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho"],
-      extra: ["Fábio Oliveira", "Marcelo", "Zé Buraca", "Telmo"] }
+      extra: ["Fábio Oliveira", "Marcelo", "Zé Buraca", "Telmo"] },
+    { data: "23 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho", "Sérgio Freitas", "Tiago Mota"],
+      extra: ["Marcelo", "Zé Buraca", "Telmo"] }
 ];
 
 // ─── COMPETIÇÃO ───
@@ -223,6 +226,7 @@ const atas = [{
 // ─── HISTÓRICO ───
 const historico = [
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época — retirado do plantel. Inscrição AFA ajustada para 26 atletas (€520)." },
+    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro — 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
     { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro €5), Pedro Ferreira (árbitro €5), Joel Tavares (árbitro €5), Zé Buraca (árbitro €5), Mário Oliveira (boné €5), Pedro Costa (inscrição €30), Jorge Azevedo (inscrição €30), Pedro Cadete (inscrição €30) — total €113." },
     { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
@@ -277,7 +281,6 @@ const noticias = [
         corpo: "Mais um teste antes do campeonato. Contamos com todos."
     }
 ];
-
 
 // ─── MAPAS AUXILIARES ───
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
