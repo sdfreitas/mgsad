@@ -603,7 +603,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 18 de Setembro de 2026</p>
+        <p class="note">Última atualização: 26 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -717,7 +717,7 @@
         <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 17 de Setembro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 26 de Setembro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -806,11 +806,26 @@ function despesaPaga(chave) {
     if (typeof DESPESAS_PAGAS === 'undefined') return true;
     return DESPESAS_PAGAS[chave] === true;
 }
-const despesasJaPagas = (despesaPaga('campo') ? despesaCampo : 0)
-                       + (despesaPaga('afa') ? despesaAFA : 0)
-                       + (despesaPaga('agua') ? despesaAgua : 0)
-                       + (despesaPaga('galhardetes') ? despesaGalhardetes : 0);
-const despesasPorPagar = despesasConfirmadas - despesasJaPagas;
+const _despesasExtrasArr = (typeof despesasExtras !== 'undefined' && Array.isArray(despesasExtras)) ? despesasExtras : [];
+const despesasExtrasPagas = _despesasExtrasArr.filter(d => d.pago).reduce((s, d) => s + d.valor, 0);
+const despesasExtrasPorPagar = _despesasExtrasArr.filter(d => !d.pago).reduce((s, d) => s + d.valor, 0);
+const totalDespesasExtras = despesasExtrasPagas + despesasExtrasPorPagar;
+
+const despesasFixasJaPagas = (despesaPaga('campo') ? despesaCampo : 0)
+                            + (despesaPaga('afa') ? despesaAFA : 0)
+                            + (despesaPaga('agua') ? despesaAgua : 0)
+                            + (despesaPaga('galhardetes') ? despesaGalhardetes : 0);
+const despesasFixasPorPagar = despesasConfirmadas - despesasFixasJaPagas;
+const despesasJaPagas = despesasFixasJaPagas + despesasExtrasPagas;
+const despesasPorPagar = despesasFixasPorPagar + despesasExtrasPorPagar;
+const despesasTotais = despesasConfirmadas + totalDespesasExtras;
+
+// ─── FORMATAÇÃO ───
+function fmtEur(v) {
+    const n = Math.round(v * 100) / 100;
+    if (n === Math.floor(n)) return '€' + n;
+    return '€' + n.toFixed(2).replace('.', ',');
+}
 
 // ─── AJUSTES INTERNOS (config.js) ───
 function isencoesDe(nome) {
@@ -926,8 +941,8 @@ amigaveis.forEach(a => {
     }
 });
 
-// ─── SALDO — só conta vendas PAGAS ───
-const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasConfirmadas + totalVendasPagas + totalArbitroRecebido - totalArbitroCusto;
+// ─── SALDO — só conta vendas PAGAS + despesas extras PAGAS ───
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotais + totalVendasPagas + totalArbitroRecebido - totalArbitroCusto;
 const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
 
 const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
@@ -1033,21 +1048,21 @@ function renderResumo() {
     document.getElementById('saldo-hero').innerHTML = `
         <div class="saldo-hero">
             <div class="saldo-hero-label">Total em mãos</div>
-            <div class="saldo-hero-value">€${totalEmMaos}</div>
+            <div class="saldo-hero-value">${fmtEur(totalEmMaos)}</div>
             <div class="saldo-hero-sub">físico + banco · ${inscritos.length} inscritos + ${naoInscritos.length} não inscritos</div>
             <div class="saldo-hero-divider"></div>
             <div class="saldo-hero-lines">
                 <div class="saldo-hero-line">
                     <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#4ade80"></span>Livre (veteranos)</span>
-                    <span class="saldo-hero-line-value">€${livreVeteranos}</span>
+                    <span class="saldo-hero-line-value">${fmtEur(livreVeteranos)}</span>
                 </div>
                 <div class="saldo-hero-line">
                     <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#fbbf24"></span>Reservado (despesas por pagar)</span>
-                    <span class="saldo-hero-line-value">€${compromissosPorPagar}</span>
+                    <span class="saldo-hero-line-value">${fmtEur(compromissosPorPagar)}</span>
                 </div>
                 <div class="saldo-hero-line">
                     <span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#93c5fd"></span>Sócios (a entregar ao clube)</span>
-                    <span class="saldo-hero-line-value">€${sociosEmMaos}</span>
+                    <span class="saldo-hero-line-value">${fmtEur(sociosEmMaos)}</span>
                 </div>
             </div>
         </div>`;
@@ -1105,26 +1120,27 @@ function renderResumo() {
         </button>`;
 
     let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
-    sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#16a34a;font-weight:600">+€${SALDO_INICIAL}</td></tr>`;
-    sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${recebidoReal}</td></tr>`;
-    sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × €${valorInscricao})</td><td class="center" style="color:#16a34a;font-weight:600">+€${inscricoesRecebidas}</td></tr>`;
-    sd += `<tr><td>Vendas de equipamento — recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalVendasPagas}</td></tr>`;
+    sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(SALDO_INICIAL)}</td></tr>`;
+    sd += `<tr><td>Quotas mensais recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(recebidoReal)}</td></tr>`;
+    sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × ${fmtEur(valorInscricao)})</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(inscricoesRecebidas)}</td></tr>`;
+    sd += `<tr><td>Vendas de equipamento — recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(totalVendasPagas)}</td></tr>`;
     if (totalVendasPendentes > 0) {
-        sd += `<tr><td>Vendas de equipamento — por receber <span style="color:#999;font-size:11px">(não conta no saldo)</span></td><td class="center" style="color:#dc6843;font-weight:600">€${totalVendasPendentes}</td></tr>`;
+        sd += `<tr><td>Vendas de equipamento — por receber <span style="color:#999;font-size:11px">(não conta no saldo)</span></td><td class="center" style="color:#dc6843;font-weight:600">${fmtEur(totalVendasPendentes)}</td></tr>`;
     }
-    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+€${totalArbitroRecebido}</td></tr>`;
-    sd += `<tr><td>Árbitros de amigáveis — pago</td><td class="center" style="color:#c1121f;font-weight:600">−€${totalArbitroCusto}</td></tr>`;
-    sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(galhardetes + água)</span></td><td class="center" style="color:#c1121f;font-weight:600">−€${despesasJaPagas}</td></tr>`;
-    sd += `<tr class="linha-sep"><td class="linha-total">Saldo em mãos (físico + banco)</td><td class="center linha-total" style="font-size:14px">€${saldoEmMaosVeteranos}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(totalArbitroRecebido)}</td></tr>`;
+    sd += `<tr><td>Árbitros de amigáveis — pago</td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(totalArbitroCusto)}</td></tr>`;
+    sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(fixas + extra)</span></td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(despesasJaPagas)}</td></tr>`;
+    sd += `<tr class="linha-sep"><td class="linha-total">Saldo em mãos (físico + banco)</td><td class="center linha-total" style="font-size:14px">${fmtEur(saldoEmMaosVeteranos)}</td></tr>`;
     if (despesasPorPagar > 0) {
-        if (!despesaPaga('campo')) sd += `<tr><td>Campo <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaCampo}</td></tr>`;
-        if (!despesaPaga('afa')) sd += `<tr><td>Inscrição AFA <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaAFA}</td></tr>`;
-        if (!despesaPaga('galhardetes')) sd += `<tr><td>Galhardetes <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaGalhardetes}</td></tr>`;
-        if (!despesaPaga('agua')) sd += `<tr><td>Água <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−€${despesaAgua}</td></tr>`;
+        if (!despesaPaga('campo')) sd += `<tr><td>Campo <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaCampo)}</td></tr>`;
+        if (!despesaPaga('afa')) sd += `<tr><td>Inscrição AFA <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaAFA)}</td></tr>`;
+        if (!despesaPaga('galhardetes')) sd += `<tr><td>Galhardetes <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaGalhardetes)}</td></tr>`;
+        if (!despesaPaga('agua')) sd += `<tr><td>Água <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaAgua)}</td></tr>`;
+        if (despesasExtrasPorPagar > 0) sd += `<tr><td>Despesas extra <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesasExtrasPorPagar)}</td></tr>`;
     }
-    sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">€${livreVeteranos}</td></tr>`;
+    sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">${fmtEur(livreVeteranos)}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — €${totalVendasPendentes} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × €${valorSocio} = €${sociosEmMaos}.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × ${fmtEur(valorSocio)} = ${fmtEur(sociosEmMaos)}.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1143,14 +1159,14 @@ renderResumo();
 document.getElementById('quotas-cards').innerHTML =
     makeCard('Inscritos', inscritos.length, '€20/mês', '#0D3B66') +
     makeCard('Não Inscritos', naoInscritos.length, '€10/mês', '#1A6FB5') +
-    makeCard('Recebido', recebidoReal ? '€' + recebidoReal : '€0', 'até à data', '#16a34a') +
+    makeCard('Recebido', recebidoReal ? fmtEur(recebidoReal) : '€0', 'até à data', '#16a34a') +
     makeCard('Regra de Isenção', '0 presenças', 'sem treinos nem jogos no mês = isento', '#64748b');
 
 document.getElementById('despesas-cards').innerHTML =
-    makeCard('Total Despesas', '€' + despesasConfirmadas, 'orçamento da época', '#0D3B66') +
-    makeCard('Já Pagas', '€' + despesasJaPagas, 'saíram da caixa', '#16a34a') +
-    makeCard('Por Pagar', '€' + despesasPorPagar, 'ainda não saíram', '#d97706') +
-    makeCard('Árbitros Amigáveis', '€' + totalArbitroCusto, 'pago · ' + totalArbitroRecebido + ' recebido', '#64748b');
+    makeCard('Total Despesas', fmtEur(despesasTotais), 'fixas + extra', '#0D3B66') +
+    makeCard('Já Pagas', fmtEur(despesasJaPagas), 'saíram da caixa', '#16a34a') +
+    makeCard('Por Pagar', fmtEur(despesasPorPagar), 'ainda não saíram', '#d97706') +
+    makeCard('Árbitros Amigáveis', fmtEur(totalArbitroCusto), 'pago · ' + fmtEur(totalArbitroRecebido) + ' recebido', '#64748b');
 
 // ─── CHARTS ───
 const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
@@ -1192,6 +1208,7 @@ function initDespesasChart() {
         { name: 'Água', value: despesaAgua, color: '#dc6843' }
     ];
     if (totalArbitroCusto > 0) pd.push({ name: 'Árbitros amigáveis', value: totalArbitroCusto, color: '#94a3b8' });
+    if (totalDespesasExtras > 0) pd.push({ name: 'Despesas extra', value: totalDespesasExtras, color: '#fbbf24' });
     chartInstances.pie = new Chart(freshCanvas('chartPie'), {
         type: 'doughnut', data: { labels: pd.map(c => c.name), datasets: [{ data: pd.map(c => c.value), backgroundColor: pd.map(c => c.color), borderWidth: 2, borderColor: '#fff' }] },
         options: { responsive: true, maintainAspectRatio: true, ...animOpts, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ctx.label + ': €' + ctx.raw } } } }
@@ -1263,7 +1280,7 @@ function linhaDespesa(nome, valor, chave, sub) {
     const badge = pago ? '<span class="badge badge-pago">Pago</span>' : '<span class="badge badge-porpagar">Por pagar</span>';
     let tr = `<tr><td><strong style="color:#0D3B66">${nome}</strong>`;
     if (sub) tr += `<br><span style="font-size:11px;color:#888">${sub}</span>`;
-    tr += `</td><td class="center" style="font-weight:700">€${valor}</td><td class="center">${badge}</td></tr>`;
+    tr += `</td><td class="center" style="font-weight:700">${fmtEur(valor)}</td><td class="center">${badge}</td></tr>`;
     return tr;
 }
 dh += linhaDespesa('Campo (anual)', despesaCampo, 'campo');
@@ -1271,10 +1288,17 @@ dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' atletas × €20)'
 dh += linhaDespesa('Galhardetes do clube (20 unid.)', despesaGalhardetes, 'galhardetes');
 dh += linhaDespesa('Garrafões de água (4 × 6L)', despesaAgua, 'agua');
 if (totalArbitroCusto > 0) {
-    dh += `<tr><td><strong style="color:#0D3B66">Árbitros de amigáveis</strong></td><td class="center" style="font-weight:700">€${totalArbitroCusto}</td><td class="center"><span class="badge badge-pago">Pago</span></td></tr>`;
+    dh += `<tr><td><strong style="color:#0D3B66">Árbitros de amigáveis</strong></td><td class="center" style="font-weight:700">${fmtEur(totalArbitroCusto)}</td><td class="center"><span class="badge badge-pago">Pago</span></td></tr>`;
+}
+if (_despesasExtrasArr.length > 0) {
+    dh += `<tr><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;padding:8px 12px">Despesas extra</td></tr>`;
+    _despesasExtrasArr.forEach(d => {
+        const badge = d.pago ? '<span class="badge badge-pago">Pago</span>' : '<span class="badge badge-porpagar">Por pagar</span>';
+        dh += `<tr><td><strong style="color:#0D3B66">${d.desc}</strong><br><span style="font-size:11px;color:#888">${d.data}${d.itens ? ' · ' + d.itens : ''}</span></td><td class="center" style="font-weight:700">${fmtEur(d.valor)}</td><td class="center">${badge}</td></tr>`;
+    });
 }
 dh += '<tr><td><strong style="color:#0D3B66">Massagista</strong></td><td class="center" style="color:#999">A definir</td><td class="center"></td></tr>';
-dh += '</tbody><tfoot><tr><td>Total (despesas + árbitros)</td><td class="center" style="font-size:14px">€' + (despesasConfirmadas + totalArbitroCusto) + '</td><td class="center"><span style="color:#16a34a">pago €' + (despesasJaPagas + totalArbitroCusto) + '</span> · <span style="color:#d97706">por pagar €' + despesasPorPagar + '</span></td></tr></tfoot></table>';
+dh += '</tbody><tfoot><tr><td>Total (despesas + árbitros)</td><td class="center" style="font-size:14px">' + fmtEur(despesasTotais + totalArbitroCusto) + '</td><td class="center"><span style="color:#16a34a">pago ' + fmtEur(despesasJaPagas + totalArbitroCusto) + '</span> · <span style="color:#d97706">por pagar ' + fmtEur(despesasPorPagar) + '</span></td></tr></tfoot></table>';
 document.getElementById('tabela-despesas').innerHTML = dh;
 
 // ─── VERIFICAÇÃO MENSAL (isenções) ───
