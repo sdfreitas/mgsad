@@ -80,7 +80,8 @@ const inscricoesPagas = [
     "Joel Tavares", "António Oliveira", "André Pinho",
     "Rui Rocha", "António Rocha",
     "Pedro Ferreira",
-    "Pedro Costa", "Jorge Azevedo", "Pedro Cadete"
+    "Pedro Costa", "Jorge Azevedo", "Pedro Cadete",
+    "Amílcar André"
 ];
 
 // ─── SÓCIOS PAGOS ───
@@ -214,7 +215,8 @@ const amigaveis = [
                 "Américo Silva",
                 "Pedro Ferreira",
                 "Joel Tavares",
-                "Zé Buraca"
+                "Zé Buraca",
+                "Amílcar André"
             ]
         }
     }
@@ -239,6 +241,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou a inscrição AFA (€30) e o árbitro do amigável vs Paços de Ferreira (€5) — total €35." },
     { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (€40) diretamente ao clube principal — não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
