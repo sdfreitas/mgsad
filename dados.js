@@ -1,9 +1,9 @@
 /* =========================================================
-   dados.js — Todos os dados editáveis do site dos Veteranos
+   dados.js - Todos os dados editáveis do site dos Veteranos
    Basta editar este ficheiro para atualizar o site inteiro.
    ========================================================= */
 
-// ─── CONSTANTES GERAIS ───
+// --- CONSTANTES GERAIS ---
 const MESES = ["Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun"];
 const QUOTA = 20;
 const QUOTA_NI = 10;
@@ -11,7 +11,7 @@ const SALDO_INICIAL = 2220;
 const valorInscricao = 30;
 const valorSocio = 40;
 
-// ─── PLANTEL ───
+// --- PLANTEL ---
 const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
     { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
@@ -37,7 +37,7 @@ const inscritos = [
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" },
     { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
-    { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" },
+    { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" }
 ];
 
 const naoInscritos = [
@@ -45,17 +45,17 @@ const naoInscritos = [
     { nome: "Telmo", apelido: "TELMO", num: null, nasc: "23/03/1991" },
     { nome: "Fábio Oliveira", apelido: "FÁBIO", num: null, nasc: "21/10/2000" },
     { nome: "Romeu", apelido: "ROMEU", num: 2, nasc: "11/05/1976" },
-    { nome: "Marcelo", apelido: "MARCELO ─", num: null,── nasc: "18/12/1992 DES" },
-    { nomePESAS: "Celso Ferreira", apelido: "CELSO", num: null, nasc: null },
+    { nome: "Marcelo", apelido: "MARCELO", num: null, nasc: "18/12/1992" },
+    { nome: "Celso Ferreira", apelido: "CELSO", num: null, nasc: null },
     { nome: "António José Silva", apelido: "TOZE", num: 70, nasc: "16/03/1981" },
     { nome: "Salvador", apelido: "SALVADOR", num: null, nasc: "13/07/1978" },
     { nome: "Vitor Leite", apelido: "VITINHA GR", num: null, nasc: "01/06/1992" },
     { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
-    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
+    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" }
 ];
 
-// ─── PAGAMENTOS DE QUOTAS (índices = posição em MESES) ───
-// ATENÇÃO: Amílcar André e Zé Buraca NÃO entram aqui — os ajustes estão em config.js
+// --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
+// ATENÇÃO: Amílcar André e Zé Buraca NÃO entram aqui - os ajustes estão em config.js
 const pagamentos = {
     "Pedro Costa": [0],
     "Telmo": [0, 1],
@@ -74,7 +74,7 @@ const pagamentos = {
     "Pedro Ferreira": [0]
 };
 
-// ─── INSCRIÇÕES PAGAS ───
+// --- INSCRIÇÕES PAGAS ---
 const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira", "André Pinho",
@@ -84,7 +84,7 @@ const inscricoesPagas = [
     "Amílcar André"
 ];
 
-// ─── SÓCIOS PAGOS ───
+// --- SÓCIOS PAGOS ---
 const sociosPagos = [
     "Pedro Cadete",
     "André Pinho",
@@ -100,8 +100,8 @@ const sociosPagos = [
     "Américo Silva"
 ];
 
-// ─── SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ───
-// Estas pessoas entregaram os €40 diretamente ao clube,
+// --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
+// Estas pessoas entregaram os 40 EUR diretamente ao clube,
 // portanto esse dinheiro NUNCA passou pela caixa dos veteranos.
 const sociosPagoAoClube = [
     "André Pinho",
@@ -112,16 +112,16 @@ const sociosPagoAoClube = [
     "Joel Tavares"
 ];
 
-// ─── MERENDAS PAGAS ───
+// --- MERENDAS PAGAS ---
 const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
 
-// ─── DESPESAS CONFIRMADAS ───
+// --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 500;   // 25 atletas × €20 (André Lopes e Armando não participam esta época)
+const despesaAFA = 500;   // 25 atletas x 20 EUR (André Lopes e Armando não participam esta época)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
-// ─── ESTADO DAS DESPESAS ───
+// --- ESTADO DAS DESPESAS ---
 // true  = já paga (saiu da caixa)
 // false = ainda por pagar (está reservada, mas ainda tens o dinheiro)
 const DESPESAS_PAGAS = {
@@ -131,20 +131,20 @@ const DESPESAS_PAGAS = {
     agua: true
 };
 
-// EXTRA (variáveis, ao longo da época) ───
+// --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 // Compras pontuais: merendas, lanches, materiais, etc.
-// pago: true = saiu da caixa · pago: false = está por pagar
+// pago: true = saiu da caixa / pago: false = está por pagar
 const despesasExtras = [
     {
         data: "26 Set 2026",
-        desc: "Merenda — jogo amigável vs Paços de Ferreira",
-        itens: "Fruta, 2× água 5L, bolachas Maria, chá, 50 copos 200ml",
+        desc: "Merenda - jogo amigável vs Paços de Ferreira",
+        itens: "Fruta, 2x água 5L, bolachas Maria, chá, 50 copos 200ml",
         valor: 15.19,
         pago: true
     }
 ];
 
-// ─── LISTA DE PREÇOS E VENDAS ───
+// --- LISTA DE PREÇOS E VENDAS ---
 const listaPrecos = {
     "Equipamento treino": 20,
     "T-shirt": 10,
@@ -166,7 +166,7 @@ const compras6Set = [
     { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
 ];
 
-// ─── TREINOS E JOGOS (presenças) ───
+// --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
@@ -188,7 +188,7 @@ const treinosJogos = [
       extra: ["Marcelo", "Zé Buraca"] }
 ];
 
-// ─── COMPETIÇÃO ───
+// --- COMPETIÇÃO ---
 const torneios = [
     {
         nome: "Torneio de Nelas",
@@ -246,68 +246,68 @@ const amigaveis = [
     }
 ];
 
-// ─── ATAS ───
+// --- ATAS ---
 const atas = [{
     data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
     tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: true,
     pontos: [
-        "Caixa transitada da época anterior: €2.220.",
-        "Campo — custo anual de €1.000 confirmado.",
-        "Inscrição na AFA — custo de €50 por atleta: o atleta paga €30 e a caixa dos veteranos cobre €20 (total da caixa: €540 para 27 atletas).",
-        "Massagista — valor a definir em reunião futura.",
+        "Caixa transitada da época anterior: 2.220 EUR.",
+        "Campo - custo anual de 1.000 EUR confirmado.",
+        "Inscrição na AFA - custo de 50 EUR por atleta: o atleta paga 30 EUR e a caixa dos veteranos cobre 20 EUR.",
+        "Massagista - valor a definir em reunião futura.",
         "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
-        "Mensalidade definida em €20/mês a começar em Setembro.",
+        "Mensalidade definida em 20 EUR/mês a começar em Setembro.",
         "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
-        "Atletas não inscritos pagam €10/mês."
+        "Atletas não inscritos pagam 10 EUR/mês."
     ],
     presentes: "Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
 }];
 
-// ─── HISTÓRICO ───
+// --- HISTÓRICO ---
 const historico = [
-    { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) — derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
-    { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (€20/mês → €10/mês). Inscrição AFA ajustada para 25 atletas (€500)." },
-    { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira — fruta, 2× água 5L, bolachas Maria, chá e 50 copos 200ml — €15,19 (pago pela caixa)." },
-    { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou a inscrição AFA (€30) e o árbitro do amigável vs Paços de Ferreira (€5) — total €35." },
-    { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (€40) ao tesoureiro." },
-    { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (€40) ao tesoureiro." },
-    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (€40) diretamente ao clube principal — não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
-    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época — retirado do plantel. Inscrição AFA ajustada para 26 atletas (€520)." },
-    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro — 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
-    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro €5), Pedro Ferreira (árbitro €5), Joel Tavares (árbitro €5), Zé Buraca (árbitro €5), Mário Oliveira (boné €5), Pedro Costa (inscrição €30), Jorge Azevedo (inscrição €30), Pedro Cadete (inscrição €30) — total €113." },
-    { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (€40 cada)." },
-    { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (€20) e inscrição (€30) — total €50." },
-    { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro — 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
-    { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira (€5) e Pedro Ferreira pagou Setembro (€20), inscrição (€30) e quota de sócio (€40) — total recebido: €95." },
-    { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André e Zé Buraca pagaram Setembro (€20 e €10)." },
-    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram €300 (€150 cada) — inscrição AFA (€30) + quotas Set a Fev (6 × €20 = €120) por atleta." },
-    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram €5 cada (€30 recebidos)." },
-    { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira — derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
-    { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira — €5 × 20 participantes = €100 (pago pela caixa)." },
-    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
-    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Setembro — €20/mês." },
-    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Azevedo pagaram a quota de sócio (€40 cada) diretamente ao clube principal." },
-    { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (€20) e inscrição (€30) — total €50." },
-    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (€134), quotas mensais (€190) e inscrições recebidas (€180). Sócios entregues ao clube principal (não contam)." },
-    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 André Pinho pagou a quota de sócio (€40) diretamente ao clube principal." },
-    { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro — 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
-    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc €50), Américo Silva (Set+Insc €50), Sérgio Rodrigues (Set+Insc €50), Américo Oliveira (Set+Insc €50), Joel Tavares (Set+Insc €50), Pedro Cadete (Set €20), Marcelo (Set €10 + equip €47), Zé Buraca (equip €30)" },
-    { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) — Total €134 (entra na caixa)" },
-    { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) — €200 no total (€10 cada)." },
-    { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 × 6L) para torneio — €4 no total (€1 cada)." },
-    { data: "4 Set 2026", tipo: "pagamento", desc: "✅ Pedro Costa pagou Setembro — €20/mês." },
-    { data: "2 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 2 de Setembro — 18 atletas presentes + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
-    { data: "2 Set 2026", tipo: "pagamento", desc: "Telmo pagou Setembro e Outubro — €10/mês (€20 no total)." },
-    { data: "2 Set 2026", tipo: "aviso", desc: "Daniel Dias passou de não inscrito para inscrito (€20/mês); António José Silva passou de inscrito para não inscrito (€10/mês)." },
-    { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
-    { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: €2.220." },
-    { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
-    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (25 atletas × €20 da caixa) — €500, a pagar em Setembro." },
+    { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
+    { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 25 atletas (500 EUR)." },
+    { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira - fruta, 2x água 5L, bolachas Maria, chá e 50 copos 200ml - 15,19 EUR (pago pela caixa)." },
+    { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou a inscrição AFA (30 EUR) e o árbitro do amigável vs Paços de Ferreira (5 EUR) - total 35 EUR." },
+    { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (40 EUR) ao tesoureiro." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (40 EUR) ao tesoureiro." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (40 EUR) diretamente ao clube principal - não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época - retirado do plantel. Inscrição AFA ajustada para 26 atletas (520 EUR)." },
+    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro - 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro 5 EUR), Pedro Ferreira (árbitro 5 EUR), Joel Tavares (árbitro 5 EUR), Zé Buraca (árbitro 5 EUR), Mário Oliveira (boné 5 EUR), Pedro Costa (inscrição 30 EUR), Jorge Azevedo (inscrição 30 EUR), Pedro Cadete (inscrição 30 EUR) - total 113 EUR." },
+    { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (40 EUR cada)." },
+    { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (20 EUR) e inscrição (30 EUR) - total 50 EUR." },
+    { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro - 12 atletas presentes + 4 extra (Fábio Oliveira, Marcelo, Zé Buraca, Telmo)." },
+    { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou o árbitro do amigável vs Paços de Ferreira (5 EUR) e Pedro Ferreira pagou Setembro (20 EUR), inscrição (30 EUR) e quota de sócio (40 EUR) - total recebido: 95 EUR." },
+    { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André e Zé Buraca pagaram Setembro (20 EUR e 10 EUR)." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Rui Rocha e António Rocha entregaram 300 EUR (150 EUR cada) - inscrição AFA (30 EUR) + quotas Set a Fev (6 x 20 EUR = 120 EUR) por atleta." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Árbitro do amigável vs Paços de Ferreira - André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram 5 EUR cada (30 EUR recebidos)." },
+    { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira - derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
+    { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira - 5 EUR x 20 participantes = 100 EUR (pago pela caixa)." },
+    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (40 EUR cada) diretamente ao clube principal." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Setembro - 20 EUR/mês." },
+    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Azevedo pagaram a quota de sócio (40 EUR cada) diretamente ao clube principal." },
+    { data: "10 Set 2026", tipo: "pagamento", desc: "✅ António Oliveira pagou Setembro (20 EUR) e inscrição (30 EUR) - total 50 EUR." },
+    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (134 EUR), quotas mensais (190 EUR) e inscrições recebidas (180 EUR). Sócios entregues ao clube principal (não contam)." },
+    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 André Pinho pagou a quota de sócio (40 EUR) diretamente ao clube principal." },
+    { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro - 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Mário Oliveira (Set+Insc 50 EUR), Américo Silva (Set+Insc 50 EUR), Sérgio Rodrigues (Set+Insc 50 EUR), Américo Oliveira (Set+Insc 50 EUR), Joel Tavares (Set+Insc 50 EUR), Pedro Cadete (Set 20 EUR), Marcelo (Set 10 EUR + equip 47 EUR), Zé Buraca (equip 30 EUR)" },
+    { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) - Total 134 EUR (entra na caixa)" },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) - 200 EUR no total (10 EUR cada)." },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 x 6L) para torneio - 4 EUR no total (1 EUR cada)." },
+    { data: "4 Set 2026", tipo: "pagamento", desc: "✅ Pedro Costa pagou Setembro - 20 EUR/mês." },
+    { data: "2 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 2 de Setembro - 18 atletas presentes + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
+    { data: "2 Set 2026", tipo: "pagamento", desc: "Telmo pagou Setembro e Outubro - 10 EUR/mês (20 EUR no total)." },
+    { data: "2 Set 2026", tipo: "aviso", desc: "Daniel Dias passou de não inscrito para inscrito (20 EUR/mês); António José Silva passou de inscrito para não inscrito (10 EUR/mês)." },
+    { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
+    { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
+    { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (25 atletas x 20 EUR da caixa) - 500 EUR, a pagar em Setembro." }
 ];
 
-// ─── NOTÍCIAS ───
+// --- NOTÍCIAS ---
 // Mostradas no Resumo (homepage). Ordem: da mais recente para a mais antiga.
-// tag: "jogo" (azul) · "treino" (verde) · "aviso" (laranja) · "convivio" (dourado) · "info" (cinza)
+// tag: "jogo" (azul) / "treino" (verde) / "aviso" (laranja) / "convivio" (dourado) / "info" (cinza)
 const noticias = [
     {
         data: "24 Set 2026",
@@ -329,6 +329,5 @@ const noticias = [
     }
 ];
 
-
-// ─── MAPAS AUXILIARES ───
+// --- MAPAS AUXILIARES ---
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
