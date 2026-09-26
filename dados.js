@@ -95,7 +95,8 @@ const sociosPagos = [
     "Pedro Ferreira",
     "Mário Oliveira",
     "Américo Oliveira",
-    "António Oliveira"
+    "António Oliveira",
+    "Américo Silva"
 ];
 
 // ─── SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ───
@@ -238,6 +239,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (€40) diretamente ao clube principal — não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época — retirado do plantel. Inscrição AFA ajustada para 26 atletas (€520)." },
