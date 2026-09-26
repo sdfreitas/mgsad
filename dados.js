@@ -16,7 +16,6 @@ const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
     { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
     { nome: "Américo Oliveira", apelido: "AMÉRICO", num: 13, nasc: "10/08/1982" },
-    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
     { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
     { nome: "Mário Oliveira", apelido: "MÁRIO", num: 18, nasc: "11/11/1970" },
     { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
@@ -46,12 +45,13 @@ const naoInscritos = [
     { nome: "Telmo", apelido: "TELMO", num: null, nasc: "23/03/1991" },
     { nome: "Fábio Oliveira", apelido: "FÁBIO", num: null, nasc: "21/10/2000" },
     { nome: "Romeu", apelido: "ROMEU", num: 2, nasc: "11/05/1976" },
-    { nome: "Marcelo", apelido: "MARCELO", num: null, nasc: "18/12/1992" },
-    { nome: "Celso Ferreira", apelido: "CELSO", num: null, nasc: null },
+    { nome: "Marcelo", apelido: "MARCELO ─", num: null,── nasc: "18/12/1992 DES" },
+    { nomePESAS: "Celso Ferreira", apelido: "CELSO", num: null, nasc: null },
     { nome: "António José Silva", apelido: "TOZE", num: 70, nasc: "16/03/1981" },
     { nome: "Salvador", apelido: "SALVADOR", num: null, nasc: "13/07/1978" },
     { nome: "Vitor Leite", apelido: "VITINHA GR", num: null, nasc: "01/06/1992" },
     { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
+    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
 ];
 
 // ─── PAGAMENTOS DE QUOTAS (índices = posição em MESES) ───
@@ -117,7 +117,7 @@ const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
 
 // ─── DESPESAS CONFIRMADAS ───
 const despesaCampo = 1000;
-const despesaAFA = 520;   // 26 atletas × €20 (André Lopes não participa esta época)
+const despesaAFA = 500;   // 25 atletas × €20 (André Lopes e Armando não participam esta época)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -131,7 +131,7 @@ const DESPESAS_PAGAS = {
     agua: true
 };
 
-// ─── DESPESAS EXTRA (variáveis, ao longo da época) ───
+// EXTRA (variáveis, ao longo da época) ───
 // Compras pontuais: merendas, lanches, materiais, etc.
 // pago: true = saiu da caixa · pago: false = está por pagar
 const despesasExtras = [
@@ -182,7 +182,10 @@ const treinosJogos = [
       extra: ["Fábio Oliveira", "Marcelo", "Zé Buraca", "Telmo"] },
     { data: "23 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho", "Sérgio Freitas", "Tiago Mota"],
-      extra: ["Marcelo", "Zé Buraca", "Telmo"] }
+      extra: ["Marcelo", "Zé Buraca", "Telmo"] },
+    { data: "26 Set 2026", tipo: "jogo", titulo: "Jogo amigável vs Paços de Ferreira", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Pedro Ferreira", "Mário Oliveira", "Américo Oliveira", "Joel Tavares", "André Pinho", "Sérgio Freitas", "Rui Rocha", "Pedro Cadete", "Amílcar André", "Jorge Azevedo", "Américo Silva", "José Eduardo", "Daniel Dias", "Sergio Rodrigues"],
+      extra: ["Marcelo", "Zé Buraca"] }
 ];
 
 // ─── COMPETIÇÃO ───
@@ -200,6 +203,14 @@ const torneios = [
 ];
 
 const amigaveis = [
+    {
+        data: "26 Set 2026",
+        adversario: "Paços de Ferreira",
+        casa: false,
+        golosNos: 2,
+        golosEles: 4,
+        marcadores: ["José Eduardo", "Marcelo"]
+    },
     {
         data: "12 Set 2026",
         adversario: "Paços de Ferreira",
@@ -254,6 +265,8 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) — derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
+    { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (€20/mês → €10/mês). Inscrição AFA ajustada para 25 atletas (€500)." },
     { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira — fruta, 2× água 5L, bolachas Maria, chá e 50 copos 200ml — €15,19 (pago pela caixa)." },
     { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou a inscrição AFA (€30) e o árbitro do amigável vs Paços de Ferreira (€5) — total €35." },
     { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (€40) ao tesoureiro." },
@@ -289,7 +302,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 — definidas as quotas (€20 inscritos / €10 não inscritos), custo do campo (€1.000/ano) e inscrição na AFA (€50/atleta, €30 atleta + €20 caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: €2.220." },
     { data: "—", tipo: "despesa", desc: "Campo (época 2026/27) — €1.000, a pagar em Setembro." },
-    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (26 atletas × €20 da caixa) — €520, a pagar em Setembro." },
+    { data: "—", tipo: "despesa", desc: "Inscrição na AFA (25 atletas × €20 da caixa) — €500, a pagar em Setembro." },
 ];
 
 // ─── NOTÍCIAS ───
