@@ -131,6 +131,19 @@ const DESPESAS_PAGAS = {
     agua: true
 };
 
+// ─── DESPESAS EXTRA (variáveis, ao longo da época) ───
+// Compras pontuais: merendas, lanches, materiais, etc.
+// pago: true = saiu da caixa · pago: false = está por pagar
+const despesasExtras = [
+    {
+        data: "26 Set 2026",
+        desc: "Merenda — jogo amigável vs Paços de Ferreira",
+        itens: "Fruta, 2× água 5L, bolachas Maria, chá, 50 copos 200ml",
+        valor: 15.19,
+        pago: true
+    }
+];
+
 // ─── LISTA DE PREÇOS E VENDAS ───
 const listaPrecos = {
     "Equipamento treino": 20,
@@ -241,6 +254,7 @@ const atas = [{
 
 // ─── HISTÓRICO ───
 const historico = [
+    { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira — fruta, 2× água 5L, bolachas Maria, chá e 50 copos 200ml — €15,19 (pago pela caixa)." },
     { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou a inscrição AFA (€30) e o árbitro do amigável vs Paços de Ferreira (€5) — total €35." },
     { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (€40) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (€40) ao tesoureiro." },
@@ -301,7 +315,6 @@ const noticias = [
         corpo: "Mais um teste antes do campeonato. Contamos com todos."
     }
 ];
-
 
 // ─── MAPAS AUXILIARES ───
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
