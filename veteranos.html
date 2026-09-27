@@ -2116,13 +2116,19 @@ function toggleSearch() {
 function normalizarTexto(texto) { return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 function buildSearchIndex() {
     const items = [];
-    todosJogadores.forEach(j => items.push({ type: 'Jogador', text: j.nome, tab: 'treinos', n: normalizarTexto(j.nome) }));
+    // Jogadores — abrem o perfil diretamente (em vez de ir para um separador)
+    todosJogadores.forEach(j => items.push({
+        type: 'Jogador',
+        text: j.nome,
+        action: 'perfil',
+        nome: j.nome,
+        n: normalizarTexto(j.nome)
+    }));
     Object.keys(listaPrecos).forEach(prod => items.push({ type: 'Produto', text: prod, tab: 'vendas', n: normalizarTexto(prod) }));
     compras6Set.forEach(c => items.push({ type: 'Compra', text: `${c.nome} (${c.itens.join(', ')})`, tab: 'vendas', n: normalizarTexto(`${c.nome} (${c.itens.join(', ')})`) }));
     historico.forEach(h => items.push({ type: 'Histórico', text: h.desc, tab: 'historico', n: normalizarTexto(h.desc) }));
     treinosJogos.forEach(t => items.push({ type: 'Treino', text: `${t.titulo} - ${t.data}`, tab: 'treinos', n: normalizarTexto(`${t.titulo} - ${t.data}`) }));
     atas.forEach(a => items.push({ type: 'Ata', text: a.titulo, tab: 'atas', n: normalizarTexto(a.titulo) }));
-    inscritos.forEach(j => items.push({ type: 'Sócio', text: j.nome, tab: 'socios', n: normalizarTexto(j.nome) }));
     torneios.forEach(t => items.push({ type: 'Torneio', text: t.nome, tab: 'competicao', n: normalizarTexto(t.nome) }));
     amigaveis.forEach(a => items.push({ type: 'Amigável', text: `${a.adversario} (${a.data})`, tab: 'competicao', n: normalizarTexto(`${a.adversario} (${a.data})`) }));
     return items;
@@ -2134,7 +2140,16 @@ function handleSearch(query) {
     const q = normalizarTexto(query);
     const matches = searchIndex.filter(item => item.n.includes(q));
     if (matches.length === 0) resultsDiv.innerHTML = '<p style="color:rgba(255,255,255,.4);padding:12px">Sem resultados para "' + query + '"</p>';
-    else resultsDiv.innerHTML = matches.slice(0, 20).map(m => `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`).join('');
+    else resultsDiv.innerHTML = matches.slice(0, 20).map(m => {
+        if (m.action === 'perfil') {
+            return `<a href="#" class="search-result" onclick="event.preventDefault(); pesquisarAbrirPerfil('${escapeAttr(m.nome)}');"><span class="type">${m.type}</span>${m.text}</a>`;
+        }
+        return `<a href="#" class="search-result" onclick="event.preventDefault(); goToTab('${m.tab}');"><span class="type">${m.type}</span>${m.text}</a>`;
+    }).join('');
+}
+function pesquisarAbrirPerfil(nome) {
+    if (searchOpen) toggleSearch();
+    setTimeout(() => abrirPerfil(nome), 180);
 }
 function goToTab(tab) {
     if (searchOpen) toggleSearch();
