@@ -970,8 +970,8 @@ const _termosClicaveis = todosJogadores.map(j => j.nome).sort((a, b) => b.length
 const _ACENTOS_MAPA = { a:'aáàâãä', e:'eéèêë', i:'iíìîï', o:'oóòôõö', u:'uúùûü', c:'cç', n:'nñ' };
 function _expandirAcentos(str) {
     return str.split('').map(ch => {
-        const low = ch.toLowerCase();
-        if (_ACENTOS_MAPA[low]) return '[' + _ACENTOS_MAPA[low] + ']';
+        const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        if (_ACENTOS_MAPA[base]) return '[' + _ACENTOS_MAPA[base] + ']';
         return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }).join('');
 }
