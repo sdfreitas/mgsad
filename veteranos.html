@@ -632,7 +632,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 26 de Setembro de 2026</p>
+        <p class="note">Última atualização: 30 de Setembro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -746,7 +746,8 @@
         <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 26 de Setembro de 2026</span>
+    <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
+    <span style="font-size:10px;opacity:.6">Última atualização: 30 de Setembro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -1019,6 +1020,29 @@ const totalComData = todosJogadores.filter(j => j.nasc).length;
 const aniversariantesMesAtual = porMes[mesAtualNum].length;
 let mesMaisAniversarios = 1, maxCount = 0;
 for (let m = 1; m <= 12; m++) { if (porMes[m].length > maxCount) { maxCount = porMes[m].length; mesMaisAniversarios = m; } }
+
+// ═══════════════════════════════════════════
+// INFO ÉPOCA (rodapé)
+// ═══════════════════════════════════════════
+function _infoEpoca() {
+    const now = new Date();
+    const m = now.getMonth() + 1;
+    const y = now.getFullYear();
+    const dois = v => String(v % 100).padStart(2, '0');
+    if (m >= 9) return { mesNome: MESES[m - 9], epoca: y + '/' + dois(y + 1) };
+    if (m <= 6) return { mesNome: MESES[m + 3], epoca: (y - 1) + '/' + dois(y) };
+    return { mesNome: null, epoca: (y - 1) + '/' + dois(y) };
+}
+function renderFooterEpoca() {
+    const el = document.getElementById('footerEpoca');
+    if (!el) return;
+    const info = _infoEpoca();
+    if (info.mesNome) {
+        el.textContent = '📅 Época ' + info.epoca + ' · mês em curso: ' + info.mesNome;
+    } else {
+        el.textContent = '📅 Época ' + info.epoca + ' · fora da época (Jul–Ago)';
+    }
+}
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -1970,6 +1994,9 @@ function inicializarSite() {
     if (_siteInicializado) return;
     _siteInicializado = true;
 
+    // Rodapé com época e mês em curso
+    renderFooterEpoca();
+
     // Resumo
     renderNoticias();
     renderResumo();
@@ -1981,7 +2008,6 @@ function inicializarSite() {
     // Quotas
     renderVerificacaoMensal();
     renderQuotas();
-    // Acordeão de quotas por mês
     let maHtml = '';
     MESES.forEach((mNome, mIdx) => {
         let pagosCount = 0;
@@ -2045,7 +2071,7 @@ function inicializarSite() {
     // Histórico
     renderHistorico();
 
-    // Sub-tabs default (calendário / classificação / marcadores)
+    // Sub-tabs default
     document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
     let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
     equipas.forEach((e, i) => {
@@ -2059,7 +2085,7 @@ function inicializarSite() {
     // Torneios + amigáveis
     renderTorneios();
 
-    // Charts das quotas (só depois de renderQuotas ter corrido)
+    // Charts restantes
     setTimeout(initQuotasCharts, 50);
     setTimeout(initDespesasChart, 50);
 }
