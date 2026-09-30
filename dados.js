@@ -14,7 +14,6 @@ const valorSocio = 40;
 // --- PLANTEL ---
 const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
-    { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
     { nome: "Américo Oliveira", apelido: "AMÉRICO", num: 13, nasc: "10/08/1982" },
     { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
     { nome: "Mário Oliveira", apelido: "MÁRIO", num: 18, nasc: "11/11/1970" },
@@ -51,18 +50,19 @@ const naoInscritos = [
     { nome: "Vitor Leite", apelido: "VITINHA GR", num: null, nasc: "01/06/1992" },
     { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
     { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
-    { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" }
+    { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
+    { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" }
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
 // ATENÇÃO: Amílcar André e Zé Buraca NÃO entram aqui - os ajustes estão em config.js
 const pagamentos = {
-    "Pedro Costa": [0],
+    "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
     "Mário Oliveira": [0],
     "Américo Silva": [0],
     "Sergio Rodrigues": [0],
-    "Américo Oliveira": [0],
+    "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0],
     "Marcelo": [0],
     "Pedro Cadete": [0],
@@ -140,7 +140,7 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 480;   // 24 atletas x 20 EUR (André Lopes, Armando e Luís Paiva não contam como inscritos)
+const despesaAFA = 460;   // 23 atletas x 20 EUR (André Lopes, Armando, Luís Paiva e Sérgio Tavares não contam como inscritos)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -266,7 +266,10 @@ const amigaveis = [
                 "Amílcar André",
                 "José Eduardo",
                 "Hugo André",
-                "Daniel Dias"
+                "Daniel Dias",
+                "Américo Oliveira",
+                "Fábio Gonçalves",
+                "Pedro Costa"
             ]
         }
     }
@@ -291,14 +294,8 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "30 Set 2026", tipo: "aviso", desc: "⚠️ Luís Paiva passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 24 atletas (480 EUR)." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Daniel Dias pagou Setembro (20 EUR), inscrição (30 EUR), árbitro do amigável (5 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 95 EUR." },
-    { data: "30 Set 2026", tipo: "aviso", desc: "🤝 Rui Rocha e António Rocha pagaram a quota de sócio (40 EUR cada) ao tesoureiro - total 80 EUR." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Luís Paiva pagou Setembro (10 EUR como não inscrito)." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Hugo André pagou Setembro (20 EUR) e o árbitro do amigável vs Paços de Ferreira (5 EUR) - total 25 EUR." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ José Eduardo pagou Setembro (20 EUR), inscrição (30 EUR), árbitro do amigável (5 EUR) e Out/Nov/Dez (60 EUR) - total 115 EUR." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ António José Silva (Tozé) pagou Setembro e Outubro (20 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 60 EUR." },
-    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou Setembro (20 EUR), inscrição (30 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 90 EUR." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (30 Set) — total 625 EUR: Sérgio Freitas (Set + inscrição + sócio ao tesoureiro) 90 EUR · José Eduardo (Set + inscrição + árbitro + Out/Nov/Dez) 115 EUR · Daniel Dias (Set + inscrição + árbitro + sócio ao tesoureiro) 95 EUR · António José Silva 'Tozé' (Set+Out + sócio ao tesoureiro) 60 EUR · Américo Oliveira (árbitro + Out + Nov) 45 EUR · Rui Rocha (sócio ao tesoureiro) 40 EUR · António Rocha (sócio ao tesoureiro) 40 EUR · Hugo André (Set + árbitro) 25 EUR · Pedro Costa (árbitro + Out) 25 EUR · Luís Paiva (Set como não inscrito) 10 EUR · Fábio Gonçalves (árbitro) 5 EUR." },
+    { data: "30 Set 2026", tipo: "aviso", desc: "⚠️ Sérgio Tavares passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 23 atletas (460 EUR)." },
     { data: "30 Set 2026", tipo: "aviso", desc: "🍽️ Joel Tavares e Jorge Azevedo vão pagar o farnel dos seus aniversários (Setembro). Marcados na grelha de Aniversários com 🍽️." },
     { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 25 atletas (500 EUR)." },
@@ -337,7 +334,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
     { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
-    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (24 atletas x 20 EUR da caixa) - 480 EUR, a pagar em Setembro." }
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (23 atletas x 20 EUR da caixa) - 460 EUR, a pagar em Setembro." }
 ];
 
 // --- NOTÍCIAS ---
