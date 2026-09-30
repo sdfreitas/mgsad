@@ -112,8 +112,15 @@ const sociosPagoAoClube = [
     "Joel Tavares"
 ];
 
-// --- MERENDAS PAGAS ---
-const merendaPaga = ["Zé Buraca", "Américo Oliveira", "José Eduardo"];
+// --- MERENDAS / FARNEL PAGOS ---
+// Quem aparece aqui ganha o ícone 🍽️ na grelha de Aniversários
+const merendaPaga = [
+    "Zé Buraca",
+    "Américo Oliveira",
+    "José Eduardo",
+    "Joel Tavares",
+    "Jorge Azevedo"
+];
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
@@ -265,6 +272,7 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "30 Set 2026", tipo: "aviso", desc: "🍽️ Joel Tavares e Jorge Azevedo vão pagar o farnel dos seus aniversários (Setembro). Marcados na grelha de Aniversários com 🍽️." },
     { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 25 atletas (500 EUR)." },
     { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira - fruta, 2x água 5L, bolachas Maria, chá e 50 copos 200ml - 15,19 EUR (pago pela caixa)." },
