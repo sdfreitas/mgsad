@@ -36,7 +36,6 @@ const inscritos = [
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" },
-    { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
     { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" }
 ];
 
@@ -51,7 +50,8 @@ const naoInscritos = [
     { nome: "Salvador", apelido: "SALVADOR", num: null, nasc: "13/07/1978" },
     { nome: "Vitor Leite", apelido: "VITINHA GR", num: null, nasc: "01/06/1992" },
     { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
-    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" }
+    { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
+    { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" }
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
@@ -74,7 +74,10 @@ const pagamentos = {
     "Pedro Ferreira": [0],
     "Sérgio Freitas": [0],
     "José Eduardo": [0, 1, 2, 3],
-    "António José Silva": [0, 1]
+    "António José Silva": [0, 1],
+    "Hugo André": [0],
+    "Daniel Dias": [0],
+    "Luís Paiva": [0]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -86,7 +89,8 @@ const inscricoesPagas = [
     "Pedro Costa", "Jorge Azevedo", "Pedro Cadete",
     "Amílcar André",
     "Sérgio Freitas",
-    "José Eduardo"
+    "José Eduardo",
+    "Daniel Dias"
 ];
 
 // --- SÓCIOS PAGOS ---
@@ -104,7 +108,11 @@ const sociosPagos = [
     "António Oliveira",
     "Américo Silva",
     "Sérgio Freitas",
-    "António José Silva"
+    "António José Silva",
+    "Rui Rocha",
+    "António Rocha",
+    "Daniel Dias",
+    "Luís Paiva"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -116,7 +124,8 @@ const sociosPagoAoClube = [
     "Hugo André",
     "Amílcar André",
     "José Eduardo",
-    "Joel Tavares"
+    "Joel Tavares",
+    "Luís Paiva"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -131,7 +140,7 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 500;   // 25 atletas x 20 EUR (André Lopes e Armando não participam esta época)
+const despesaAFA = 480;   // 24 atletas x 20 EUR (André Lopes, Armando e Luís Paiva não contam como inscritos)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -255,7 +264,9 @@ const amigaveis = [
                 "Joel Tavares",
                 "Zé Buraca",
                 "Amílcar André",
-                "José Eduardo"
+                "José Eduardo",
+                "Hugo André",
+                "Daniel Dias"
             ]
         }
     }
@@ -280,6 +291,11 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "30 Set 2026", tipo: "aviso", desc: "⚠️ Luís Paiva passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 24 atletas (480 EUR)." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Daniel Dias pagou Setembro (20 EUR), inscrição (30 EUR), árbitro do amigável (5 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 95 EUR." },
+    { data: "30 Set 2026", tipo: "aviso", desc: "🤝 Rui Rocha e António Rocha pagaram a quota de sócio (40 EUR cada) ao tesoureiro - total 80 EUR." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Luís Paiva pagou Setembro (10 EUR como não inscrito)." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Hugo André pagou Setembro (20 EUR) e o árbitro do amigável vs Paços de Ferreira (5 EUR) - total 25 EUR." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ José Eduardo pagou Setembro (20 EUR), inscrição (30 EUR), árbitro do amigável (5 EUR) e Out/Nov/Dez (60 EUR) - total 115 EUR." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ António José Silva (Tozé) pagou Setembro e Outubro (20 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 60 EUR." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou Setembro (20 EUR), inscrição (30 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 90 EUR." },
@@ -321,7 +337,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
     { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
-    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (25 atletas x 20 EUR da caixa) - 500 EUR, a pagar em Setembro." }
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (24 atletas x 20 EUR da caixa) - 480 EUR, a pagar em Setembro." }
 ];
 
 // --- NOTÍCIAS ---
