@@ -286,6 +286,57 @@
         .tema-btn:active { transform: scale(.94); }
         .tema-btn span { display: block; }
 
+        /* ─── ECRÃ DE PASSWORD ─── */
+        .auth-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #0D3B66 0%, #1A6FB5 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        .auth-box {
+            background: #fff; border-radius: 16px; padding: 32px 28px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.35);
+            text-align: center;
+        }
+        .auth-logo {
+            font-size: 11px; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; color: #0D3B66; margin-bottom: 8px;
+            opacity: .7;
+        }
+        .auth-titulo { font-size: 22px; font-weight: 800; color: #0D3B66; margin-bottom: 6px; letter-spacing: -.3px; }
+        .auth-sub { font-size: 13px; color: #64748b; margin-bottom: 22px; line-height: 1.5; }
+        .auth-input {
+            width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0;
+            border-radius: 10px; font-size: 15px; font-family: inherit;
+            outline: none; transition: border-color .15s, box-shadow .15s;
+            text-align: center; letter-spacing: 1px; background: #fff; color: #1a1a1a;
+        }
+        .auth-input:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.15); }
+        .auth-btn {
+            width: 100%; margin-top: 12px; padding: 13px;
+            background: #0D3B66; color: #fff; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+            cursor: pointer; font-family: inherit; text-transform: uppercase;
+            transition: background .15s, transform .1s;
+        }
+        .auth-btn:hover { background: #1A6FB5; }
+        .auth-btn:active { transform: scale(.98); }
+        .auth-btn:disabled { opacity: .5; cursor: wait; }
+        .auth-erro {
+            color: #c1121f; font-size: 12px; font-weight: 600;
+            margin-top: 12px; min-height: 16px; line-height: 1.4;
+        }
+        html[data-tema="escuro"] .auth-box { background: #1e293b; }
+        html[data-tema="escuro"] .auth-titulo { color: #93c5fd; }
+        html[data-tema="escuro"] .auth-logo { color: #93c5fd; }
+        html[data-tema="escuro"] .auth-sub { color: #94a3b8; }
+        html[data-tema="escuro"] .auth-input { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+        html[data-tema="escuro"] .auth-input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96,165,250,.2); }
+        html[data-tema="escuro"] .auth-btn { background: #1A6FB5; }
+        html[data-tema="escuro"] .auth-btn:hover { background: #5BA4D9; }
+        html[data-tema="escuro"] .auth-erro { color: #fca5a5; }
+
         .filtro-bar {
             display: flex; justify-content: space-between; align-items: center;
             gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
@@ -533,10 +584,24 @@
             .saldo-hero-line-value { font-size: 14px; }
             .alertas-grid { grid-template-columns: 1fr; }
             .alerta-num { font-size: 26px; }
+            .auth-box { padding: 26px 22px; }
+            .auth-titulo { font-size: 20px; }
         }
     </style>
 </head>
 <body>
+
+<!-- ═══ ECRÃ DE PASSWORD ═══ -->
+<div class="auth-gate" id="authGate">
+    <div class="auth-box">
+        <div class="auth-logo">Veteranos ADC Lobão</div>
+        <div class="auth-titulo">🔒 Acesso reservado</div>
+        <p class="auth-sub">Introduz a password para entrar</p>
+        <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')tentarEntrar()">
+        <button class="auth-btn" id="authBtn" onclick="tentarEntrar()">Entrar</button>
+        <div id="authErro" class="auth-erro"></div>
+    </div>
+</div>
 
 <nav class="navbar">
     <span class="nav-brand">Veteranos ADC Lobão</span>
@@ -729,6 +794,67 @@
 <script src="dados.js"></script>
 <script src="config.js"></script>
 <script>
+// ─── AUTENTICAÇÃO (password hash SHA-256) ───
+function siteAutenticado() {
+    try { return localStorage.getItem('siteAuth') === 'ok'; } catch (e) { return false; }
+}
+function aplicarGate() {
+    const gate = document.getElementById('authGate');
+    if (!gate) return;
+    if (siteAutenticado()) {
+        gate.style.display = 'none';
+        document.body.style.overflow = '';
+    } else {
+        gate.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        const inp = document.getElementById('authInput');
+        if (inp) setTimeout(() => inp.focus(), 80);
+    }
+}
+async function hashSHA256(texto) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+    return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+async function tentarEntrar() {
+    const inp = document.getElementById('authInput');
+    const err = document.getElementById('authErro');
+    const btn = document.getElementById('authBtn');
+    if (!inp || !err) return;
+
+    const hashGuardado = (typeof SENHA_HASH !== 'undefined') ? SENHA_HASH : null;
+    if (!hashGuardado || hashGuardado === '') {
+        err.textContent = 'Erro: senha não configurada (config.js).';
+        return;
+    }
+    if (!inp.value) {
+        err.textContent = 'Escreve a password.';
+        return;
+    }
+    if (btn) btn.disabled = true;
+    err.textContent = '';
+    try {
+        const hashInserido = await hashSHA256(inp.value);
+        if (hashInserido === hashGuardado) {
+            try { localStorage.setItem('siteAuth', 'ok'); } catch (e) {}
+            inp.value = '';
+            aplicarGate();
+        } else {
+            err.textContent = 'Password incorreta. Tenta outra vez.';
+            inp.value = '';
+            inp.focus();
+        }
+    } catch (e) {
+        err.textContent = 'Erro ao validar. Tenta outra vez.';
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+function bloquearSite() {
+    try { localStorage.removeItem('siteAuth'); } catch (e) {}
+    aplicarGate();
+}
+aplicarGate();
+
 // ─── MENU LOGIC ───
 let menuOpen = false;
 function toggleMenu() {
@@ -753,7 +879,13 @@ function marcarMenuAtivo(id) {
         b.classList.toggle('active', b.textContent.toLowerCase().includes(id.slice(0, 5)));
     });
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuOpen) toggleMenu();
+    if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'l')) {
+        e.preventDefault();
+        bloquearSite();
+    }
+});
 
 // ─── TEMA ───
 const _mediaDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -801,7 +933,6 @@ const receitaNaoInscritos = naoInscritos.length * QUOTA_NI;
 const receitaMensalEsperada = receitaInscritos + receitaNaoInscritos;
 const despesasConfirmadas = despesaCampo + despesaAFA + despesaAgua + despesaGalhardetes;
 
-// ─── DESPESAS PAGAS vs POR PAGAR ───
 function despesaPaga(chave) {
     if (typeof DESPESAS_PAGAS === 'undefined') return true;
     return DESPESAS_PAGAS[chave] === true;
@@ -820,14 +951,12 @@ const despesasJaPagas = despesasFixasJaPagas + despesasExtrasPagas;
 const despesasPorPagar = despesasFixasPorPagar + despesasExtrasPorPagar;
 const despesasTotais = despesasConfirmadas + totalDespesasExtras;
 
-// ─── FORMATAÇÃO ───
 function fmtEur(v) {
     const n = Math.round(v * 100) / 100;
     if (n === Math.floor(n)) return '€' + n;
     return '€' + n.toFixed(2).replace('.', ',');
 }
 
-// ─── AJUSTES INTERNOS (config.js) ───
 function isencoesDe(nome) {
     if (typeof ISENCOES === 'undefined') return [];
     return ISENCOES[nome] || [];
@@ -851,7 +980,6 @@ function socioPagouAoClube(nome) {
     return sociosPagoAoClube.includes(nome);
 }
 
-// ─── MÊS ATUAL NA ÉPOCA (Set=0 … Jun=9) ───
 function mesEpocaAtualIdx() {
     const m = new Date().getMonth() + 1;
     if (m >= 9) return m - 9;
@@ -859,7 +987,6 @@ function mesEpocaAtualIdx() {
     return -1;
 }
 
-// ─── ISENÇÃO POR FALTA DE PRESENÇA (mês fechado) ───
 function mesFechado(mIdx) {
     const atual = mesEpocaAtualIdx();
     if (atual === -1) return true;
@@ -897,7 +1024,6 @@ function eDevedor(nome) {
     return false;
 }
 
-// ─── ÚLTIMO PAGAMENTO ───
 function ultimoPagamentoHistorico(nome) {
     if (typeof historico === 'undefined' || !historico.length) return null;
     for (const h of historico) {
@@ -922,7 +1048,6 @@ function calcularTotalVenda(itens) {
 }
 compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
 
-// Vendas — separar pagas das pendentes
 const vendasPagas = compras6Set.filter(v => v.pago);
 const vendasPendentes = compras6Set.filter(v => !v.pago);
 const totalVendasTotal = compras6Set.reduce((s, v) => s + v.total, 0);
@@ -941,7 +1066,6 @@ amigaveis.forEach(a => {
     }
 });
 
-// ─── SALDO — só conta vendas PAGAS + despesas extras PAGAS ───
 const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotais + totalVendasPagas + totalArbitroRecebido - totalArbitroCusto;
 const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
 
@@ -952,7 +1076,6 @@ const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
 
-// ─── HELPERS ───
 function calcIdade(nasc) {
     if (!nasc) return '—';
     const p = nasc.split('/');
@@ -965,7 +1088,6 @@ function makeCard(l, v, s, a) {
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
 
-// ─── NOMES CLICÁVEIS (insensível a acentos e a maiúsculas) ───
 const _termosClicaveis = todosJogadores.map(j => j.nome).sort((a, b) => b.length - a.length);
 const _ACENTOS_MAPA = { a:'aáàâãä', e:'eéèêë', i:'iíìîï', o:'oóòôõö', u:'uúùûü', c:'cç', n:'nñ' };
 function _expandirAcentos(str) {
@@ -1014,17 +1136,14 @@ function showTab(id) {
     if (id === 'treinos') { destroyCharts('treinosPresencas', 'treinosBolo', 'treinosTop'); setTimeout(initTreinosCharts, 50); }
 }
 
-// ─── NOTÍCIAS ───
 function renderNoticias() {
     const lista = (typeof noticias !== 'undefined' && Array.isArray(noticias)) ? noticias : [];
     const el = document.getElementById('resumo-noticias');
     if (!el) return;
-
     if (lista.length === 0) {
         el.innerHTML = '<p class="noticia-empty">Sem notícias de momento.</p>';
         return;
     }
-
     let html = '';
     lista.forEach(n => {
         const tag = n.tag || 'info';
@@ -1043,7 +1162,6 @@ function renderNoticias() {
 }
 renderNoticias();
 
-// ─── RESUMO ───
 function renderResumo() {
     document.getElementById('saldo-hero').innerHTML = `
         <div class="saldo-hero">
@@ -1085,12 +1203,8 @@ function renderResumo() {
     const _aniv = todosJogadores
         .filter(j => j.nasc && parseInt(j.nasc.split('/')[1]) === _mesR)
         .sort((a, b) => parseInt(a.nasc.split('/')[0]) - parseInt(b.nasc.split('/')[0]));
-    const _anivSub = _aniv.length === 0
-        ? 'sem aniversários este mês'
-        : _aniv.map(j => j.nome).join(', ');
-    const _anivSubCurto = _aniv.length > 3
-        ? _aniv.slice(0, 3).map(j => j.nome).join(', ') + ' + ' + (_aniv.length - 3) + ' outros'
-        : _anivSub;
+    const _anivSub = _aniv.length === 0 ? 'sem aniversários este mês' : _aniv.map(j => j.nome).join(', ');
+    const _anivSubCurto = _aniv.length > 3 ? _aniv.slice(0, 3).map(j => j.nome).join(', ') + ' + ' + (_aniv.length - 3) + ' outros' : _anivSub;
 
     document.getElementById('resumo-alertas').innerHTML = `
         <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="irPara('quotas')">
@@ -1168,7 +1282,6 @@ document.getElementById('despesas-cards').innerHTML =
     makeCard('Por Pagar', fmtEur(despesasPorPagar), 'ainda não saíram', '#d97706') +
     makeCard('Árbitros Amigáveis', fmtEur(totalArbitroCusto), 'pago · ' + fmtEur(totalArbitroRecebido) + ' recebido', '#64748b');
 
-// ─── CHARTS ───
 const animOpts = { animation: { duration: 900, easing: 'easeOutQuart' } };
 const chartOpts = {
     responsive: true, maintainAspectRatio: true, ...animOpts,
@@ -1272,7 +1385,6 @@ function initQuotasCharts() {
 }
 initResumoCharts();
 
-// ─── DESPESAS ───
 let dh = '<h3 style="font-size:13px;color:#0D3B66;font-weight:600;margin:0 0 12px 4px;text-transform:uppercase;letter-spacing:.4px">Despesas da Época</h3>';
 dh += '<table><thead><tr><th>Despesa</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
 function linhaDespesa(nome, valor, chave, sub) {
@@ -1301,7 +1413,6 @@ dh += '<tr><td><strong style="color:#0D3B66">Massagista</strong></td><td class="
 dh += '</tbody><tfoot><tr><td>Total (despesas + árbitros)</td><td class="center" style="font-size:14px">' + fmtEur(despesasTotais + totalArbitroCusto) + '</td><td class="center"><span style="color:#16a34a">pago ' + fmtEur(despesasJaPagas + totalArbitroCusto) + '</span> · <span style="color:#d97706">por pagar ' + fmtEur(despesasPorPagar) + '</span></td></tr></tfoot></table>';
 document.getElementById('tabela-despesas').innerHTML = dh;
 
-// ─── VERIFICAÇÃO MENSAL (isenções) ───
 function renderVerificacaoMensal() {
     const mesesFechados = [];
     for (let i = 0; i < MESES.length; i++) {
@@ -1360,7 +1471,6 @@ function renderVerificacaoMensal() {
 }
 renderVerificacaoMensal();
 
-// ─── QUOTAS ───
 function monthCell(pago, isento) {
     if (pago) return '<td class="center" style="padding:7px 3px;background:#f0fdf4"><span style="font-size:12px;font-weight:700;color:#16a34a" title="Pago">✓</span></td>';
     if (isento) return '<td class="center" style="padding:7px 3px;background:#faf5ff"><span style="font-size:11px;font-weight:700;color:#8b5cf6" title="Isento (não compareceu)">I</span></td>';
@@ -1511,7 +1621,6 @@ MESES.forEach((mNome, mIdx) => {
 document.getElementById('quotas-por-mes').innerHTML = maHtml;
 function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
 
-// ─── RENDER GENÉRICO DE ESTADO DE PAGAMENTO ───
 function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota, mostrarAoClube }) {
     const total = jogadores.length;
     const numPagos = jogadores.filter(j => pagos.includes(j.nome)).length;
@@ -1553,7 +1662,6 @@ renderEstadoPagamento({
     nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube.'
 });
 
-// ─── ANIVERSÁRIOS ───
 const hoje = new Date();
 const mesAtualNum = hoje.getMonth() + 1;
 const porMes = {};
@@ -1595,7 +1703,6 @@ for (let m = 1; m <= 12; m++) {
 bmHtml += '</div><div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span><span>🍽️ Merenda paga</span></div>';
 document.getElementById('aniversarios-grid').innerHTML = bmHtml;
 
-// ─── TREINOS ───
 const totalEventos = treinosJogos.length;
 const pendentes = treinosJogos.filter(t => t.estado === 'pendente').length;
 document.getElementById('treinos-cards').innerHTML =
@@ -1708,7 +1815,6 @@ treinosJogos.forEach((t, idx) => {
 document.getElementById('treinos-lista').innerHTML = ph;
 function togglePresAcc(i) { document.getElementById('presacc-' + i).classList.toggle('open'); }
 
-// ─── VENDAS ───
 document.getElementById('vendas-cards').innerHTML =
     makeCard('Itens Vendidos', totalItensVendidos, 'unidades', '#0D3B66') +
     makeCard('Produtos na lista', Object.keys(listaPrecos).length, 'tipos', '#1A6FB5') +
@@ -1728,7 +1834,6 @@ vendasHtml += `<div style="margin-top:12px;font-size:13px;font-weight:600;color:
 vendasHtml += `<p style="font-size:11px;color:#16a34a;margin-top:8px;text-align:center">✓ Só a parte recebida (€${totalVendasPagas}) está incluída no saldo da caixa</p>`;
 document.getElementById('vendas-lista').innerHTML = vendasHtml;
 
-// ─── ATAS ───
 document.getElementById('atas-cards').innerHTML =
     makeCard('Total Reuniões', atas.length, 'nesta época', '#0D3B66') +
     makeCard('Última Reunião', atas[0].data, '', '#1A6FB5') +
@@ -1742,7 +1847,6 @@ atas.forEach(a => {
 });
 document.getElementById('atas-lista').innerHTML = ah;
 
-// ─── HISTÓRICO (com filtros e ordenação) ───
 const tipoInfo = {
     ata: { cor: '#1A6FB5', icon: '📋', label: 'Ata' },
     caixa: { cor: '#0D3B66', icon: '💰', label: 'Caixa' },
@@ -1807,7 +1911,6 @@ function renderHistorico() {
 }
 renderHistorico();
 
-// ─── SUB-TABS ───
 function showSubTab(id) {
     document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
@@ -1829,7 +1932,6 @@ ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Vet
 document.getElementById('sub-classificacao').innerHTML = ch;
 document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-// ─── TORNEIOS E AMIGÁVEIS ───
 function renderAmigavel(a, idx) {
     const golosNos = a.golosNos, golosEles = a.golosEles;
     let scoreClass = 'draw';
@@ -1922,7 +2024,6 @@ function renderTorneios() {
 }
 renderTorneios();
 
-// ─── PERFIL ───
 function encontrarJogador(termo) {
     if (!termo) return null;
     const t = termo.toLowerCase();
@@ -2104,7 +2205,6 @@ function abrirPerfil(nome) {
 function fecharPerfil() { document.getElementById('perfilModal').classList.remove('open'); document.body.style.overflow = ''; }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) fecharPerfil(); });
 
-// ─── PESQUISA ───
 let searchOpen = false;
 function toggleSearch() {
     searchOpen = !searchOpen;
@@ -2116,7 +2216,6 @@ function toggleSearch() {
 function normalizarTexto(texto) { return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 function buildSearchIndex() {
     const items = [];
-    // Jogadores — abrem o perfil diretamente (em vez de ir para um separador)
     todosJogadores.forEach(j => items.push({
         type: 'Jogador',
         text: j.nome,
@@ -2156,7 +2255,6 @@ function goToTab(tab) {
     setTimeout(() => { showTab(tab); marcarMenuAtivo(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 150);
 }
 
-// ─── RECIBO ───
 function imprimirRecibo(nome) {
     const j = encontrarJogador(nome);
     if (!j) return;
