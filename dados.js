@@ -72,7 +72,9 @@ const pagamentos = {
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0],
     "Pedro Ferreira": [0],
-    "Sérgio Freitas": [0]
+    "Sérgio Freitas": [0],
+    "José Eduardo": [0, 1, 2, 3],
+    "António José Silva": [0, 1]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -83,7 +85,8 @@ const inscricoesPagas = [
     "Pedro Ferreira",
     "Pedro Costa", "Jorge Azevedo", "Pedro Cadete",
     "Amílcar André",
-    "Sérgio Freitas"
+    "Sérgio Freitas",
+    "José Eduardo"
 ];
 
 // --- SÓCIOS PAGOS ---
@@ -100,7 +103,8 @@ const sociosPagos = [
     "Américo Oliveira",
     "António Oliveira",
     "Américo Silva",
-    "Sérgio Freitas"
+    "Sérgio Freitas",
+    "António José Silva"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -250,7 +254,8 @@ const amigaveis = [
                 "Pedro Ferreira",
                 "Joel Tavares",
                 "Zé Buraca",
-                "Amílcar André"
+                "Amílcar André",
+                "José Eduardo"
             ]
         }
     }
@@ -275,6 +280,8 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ José Eduardo pagou Setembro (20 EUR), inscrição (30 EUR), árbitro do amigável (5 EUR) e Out/Nov/Dez (60 EUR) - total 115 EUR." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ António José Silva (Tozé) pagou Setembro e Outubro (20 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 60 EUR." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou Setembro (20 EUR), inscrição (30 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 90 EUR." },
     { data: "30 Set 2026", tipo: "aviso", desc: "🍽️ Joel Tavares e Jorge Azevedo vão pagar o farnel dos seus aniversários (Setembro). Marcados na grelha de Aniversários com 🍽️." },
     { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
