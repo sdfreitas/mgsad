@@ -71,7 +71,8 @@ const pagamentos = {
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0],
-    "Pedro Ferreira": [0]
+    "Pedro Ferreira": [0],
+    "Sérgio Freitas": [0]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -81,7 +82,8 @@ const inscricoesPagas = [
     "Rui Rocha", "António Rocha",
     "Pedro Ferreira",
     "Pedro Costa", "Jorge Azevedo", "Pedro Cadete",
-    "Amílcar André"
+    "Amílcar André",
+    "Sérgio Freitas"
 ];
 
 // --- SÓCIOS PAGOS ---
@@ -97,7 +99,8 @@ const sociosPagos = [
     "Mário Oliveira",
     "Américo Oliveira",
     "António Oliveira",
-    "Américo Silva"
+    "Américo Silva",
+    "Sérgio Freitas"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -272,6 +275,7 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Sérgio Freitas pagou Setembro (20 EUR), inscrição (30 EUR) e quota de sócio ao tesoureiro (40 EUR) - total 90 EUR." },
     { data: "30 Set 2026", tipo: "aviso", desc: "🍽️ Joel Tavares e Jorge Azevedo vão pagar o farnel dos seus aniversários (Setembro). Marcados na grelha de Aniversários com 🍽️." },
     { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 25 atletas (500 EUR)." },
