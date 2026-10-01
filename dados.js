@@ -116,8 +116,6 @@ const sociosPagos = [
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
-// Estas pessoas entregaram os 40 EUR diretamente ao clube,
-// portanto esse dinheiro NUNCA passou pela caixa dos veteranos.
 const sociosPagoAoClube = [
     "André Pinho",
     "Jorge Azevedo",
@@ -129,7 +127,6 @@ const sociosPagoAoClube = [
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
-// Quem aparece aqui ganha o ícone 🍽️ na grelha de Aniversários
 const merendaPaga = [
     "Zé Buraca",
     "Américo Oliveira",
@@ -145,8 +142,6 @@ const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
 // --- ESTADO DAS DESPESAS ---
-// true  = já paga (saiu da caixa)
-// false = ainda por pagar (está reservada, mas ainda tens o dinheiro)
 const DESPESAS_PAGAS = {
     campo: false,
     afa: false,
@@ -155,8 +150,6 @@ const DESPESAS_PAGAS = {
 };
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
-// Compras pontuais: merendas, lanches, materiais, etc.
-// pago: true = saiu da caixa / pago: false = está por pagar
 const despesasExtras = [
     {
         data: "26 Set 2026",
@@ -204,7 +197,7 @@ const treinosJogos = [
       presentes: ["Joel Tavares", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho"],
       extra: ["Fábio Oliveira", "Marcelo", "Zé Buraca", "Telmo"] },
     { data: "23 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
-      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho", "Sérgio Freitas", "Tiago Mota"],
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Luís Paiva", "Daniel Dias", "José Eduardo", "Hugo André"],
       extra: ["Marcelo", "Zé Buraca", "Telmo"] },
     { data: "26 Set 2026", tipo: "jogo", titulo: "Jogo amigável vs Paços de Ferreira", estado: "registado",
       presentes: ["Fábio Gonçalves", "Pedro Ferreira", "Mário Oliveira", "Américo Oliveira", "Joel Tavares", "André Pinho", "Sérgio Freitas", "Rui Rocha", "Pedro Cadete", "Amílcar André", "Jorge Azevedo", "Américo Silva", "José Eduardo", "Daniel Dias", "Sergio Rodrigues"],
@@ -305,7 +298,7 @@ const historico = [
     { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (40 EUR) ao tesoureiro." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (40 EUR) diretamente ao clube principal - não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
     { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época - retirado do plantel. Inscrição AFA ajustada para 26 atletas (520 EUR)." },
-    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro - 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
+    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro - 17 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
     { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos: Américo Silva (árbitro 5 EUR), Pedro Ferreira (árbitro 5 EUR), Joel Tavares (árbitro 5 EUR), Zé Buraca (árbitro 5 EUR), Mário Oliveira (boné 5 EUR), Pedro Costa (inscrição 30 EUR), Jorge Azevedo (inscrição 30 EUR), Pedro Cadete (inscrição 30 EUR) - total 113 EUR." },
     { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (40 EUR cada)." },
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ André Pinho pagou Setembro (20 EUR) e inscrição (30 EUR) - total 50 EUR." },
@@ -360,7 +353,6 @@ const noticias = [
         corpo: "Mais um teste antes do campeonato. Contamos com todos."
     }
 ];
-
 
 // --- MAPAS AUXILIARES ---
 const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
