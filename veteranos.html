@@ -323,6 +323,17 @@
         .filtro-bar .filtro-info { font-size: 12px; color: #64748b; }
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
+        .hist-search-wrap { position: relative; width: 100%; }
+        .hist-search { width: 100%; padding: 10px 40px 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1a1a1a; outline: none; transition: border-color .15s, box-shadow .15s; }
+        .hist-search:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.12); }
+        .hist-search::placeholder { color: #94a3b8; }
+        .hist-search-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: #888; padding: 6px 10px; border-radius: 6px; font-family: inherit; line-height: 1; }
+        .hist-search-clear:hover { background: #e2e8f0; color: #333; }
+        html[data-tema="escuro"] .hist-search { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+        html[data-tema="escuro"] .hist-search::placeholder { color: #64748b; }
+        html[data-tema="escuro"] .hist-search-clear { color: #94a3b8; }
+        html[data-tema="escuro"] .hist-search-clear:hover { background: #334155; color: #e2e8f0; }
+
         .seg-group { display: inline-flex; flex-wrap: wrap; gap: 3px; background: #e2e8f0; padding: 3px; border-radius: 8px; }
         .seg-btn { padding: 6px 11px; border: none; background: none; font-family: inherit; font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; border-radius: 6px; transition: color .15s, background .15s; white-space: nowrap; }
         .seg-btn:hover { color: #0D3B66; }
@@ -721,7 +732,7 @@
         <div id="atas-lista"></div>
     </div>
     <div id="tab-historico" class="tab-panel">
-        <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, treinos, atas e vendas.</p></div>
+        <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, treinos, atas e vendas. Podes pesquisar por jogador, valor ou palavra-chave.</p></div>
         <div id="historico-filtros"></div>
         <div id="historico-lista"></div>
     </div>
@@ -1058,6 +1069,7 @@ function makeCard(l, v, s, a) {
     return `<div class="card" style="border-top-color:${a}"><div class="card-label">${l}</div><div class="card-value" style="color:${a}">${v}</div>${s ? `<div class="card-sub">${s}</div>` : ''}</div>`;
 }
 function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
+function escHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
 const _termosClicaveis = todosJogadores.map(j => j.nome).sort((a, b) => b.length - a.length);
 const _ACENTOS_MAPA = { a:'aáàâãä', e:'eéèêë', i:'iíìîï', o:'oóòôõö', u:'uúùûü', c:'cç', n:'nñ' };
@@ -1131,6 +1143,7 @@ let quotasFiltro = 'todos';
 let quotasOrdem = 'padrao';
 let histFiltro = 'todos';
 let histOrdem = 'recente';
+let histPesquisa = '';
 let nomeAtualPerfil = null;
 let searchOpen = false;
 
@@ -1723,6 +1736,25 @@ function renderAtas() {
 // ═══════════════════════════════════════════
 function setHistFiltro(f) { histFiltro = f; renderHistorico(); }
 function setHistOrdem(o) { histOrdem = o; renderHistorico(); }
+function setHistPesquisa(v) {
+    histPesquisa = v;
+    const inp = document.activeElement;
+    const s = inp && inp.selectionStart;
+    const e = inp && inp.selectionEnd;
+    const eraSearch = !!(inp && inp.classList && inp.classList.contains('hist-search'));
+    renderHistorico();
+    if (eraSearch) {
+        const novo = document.querySelector('.hist-search');
+        if (novo) { novo.focus(); try { novo.setSelectionRange(s, e); } catch(_){} }
+    }
+}
+function limparHistPesquisa() {
+    histPesquisa = '';
+    renderHistorico();
+    const novo = document.querySelector('.hist-search');
+    if (novo) novo.focus();
+}
+
 function renderHistorico() {
     const filtros = [
         { id: 'todos', label: 'Todos' },
@@ -1736,15 +1768,35 @@ function renderHistorico() {
     ];
     let lista = historico.slice();
     if (histFiltro !== 'todos') lista = lista.filter(h => h.tipo === histFiltro);
+    const termo = (histPesquisa || '').trim();
+    if (termo.length >= 1) {
+        const q = normalizarTexto(termo);
+        lista = lista.filter(h => normalizarTexto(h.desc || '').includes(q) || normalizarTexto(h.data || '').includes(q));
+    }
     if (histOrdem === 'antigo') lista = lista.reverse();
 
-    let fh = `<div class="filtro-bar" style="flex-direction:column;align-items:stretch;gap:10px"><div class="filtro-info">A mostrar <strong>${lista.length}</strong> de <strong>${historico.length}</strong> movimentos</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="seg-group">`;
+    const temPesquisa = termo.length > 0;
+    const valInput = escHtml(histPesquisa || '');
+
+    let fh = `<div class="filtro-bar" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div class="hist-search-wrap">
+            <input type="text" class="hist-search" placeholder="🔍 Pesquisar jogador, valor ou palavra-chave..." value="${valInput}" oninput="setHistPesquisa(this.value)" autocomplete="off">
+            ${temPesquisa ? '<button type="button" class="hist-search-clear" onclick="limparHistPesquisa()" title="Limpar pesquisa" aria-label="Limpar">✕</button>' : ''}
+        </div>
+        <div class="filtro-info">A mostrar <strong>${lista.length}</strong> de <strong>${historico.length}</strong> movimentos${temPesquisa ? ` · pesquisa: "<strong>${escHtml(termo)}</strong>"` : ''}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="seg-group">`;
     filtros.forEach(t => { fh += `<button class="seg-btn${histFiltro === t.id ? ' active' : ''}" onclick="setHistFiltro('${t.id}')">${t.label}</button>`; });
     fh += `</div><div class="seg-group"><button class="seg-btn${histOrdem === 'recente' ? ' active' : ''}" onclick="setHistOrdem('recente')">↓ Recentes</button><button class="seg-btn${histOrdem === 'antigo' ? ' active' : ''}" onclick="setHistOrdem('antigo')">↑ Antigos</button></div></div></div>`;
     document.getElementById('historico-filtros').innerHTML = fh;
 
     const el = document.getElementById('historico-lista');
-    if (lista.length === 0) { el.innerHTML = '<div class="section-card" style="text-align:center;color:#999;padding:30px 20px;font-size:13px">Sem movimentos para este filtro.</div>'; return; }
+    if (lista.length === 0) {
+        const msg = temPesquisa
+            ? `Sem movimentos que correspondam a "<strong>${escHtml(termo)}</strong>".`
+            : 'Sem movimentos para este filtro.';
+        el.innerHTML = `<div class="section-card" style="text-align:center;color:#999;padding:30px 20px;font-size:13px">${msg}</div>`;
+        return;
+    }
     let hh = '';
     lista.forEach(h => {
         const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
