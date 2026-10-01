@@ -77,7 +77,9 @@ const pagamentos = {
     "António José Silva": [0, 1],
     "Hugo André": [0],
     "Daniel Dias": [0],
-    "Luís Paiva": [0]
+    "Luís Paiva": [0],
+    "Inácio": [0],
+    "Tiago Mota": [0]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -113,7 +115,9 @@ const sociosPagos = [
     "António Rocha",
     "Daniel Dias",
     "Luís Paiva",
-    "Sergio Rodrigues"
+    "Sergio Rodrigues",
+    "Inácio",
+    "Tiago Mota"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -124,7 +128,8 @@ const sociosPagoAoClube = [
     "Amílcar André",
     "José Eduardo",
     "Joel Tavares",
-    "Luís Paiva"
+    "Luís Paiva",
+    "Tiago Mota"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -290,6 +295,8 @@ const atas = [{
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Inácio pagou Setembro como não inscrito (10 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 50 EUR." },
+    { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Tiago Mota pagou Setembro (20 EUR) e a quota de sócio (40 EUR) diretamente ao clube principal." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Sergio Rodrigues pagou o árbitro do amigável vs Paços de Ferreira (5 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 45 EUR. Árbitro do amigável 100% recebido (20/20)." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Marcelo pagou o árbitro do amigável vs Paços de Ferreira (5 EUR)." },
     { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (30 Set) — total 645 EUR: Sérgio Freitas (Set + inscrição + sócio ao tesoureiro) 90 EUR · José Eduardo (Set + inscrição + árbitro + Out/Nov/Dez) 115 EUR · Daniel Dias (Set + inscrição + árbitro + sócio ao tesoureiro) 95 EUR · António José Silva 'Tozé' (Set+Out + sócio ao tesoureiro) 60 EUR · Américo Oliveira (árbitro + Out + Nov) 45 EUR · Rui Rocha (sócio ao tesoureiro) 40 EUR · António Rocha (sócio ao tesoureiro) 40 EUR · Hugo André (Set + árbitro) 25 EUR · Pedro Costa (árbitro + Out) 25 EUR · Mário Oliveira (Out) 20 EUR · Luís Paiva (Set como não inscrito) 10 EUR · Fábio Gonçalves (árbitro) 5 EUR." },
