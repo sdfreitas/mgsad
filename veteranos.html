@@ -149,6 +149,7 @@
         .bday-person-name { color: #333; font-weight: 500; }
         .bday-person-name.ni { color: #dc6843; }
         .bday-person-day { color: #999; font-size: 12px; font-weight: 600; background: #f0f4f8; padding: 2px 8px; border-radius: 8px; white-space: nowrap; }
+        .bday-person-day.prox { background: #fff7ed; color: #9a3412; }
         .bday-empty { color: #bbb; font-size: 12px; font-style: italic; padding: 8px 0; text-align: center; }
         .bday-legend { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 16px 0 4px; font-size: 12px; color: #666; }
         .bday-legend span.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
@@ -286,7 +287,6 @@
         .tema-btn:active { transform: scale(.94); }
         .tema-btn span { display: block; }
 
-        /* ─── ECRÃ DE PASSWORD ─── */
         .auth-gate {
             position: fixed; inset: 0; z-index: 9999;
             background: linear-gradient(135deg, #0D3B66 0%, #1A6FB5 100%);
@@ -447,6 +447,7 @@
         html[data-tema="escuro"] .mes-acc-badge.falta { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .mes-acc-badge.isento { background: #2e1065; color: #c4b5fd; }
         html[data-tema="escuro"] .bday-person-day { background: #0f172a; color: #94a3b8; }
+        html[data-tema="escuro"] .bday-person-day.prox { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .mes-player-status.nao { background: #1e293b; color: #94a3b8; }
         html[data-tema="escuro"] .mes-player-status.isento { background: #2e1065; color: #c4b5fd; }
         html[data-tema="escuro"] .mes-player-name.ni-tag::after { background: #422006; }
@@ -555,7 +556,6 @@
 </head>
 <body>
 
-<!-- ═══ ECRÃ DE PASSWORD ═══ -->
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
         <div class="auth-logo">Veteranos ADC Lobão</div>
@@ -632,7 +632,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 30 de Setembro de 2026</p>
+        <p class="note">Última atualização: 1 de Outubro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -747,7 +747,7 @@
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 30 de Setembro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 1 de Outubro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -872,7 +872,7 @@ _mediaDark.addEventListener('change', () => { if (_getTemaPreferido() === 'auto'
 _aplicarTema();
 
 // ═══════════════════════════════════════════
-// DERIVADOS (dados, sem tocar no DOM)
+// DERIVADOS
 // ═══════════════════════════════════════════
 const todosJogadores = [
     ...inscritos.map(j => ({ ...j, inscrito: true })),
@@ -1157,7 +1157,7 @@ const equipas = [
 ];
 
 // ═══════════════════════════════════════════
-// RENDER: NOTÍCIAS + RESUMO
+// NOTÍCIAS + RESUMO
 // ═══════════════════════════════════════════
 function renderNoticias() {
     const lista = (typeof noticias !== 'undefined' && Array.isArray(noticias)) ? noticias : [];
@@ -1200,17 +1200,51 @@ function renderResumo() {
         faltaArbitroTotal += emFalta.length * a.arbitro.valorPorJogador;
     });
 
-    const _mesR = new Date().getMonth() + 1;
-    const _aniv = todosJogadores.filter(j => j.nasc && parseInt(j.nasc.split('/')[1]) === _mesR).sort((a, b) => parseInt(a.nasc.split('/')[0]) - parseInt(b.nasc.split('/')[0]));
-    const _anivSub = _aniv.length === 0 ? 'sem aniversários este mês' : _aniv.map(j => j.nome).join(', ');
-    const _anivSubCurto = _aniv.length > 3 ? _aniv.slice(0, 3).map(j => j.nome).join(', ') + ' + ' + (_aniv.length - 3) + ' outros' : _anivSub;
+    // Aniversariantes do mês atual
+    const _hoje = new Date();
+    const _mesR = _hoje.getMonth() + 1;
+    const _diaR = _hoje.getDate();
+    const _aniv = todosJogadores
+        .filter(j => j.nasc && parseInt(j.nasc.split('/')[1]) === _mesR)
+        .sort((a, b) => parseInt(a.nasc.split('/')[0]) - parseInt(b.nasc.split('/')[0]));
+
+    // Aniversariantes nos próximos 3 dias (hoje + 2)
+    const _anivProx = _aniv.filter(j => {
+        const d = parseInt(j.nasc.split('/')[0]);
+        return d >= _diaR && d <= _diaR + 2;
+    });
+
+    let _anivClasse, _anivNum, _anivLabel, _anivSubCurto, _anivSub;
+    if (_anivProx.length > 0) {
+        _anivClasse = 'atencao';
+        _anivNum = _anivProx.length;
+        const comData = _anivProx.map(j => {
+            const d = parseInt(j.nasc.split('/')[0]);
+            if (d === _diaR) return j.nome + ' (hoje)';
+            if (d === _diaR + 1) return j.nome + ' (amanhã)';
+            return j.nome + ' (' + d + ')';
+        });
+        _anivSub = comData.join(', ');
+        _anivSubCurto = _anivProx.length > 2
+            ? _anivProx.slice(0, 2).map(j => j.nome).join(', ') + ' + ' + (_anivProx.length - 2) + ' outros'
+            : _anivSub;
+        _anivLabel = _anivProx.length === 1 ? '🎂 Aniversário!' : '🎂 Aniversários!';
+    } else {
+        _anivClasse = _aniv.length === 0 ? 'atencao' : 'ok';
+        _anivNum = _aniv.length;
+        _anivLabel = '🎂 ' + mesesAno[_mesR - 1];
+        _anivSub = _aniv.length === 0 ? 'sem aniversários este mês' : _aniv.map(j => j.nome).join(', ');
+        _anivSubCurto = _aniv.length > 3
+            ? _aniv.slice(0, 3).map(j => j.nome).join(', ') + ' + ' + (_aniv.length - 3) + ' outros'
+            : _anivSub;
+    }
 
     document.getElementById('resumo-alertas').innerHTML = `
         <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="irPara('quotas')"><div class="alerta-num">${totalDevedores}</div><div class="alerta-label">Quotas em falta</div><div class="alerta-sub">${totalDevedores === 0 ? 'tudo em ordem' : 'jogadores com meses por pagar'}</div></button>
         <button class="alerta-card ${inscPorPagar === 0 ? 'ok' : 'atencao'}" onclick="irPara('inscricoes')"><div class="alerta-num">${inscPorPagar}</div><div class="alerta-label">Inscrições por pagar</div><div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div></button>
         <button class="alerta-card ${vendasPendentes.length === 0 ? 'ok' : 'atencao'}" onclick="irPara('vendas')"><div class="alerta-num">${vendasPendentes.length}</div><div class="alerta-label">Vendas por receber</div><div class="alerta-sub">${vendasPendentes.length === 0 ? 'tudo recebido' : '€' + totalVendasPendentes + ' em falta'}</div></button>
         <button class="alerta-card ${faltaArbitroJogadores === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')"><div class="alerta-num">${faltaArbitroJogadores}</div><div class="alerta-label">Árbitro por receber</div><div class="alerta-sub">${faltaArbitroJogadores === 0 ? 'tudo recebido' : '€' + faltaArbitroTotal + ' em falta'}</div></button>
-        <button class="alerta-card ${_aniv.length === 0 ? 'atencao' : 'ok'}" onclick="irPara('aniversarios')" title="${_anivSub}"><div class="alerta-num">${_aniv.length}</div><div class="alerta-label">🎂 ${mesesAno[_mesR - 1]}</div><div class="alerta-sub">${_anivSubCurto}</div></button>`;
+        <button class="alerta-card ${_anivClasse}" onclick="irPara('aniversarios')" title="${_anivSub}"><div class="alerta-num">${_anivNum}</div><div class="alerta-label">${_anivLabel}</div><div class="alerta-sub">${_anivSubCurto}</div></button>`;
 
     let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
     sd += `<tr><td>Caixa inicial (transitada)</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(SALDO_INICIAL)}</td></tr>`;
@@ -1357,7 +1391,7 @@ function initTreinosCharts() {
 }
 
 // ═══════════════════════════════════════════
-// RENDER: DESPESAS
+// DESPESAS
 // ═══════════════════════════════════════════
 function renderDespesas() {
     document.getElementById('despesas-cards').innerHTML =
@@ -1394,7 +1428,7 @@ function renderDespesas() {
 }
 
 // ═══════════════════════════════════════════
-// RENDER: QUOTAS
+// QUOTAS
 // ═══════════════════════════════════════════
 function renderVerificacaoMensal() {
     const mesesFechados = [];
@@ -1523,7 +1557,7 @@ function renderQuotas() {
 function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
 
 // ═══════════════════════════════════════════
-// RENDER: INSCRIÇÕES / SÓCIOS
+// INSCRIÇÕES / SÓCIOS
 // ═══════════════════════════════════════════
 function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota, mostrarAoClube }) {
     const total = jogadores.length;
@@ -1551,7 +1585,7 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
 }
 
 // ═══════════════════════════════════════════
-// RENDER: ANIVERSÁRIOS
+// ANIVERSÁRIOS
 // ═══════════════════════════════════════════
 function renderAniversarios() {
     document.getElementById('aniversarios-cards').innerHTML =
@@ -1559,6 +1593,10 @@ function renderAniversarios() {
         makeCard('Este Mês', aniversariantesMesAtual, mesesAno[mesAtualNum - 1], '#1A6FB5') +
         makeCard('Mês com Mais', mesesAno[mesMaisAniversarios - 1], maxCount + ' aniversariantes', '#64748b') +
         makeCard('Fora da Época', porMes[7].length + porMes[8].length, 'Julho + Agosto', '#dc6843');
+
+    const _hojeD = new Date();
+    const _diaHoje = _hojeD.getDate();
+
     let bmHtml = '<div class="bday-months-grid">';
     for (let m = 1; m <= 12; m++) {
         const lista = porMes[m];
@@ -1571,17 +1609,19 @@ function renderAniversarios() {
         if (lista.length === 0) bmHtml += '<div class="bday-empty">Sem aniversários</div>';
         else lista.forEach(j => {
             const nameCls = j.inscrito ? 'bday-person-name' : 'bday-person-name ni';
-            const merenda = merendaPaga.includes(j.nome) ? ' <span title="Merenda paga" style="font-size:12px;">🍽️</span>' : '';
-            bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${merenda}</span><span class="bday-person-day">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
+            const merenda = merendaPaga.includes(j.nome) ? ' <span title="Farnel pago" style="font-size:12px;">🍽️</span>' : '';
+            const isProx = isCurrent && j.dia >= _diaHoje && j.dia <= _diaHoje + 2;
+            const dayCls = isProx ? 'bday-person-day prox' : 'bday-person-day';
+            bmHtml += `<div class="bday-person"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}${merenda}</span><span class="${dayCls}">${j.dia} ${mesesAno[m - 1].slice(0, 3)}</span></div>`;
         });
         bmHtml += '</div></div>';
     }
-    bmHtml += '</div><div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span><span>🍽️ Merenda paga</span></div>';
+    bmHtml += '</div><div class="bday-legend"><span><span class="dot" style="background:#0D3B66"></span>Inscrito</span><span><span class="dot" style="background:#dc6843"></span>Não Inscrito</span><span>📍 Mês atual</span><span>🍽️ Farnel pago</span><span style="background:#fff7ed;padding:2px 8px;border-radius:8px;color:#9a3412">Próximos 3 dias</span></div>';
     document.getElementById('aniversarios-grid').innerHTML = bmHtml;
 }
 
 // ═══════════════════════════════════════════
-// RENDER: TREINOS
+// TREINOS
 // ═══════════════════════════════════════════
 function renderBlocoPresencas(titulo, cor, lista) {
     let html = `<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px;color:${cor}">${titulo}</h3>`;
@@ -1641,7 +1681,7 @@ function renderTreinos() {
 function togglePresAcc(i) { document.getElementById('presacc-' + i).classList.toggle('open'); }
 
 // ═══════════════════════════════════════════
-// RENDER: VENDAS + ATAS
+// VENDAS + ATAS
 // ═══════════════════════════════════════════
 function renderVendas() {
     document.getElementById('vendas-cards').innerHTML =
@@ -1679,7 +1719,7 @@ function renderAtas() {
 }
 
 // ═══════════════════════════════════════════
-// RENDER: HISTÓRICO
+// HISTÓRICO
 // ═══════════════════════════════════════════
 function setHistFiltro(f) { histFiltro = f; renderHistorico(); }
 function setHistOrdem(o) { histOrdem = o; renderHistorico(); }
@@ -1987,27 +2027,21 @@ function imprimirRecibo(nome) {
 }
 
 // ═══════════════════════════════════════════
-// INICIALIZAÇÃO (só depois de autenticado)
+// INICIALIZAÇÃO
 // ═══════════════════════════════════════════
 let _siteInicializado = false;
 function inicializarSite() {
     if (_siteInicializado) return;
     _siteInicializado = true;
 
-    // Rodapé com época e mês em curso
     renderFooterEpoca();
-
-    // Resumo
     renderNoticias();
     renderResumo();
     initResumoCharts();
-
-    // Despesas
     renderDespesas();
-
-    // Quotas
     renderVerificacaoMensal();
     renderQuotas();
+
     let maHtml = '';
     MESES.forEach((mNome, mIdx) => {
         let pagosCount = 0;
@@ -2035,7 +2069,6 @@ function inicializarSite() {
     });
     document.getElementById('quotas-por-mes').innerHTML = maHtml;
 
-    // Inscrições
     renderEstadoPagamento({
         cardsId: 'inscricoes-cards', tabelaId: 'tabela-inscricoes', jogadores: inscritos, pagos: inscricoesPagas, valor: valorInscricao,
         labels: { total: 'Inscritos', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
@@ -2043,8 +2076,6 @@ function inicializarSite() {
         nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). O valor total já está contabilizado nas despesas.'
     });
     initInscricoesChart();
-
-    // Sócios
     renderEstadoPagamento({
         cardsId: 'socios-cards', tabelaId: 'tabela-socios', jogadores: inscritos, pagos: sociosPagos, valor: valorSocio,
         labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Em mãos', porPagar: 'Por pagar' },
@@ -2055,23 +2086,13 @@ function inicializarSite() {
         nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube.'
     });
 
-    // Aniversários
     renderAniversarios();
-
-    // Treinos
     renderTreinos();
     initTreinosCharts();
-
-    // Vendas
     renderVendas();
-
-    // Atas
     renderAtas();
-
-    // Histórico
     renderHistorico();
 
-    // Sub-tabs default
     document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
     let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
     equipas.forEach((e, i) => {
@@ -2082,17 +2103,12 @@ function inicializarSite() {
     document.getElementById('sub-classificacao').innerHTML = ch;
     document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
-    // Torneios + amigáveis
     renderTorneios();
 
-    // Charts restantes
     setTimeout(initQuotasCharts, 50);
     setTimeout(initDespesasChart, 50);
 }
 
-// ═══════════════════════════════════════════
-// ARRANQUE
-// ═══════════════════════════════════════════
 aplicarGate();
 if (siteAutenticado()) {
     inicializarSite();
