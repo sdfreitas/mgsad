@@ -649,7 +649,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 1 de Outubro de 2026</p>
+        <p class="note">Última atualização: 2 de Outubro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -764,7 +764,7 @@
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 1 de Outubro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 2 de Outubro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -932,8 +932,16 @@ function mesesPagos(nome) {
     return [...new Set([...pag, ...isen, ...red])];
 }
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
-function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome); }
+function inscricaoPagaPelaCaixa(nome) { if (typeof INSCRICOES_PAGAS_CAIXA === 'undefined') return false; return INSCRICOES_PAGAS_CAIXA.includes(nome); }
+function sociosEmPrestacoes(nome) { if (typeof SOCIOS_EM_PRESTACOES === 'undefined') return null; return SOCIOS_EM_PRESTACOES[nome] || null; }
+function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome) || inscricaoPagaPelaCaixa(nome); }
 function socioPagouAoClube(nome) { if (typeof sociosPagoAoClube === 'undefined') return false; return sociosPagoAoClube.includes(nome); }
+function valorQuotaMes(nome, mIdx, inscrito) {
+    if (isencoesDe(nome).includes(mIdx)) return 0;
+    const red = quotasReduzidasDe(nome);
+    if (red[mIdx] !== undefined) return red[mIdx];
+    return inscrito ? QUOTA : QUOTA_NI;
+}
 function mesEpocaAtualIdx() { const m = new Date().getMonth() + 1; if (m >= 9) return m - 9; if (m <= 6) return m + 3; return -1; }
 function mesFechado(mIdx) { const atual = mesEpocaAtualIdx(); if (atual === -1) return true; return mIdx < atual; }
 function eventoNoMes(dataStr, mIdx) {
@@ -956,7 +964,6 @@ function isentoPorFaltaPresenca(nome, mIdx) {
     if (jaPagou(nome, mIdx)) return false;
     return presencasNoMes(nome, mIdx) === 0;
 }
-// Mês aberto (corrente) e ainda sem presenças registadas → "Por apurar"
 function aguardaPresenca(nome, mIdx) {
     if (mesFechado(mIdx)) return false;
     if (mIdx !== mesEpocaAtualIdx()) return false;
@@ -1015,7 +1022,11 @@ const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotai
 const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
 
 const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
-const sociosEmMaos = sociosPagosEmMaos.length * valorSocio;
+let sociosEmMaos = sociosPagosEmMaos.length * valorSocio;
+const _prestMapGlobal = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
+const _prestNomesGlobal = Object.keys(_prestMapGlobal).filter(n => !sociosPagos.includes(n) && !socioPagouAoClube(n));
+_prestNomesGlobal.forEach(n => { sociosEmMaos += _prestMapGlobal[n].jaPago; });
+
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
@@ -1216,7 +1227,7 @@ function renderResumo() {
         </div>`;
 
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
-    const inscPorPagar = inscritos.length - inscricoesPagas.length;
+    const inscPorPagar = inscritos.length - inscricoesPagas.length - (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined' ? INSCRICOES_PAGAS_CAIXA.length : 0);
     const inscValor = inscPorPagar * valorInscricao;
 
     let faltaArbitroJogadores = 0, faltaArbitroTotal = 0;
@@ -1227,7 +1238,6 @@ function renderResumo() {
         faltaArbitroTotal += emFalta.length * a.arbitro.valorPorJogador;
     });
 
-    // Aniversariantes do mês atual
     const _hoje = new Date();
     const _mesR = _hoje.getMonth() + 1;
     const _diaR = _hoje.getDate();
@@ -1235,7 +1245,6 @@ function renderResumo() {
         .filter(j => j.nasc && parseInt(j.nasc.split('/')[1]) === _mesR)
         .sort((a, b) => parseInt(a.nasc.split('/')[0]) - parseInt(b.nasc.split('/')[0]));
 
-    // Aniversariantes nos próximos 3 dias (hoje + 2)
     const _anivProx = _aniv.filter(j => {
         const d = parseInt(j.nasc.split('/')[0]);
         return d >= _diaR && d <= _diaR + 2;
@@ -1292,7 +1301,7 @@ function renderResumo() {
     }
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">${fmtEur(livreVeteranos)}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa) — em mãos estão só <strong>${sociosPagosEmMaos.length}</strong> × ${fmtEur(valorSocio)} = ${fmtEur(sociosEmMaos)}.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length + Object.keys(_prestMapGlobal).length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa). Em mãos: <strong>${fmtEur(sociosEmMaos)}</strong> (${sociosPagosEmMaos.length} × €40${_prestNomesGlobal.length > 0 ? ' + ' + _prestNomesGlobal.length + ' em prestações' : ''}).</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1337,7 +1346,7 @@ function initDespesasChart() {
 }
 function initInscricoesChart() {
     const total = inscritos.length;
-    const pagas = inscricoesPagas.length;
+    const pagas = inscricoesPagas.length + (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined' ? INSCRICOES_PAGAS_CAIXA.length : 0);
     const porPagar = total - pagas;
     const c = chartThemeColors();
     chartInstances.inscricoesBolo = new Chart(freshCanvas('chartInscricoesBolo'), {
@@ -1438,7 +1447,7 @@ function renderDespesas() {
         return tr;
     }
     dh += linhaDespesa('Campo (anual)', despesaCampo, 'campo');
-    dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' atletas × €20)', despesaAFA, 'afa', 'Custo total: €50/atleta (atleta paga €30 + caixa €20)');
+    dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' atletas × €20 + €30 extra)', despesaAFA, 'afa', 'Inclui caso especial Fábio Gonçalves (caixa paga €50 em vez de €20)');
     dh += linhaDespesa('Galhardetes do clube (20 unid.)', despesaGalhardetes, 'galhardetes');
     dh += linhaDespesa('Garrafões de água (4 × 6L)', despesaAgua, 'agua');
     if (totalArbitroCusto > 0) dh += `<tr><td><strong style="color:#0D3B66">Árbitros de amigáveis</strong></td><td class="center" style="font-weight:700">${fmtEur(totalArbitroCusto)}</td><td class="center"><span class="badge badge-pago">Pago</span></td></tr>`;
@@ -1590,10 +1599,25 @@ function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.togg
 // ═══════════════════════════════════════════
 function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota, mostrarAoClube }) {
     const total = jogadores.length;
-    const numPagos = jogadores.filter(j => pagos.includes(j.nome)).length;
-    const porPagar = total - numPagos;
-    const numEmMaos = mostrarAoClube ? jogadores.filter(j => pagos.includes(j.nome) && !socioPagouAoClube(j.nome)).length : numPagos;
-    const recebido = numEmMaos * valor;
+    const prestacoes = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
+    const caixaInscr = (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [];
+    function estaPago(nome) { return pagos.includes(nome); }
+    function pagoPelaCaixa(nome) { return caixaInscr.includes(nome); }
+    function emPrestacoes(nome) { return prestacoes[nome] || null; }
+    function pagoTotal(nome) { return estaPago(nome) || pagoPelaCaixa(nome) || emPrestacoes(nome); }
+
+    const numPagos = jogadores.filter(j => pagoTotal(j.nome)).length;
+    const porPagar = jogadores.filter(j => !pagoTotal(j.nome)).length;
+    let recebido = 0;
+    jogadores.forEach(j => {
+        const pago = estaPago(j.nome);
+        const prest = emPrestacoes(j.nome);
+        const cxPaid = pagoPelaCaixa(j.nome);
+        if (!pago && !prest && !cxPaid) return;
+        if (mostrarAoClube && socioPagouAoClube(j.nome)) return;
+        if (prest) recebido += prest.jaPago;
+        else if (pago) recebido += valor;
+    });
     document.getElementById(cardsId).innerHTML =
         makeCard(labels.total, total, sublabelTotal || '', '#0D3B66') +
         makeCard(labels.pagos, numPagos, 'até à data', '#16a34a') +
@@ -1601,9 +1625,13 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
         makeCard(labels.porPagar, porPagar, sublabelPorPagar || '', '#dc6843');
     let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th class="center">Valor</th><th class="center">Estado</th></tr></thead><tbody>';
     jogadores.forEach(j => {
-        const pago = pagos.includes(j.nome);
+        const pago = estaPago(j.nome);
+        const prest = emPrestacoes(j.nome);
+        const cxPaid = pagoPelaCaixa(j.nome);
         let badge;
-        if (!pago) badge = '<span class="badge badge-falta">Por pagar</span>';
+        if (prest) badge = `<span class="badge badge-porpagar">Em prestações ${prest.jaPago}/${prest.total}</span>`;
+        else if (cxPaid) badge = '<span class="badge badge-clube">Paga pela caixa</span>';
+        else if (!pago) badge = '<span class="badge badge-falta">Por pagar</span>';
         else if (mostrarAoClube && socioPagouAoClube(j.nome)) badge = '<span class="badge badge-clube">Pago ao clube</span>';
         else badge = '<span class="badge badge-ok">Pago</span>';
         html += `<tr><td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td><td class="center">€${valor}</td><td class="center">${badge}</td></tr>`;
@@ -1936,11 +1964,12 @@ function calcularEstadoJogador(jogador) {
             if (jaPagou(nomeC, m)) continue;
             if (isentoPorFaltaPresenca(nomeC, m)) continue;
             if (aguardaPresenca(nomeC, m)) continue;
-            itens.push({ tipo: 'quota', label: `Quota ${MESES[m]}`, valor: inscrito ? QUOTA : QUOTA_NI });
+            itens.push({ tipo: 'quota', label: `Quota ${MESES[m]}`, valor: valorQuotaMes(nomeC, m, inscrito) });
         }
     }
     if (inscrito && !jaPagouInscricao(nomeC)) itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
-    if (inscrito && !sociosPagos.includes(nomeC)) itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
+    const prest = sociosEmPrestacoes(nomeC);
+    if (inscrito && !sociosPagos.includes(nomeC) && !prest) itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
     const compra = compras6Set.find(c => c.nome === nomeC);
     if (compra && !compra.pago) itens.push({ tipo: 'equipamento', label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`, valor: compra.total });
     amigaveis.forEach(a => {
@@ -1994,12 +2023,15 @@ function abrirPerfil(nome) {
         conteudo += `</div>`;
     }
     const mesesPagosJogador = mesesPagos(nomeCompleto);
-    const quotaMensalJogador = jogador.inscrito ? QUOTA : QUOTA_NI;
-    const totalMensalidades = mesesPagosJogador.length * quotaMensalJogador;
+    const totalMensalidades = mesesPagosJogador.reduce((s, m) => s + valorQuotaMes(nomeCompleto, m, jogador.inscrito), 0);
     const ultPag = ultimoPagamentoHistorico(nomeCompleto);
     conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4><div class="modal-row"><span>Último pagamento registado</span><strong style="font-size:12px;color:#0D3B66">${ultPag || '—'}</strong></div>`;
     if (mesesPagosJogador.length === 0) conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
-    else mesesPagosJogador.forEach(mIdx => { conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago</span></div>`; });
+    else mesesPagosJogador.forEach(mIdx => {
+        const v = valorQuotaMes(nomeCompleto, mIdx, jogador.inscrito);
+        const extra = v !== (jogador.inscrito ? QUOTA : QUOTA_NI) && v !== 0 ? ' (€' + v + ')' : '';
+        conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago${extra}</span></div>`;
+    });
     for (let mIdx = 0; mIdx < MESES.length; mIdx++) {
         if (isentoPorFaltaPresenca(nomeCompleto, mIdx)) conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-isento">Isento (não compareceu)</span></div>`;
         else if (aguardaPresenca(nomeCompleto, mIdx)) conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-aberto">Por apurar (aguarda presença)</span></div>`;
@@ -2007,15 +2039,25 @@ function abrirPerfil(nome) {
     conteudo += `</div>`;
     if (jogador.inscrito) {
         const inscricaoPaga = jaPagouInscricao(nomeCompleto);
-        conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4><div class="modal-row"><span>Estado</span><span class="modal-badge ${inscricaoPaga ? 'badge-ok' : 'badge-falta'}">${inscricaoPaga ? 'Pago' : 'Por pagar'}</span></div></div>`;
+        const inscricaoCaixa = inscricaoPagaPelaCaixa(nomeCompleto);
+        let inscBadge;
+        if (!inscricaoPaga) inscBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
+        else if (inscricaoCaixa) inscBadge = '<span class="modal-badge badge-clube">Paga pela caixa</span>';
+        else inscBadge = '<span class="modal-badge badge-ok">Pago</span>';
+        conteudo += `<div class="modal-section"><h4>📝 Inscrição (€${valorInscricao})</h4><div class="modal-row"><span>Estado</span>${inscBadge}</div>`;
+        if (inscricaoCaixa) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Caso especial — a caixa paga os €50 por inteiro</span></div>`;
+        conteudo += `</div>`;
         const socioPago = sociosPagos.includes(nomeCompleto);
         const aoClube = socioPagouAoClube(nomeCompleto);
+        const prestSocio = sociosEmPrestacoes(nomeCompleto);
         let socioBadge;
-        if (!socioPago) socioBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
+        if (prestSocio) socioBadge = `<span class="modal-badge badge-porpagar">Em prestações ${prestSocio.jaPago}/${prestSocio.total}</span>`;
+        else if (!socioPago) socioBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
         else if (aoClube) socioBadge = '<span class="modal-badge badge-clube">Pago ao clube</span>';
         else socioBadge = '<span class="modal-badge badge-ok">Pago</span>';
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4><div class="modal-row"><span>Estado</span>${socioBadge}</div>`;
-        if (socioPago && aoClube) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Entregue diretamente ao clube principal</span></div>`;
+        if (prestSocio) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Incluído na quota mensal (€24/mês) — ${prestSocio.jaPago} de ${prestSocio.total} já recebidos</span></div>`;
+        else if (socioPago && aoClube) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Entregue diretamente ao clube principal</span></div>`;
         conteudo += `</div>`;
     }
     const compraJogador = compras6Set.find(c => c.nome === nomeCompleto);
@@ -2072,7 +2114,6 @@ function imprimirRecibo(nome) {
     const j = encontrarJogador(nome);
     if (!j) return;
     const inscrito = j.inscrito;
-    const quota = inscrito ? QUOTA : QUOTA_NI;
     const mesesPagosJ = mesesPagos(j.nome);
     const inscricaoPaga = jaPagouInscricao(j.nome);
     const socioPago = inscrito && sociosPagos.includes(j.nome);
@@ -2080,8 +2121,13 @@ function imprimirRecibo(nome) {
     const compra = compras6Set.find(c => c.nome === j.nome);
     const linhas = [];
     let total = 0;
-    mesesPagosJ.forEach(m => { linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${quota}`]); total += quota; });
-    if (inscricaoPaga) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
+    mesesPagosJ.forEach(m => {
+        const v = valorQuotaMes(j.nome, m, inscrito);
+        if (v === 0) return;
+        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${v}`]);
+        total += v;
+    });
+    if (inscricaoPaga && !inscricaoPagaPelaCaixa(j.nome)) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
     if (socioPago) {
         if (socioAoClube) linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
         else linhas.push(['Quota de sócio (entregue ao tesoureiro)', `€${valorSocio}`]);
@@ -2158,7 +2204,7 @@ function inicializarSite() {
         cardsId: 'inscricoes-cards', tabelaId: 'tabela-inscricoes', jogadores: inscritos, pagos: inscricoesPagas, valor: valorInscricao,
         labels: { total: 'Inscritos', pagos: 'Pagos', recebido: 'Recebido', porPagar: 'Por pagar' },
         sublabelTotal: '€' + valorInscricao + ' cada',
-        nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). O valor total já está contabilizado nas despesas.'
+        nota: 'ℹ️ De cada €30 recebidos, €20 são entregues ao clube principal (AFA). O valor total já está contabilizado nas despesas. <strong>Paga pela caixa</strong> = caso especial em que a caixa paga a inscrição por inteiro.'
     });
     initInscricoesChart();
     renderEstadoPagamento({
@@ -2168,7 +2214,7 @@ function inicializarSite() {
         sublabelRecebido: 'na caixa (a entregar)',
         sublabelPorPagar: 'sócios pendentes',
         mostrarAoClube: true,
-        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube.'
+        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube. <strong>Em prestações</strong> = pago em prestações mensais incluídas na quota — conta apenas o que já entrou.'
     });
 
     renderAniversarios();
