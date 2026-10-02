@@ -11,18 +11,6 @@
    ========================================================= */
 
 // ─── PASSWORD DE ACESSO AO SITE (HASH SHA-256) ───
-// Hash SHA-256 da password "adcl".
-// Para mudar a password mais tarde:
-//   1. Abre qualquer página, F12 → Console
-//   2. Cola:
-//      crypto.subtle.digest('SHA-256', new TextEncoder().encode('NOVA_PASSWORD'))
-//        .then(b => console.log([...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('')))
-//   3. Substitui o hash abaixo pelo novo.
-//
-// ⚠️ Nota: como o site é 100% estático, este sistema afasta
-// curiosos mas não é segurança a sério (alguém que saiba JS
-// pode contornar via DevTools). Para segurança real, usar
-// Cloudflare Access.
 const SENHA_HASH = "db7c0fb81878ea0030e618a3e5c6fe30fcdd8b002ccc152581e4c509cac8d5a7";
 
 // ─── ISENÇÕES ───
@@ -36,5 +24,21 @@ const ISENCOES = {
 // Aparece como pago mas entrou valor diferente do padrão
 // { "Nome": { índiceMes: valorEfetivo } }
 const QUOTAS_REDUZIDAS = {
-    "Amílcar André": { 0: 10 }  // Setembro — €10 (excesso da quota de sócio, €50 pagos ao clube)
+    "Amílcar André": { 0: 10 },  // Setembro — €10 (excesso da quota de sócio, €50 pagos ao clube)
+    "Fábio Gonçalves": { 0: 24 } // Setembro — €20 cota + €4 (1ª prestação dos €40 de sócio, diluído em 10 meses)
+};
+
+// ─── INSCRIÇÕES PAGAS PELA CAIXA ───
+// Casos especiais em que a caixa dos veteranos paga a inscrição AFA por inteiro.
+// No site aparecem como "Paga pela caixa" e não contam como receita.
+const INSCRICOES_PAGAS_CAIXA = [
+    "Fábio Gonçalves"
+];
+
+// ─── SÓCIOS EM PRESTAÇÕES ───
+// Sócios cujo valor (€40) está a ser pago por prestações mensais,
+// diluído na quota. Conta apenas o que já entrou na caixa.
+// { "Nome": { total: 40, jaPago: 4 } }
+const SOCIOS_EM_PRESTACOES = {
+    "Fábio Gonçalves": { total: 40, jaPago: 4 }
 };
