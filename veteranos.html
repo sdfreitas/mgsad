@@ -1629,7 +1629,7 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
         const prest = emPrestacoes(j.nome);
         const cxPaid = pagoPelaCaixa(j.nome);
         let badge;
-        if (prest) badge = `<span class="badge badge-porpagar">Em prestações ${prest.jaPago}/${prest.total}</span>`;
+        if (prest) badge = '<span class="badge badge-ok">Pago *</span>';
         else if (cxPaid) badge = '<span class="badge badge-clube">Paga pela caixa</span>';
         else if (!pago) badge = '<span class="badge badge-falta">Por pagar</span>';
         else if (mostrarAoClube && socioPagouAoClube(j.nome)) badge = '<span class="badge badge-clube">Pago ao clube</span>';
@@ -2051,12 +2051,12 @@ function abrirPerfil(nome) {
         const aoClube = socioPagouAoClube(nomeCompleto);
         const prestSocio = sociosEmPrestacoes(nomeCompleto);
         let socioBadge;
-        if (prestSocio) socioBadge = `<span class="modal-badge badge-porpagar">Em prestações ${prestSocio.jaPago}/${prestSocio.total}</span>`;
+        if (prestSocio) socioBadge = '<span class="modal-badge badge-ok">Pago *</span>';
         else if (!socioPago) socioBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
         else if (aoClube) socioBadge = '<span class="modal-badge badge-clube">Pago ao clube</span>';
         else socioBadge = '<span class="modal-badge badge-ok">Pago</span>';
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4><div class="modal-row"><span>Estado</span>${socioBadge}</div>`;
-        if (prestSocio) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Incluído na quota mensal (€24/mês) — ${prestSocio.jaPago} de ${prestSocio.total} já recebidos</span></div>`;
+        if (prestSocio) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">* Caso especial — €40 diluídos na quota mensal (€4/mês)</span></div>`;
         else if (socioPago && aoClube) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Entregue diretamente ao clube principal</span></div>`;
         conteudo += `</div>`;
     }
@@ -2214,7 +2214,7 @@ function inicializarSite() {
         sublabelRecebido: 'na caixa (a entregar)',
         sublabelPorPagar: 'sócios pendentes',
         mostrarAoClube: true,
-        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube. <strong>Em prestações</strong> = pago em prestações mensais incluídas na quota — conta apenas o que já entrou.'
+        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube. <strong>Pago *</strong> = caso especial, com €40 diluídos na quota mensal — só conta o que já entrou.'
     });
 
     renderAniversarios();
