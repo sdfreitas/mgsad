@@ -55,7 +55,7 @@ const naoInscritos = [
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
-// ATENÇÃO: Amílcar André e Zé Buraca NÃO entram aqui - os ajustes estão em config.js
+// ATENÇÃO: Amílcar André, Zé Buraca e Fábio Gonçalves NÃO entram aqui (ajustes em config.js)
 const pagamentos = {
     "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
@@ -82,7 +82,8 @@ const pagamentos = {
     "Tiago Mota": [0]
 };
 
-// --- INSCRIÇÕES PAGAS ---
+// --- INSCRIÇÕES PAGAS (pelo próprio atleta) ---
+// Caso especial "Fábio Gonçalves" (inscrição paga pela caixa) está no config.js
 const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira", "André Pinho",
@@ -97,6 +98,7 @@ const inscricoesPagas = [
 ];
 
 // --- SÓCIOS PAGOS ---
+// Caso especial "Fábio Gonçalves" (em prestações) está no config.js
 const sociosPagos = [
     "Pedro Cadete",
     "André Pinho",
@@ -144,7 +146,7 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 460;   // 23 atletas x 20 EUR (André Lopes, Armando, Luís Paiva e Sérgio Tavares não contam como inscritos)
+const despesaAFA = 490;   // 23 atletas × €20 + €30 extra (caso especial Fábio Gonçalves: caixa paga a inscrição por inteiro, €50 em vez de €20)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -281,24 +283,39 @@ const amigaveis = [
 ];
 
 // --- ATAS ---
-const atas = [{
-    data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
-    tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: true,
-    pontos: [
-        "Caixa transitada da época anterior: 2.220 EUR.",
-        "Campo - custo anual de 1.000 EUR confirmado.",
-        "Inscrição na AFA - custo de 50 EUR por atleta: o atleta paga 30 EUR e a caixa dos veteranos cobre 20 EUR.",
-        "Massagista - valor a definir em reunião futura.",
-        "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
-        "Mensalidade definida em 20 EUR/mês a começar em Setembro.",
-        "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
-        "Atletas não inscritos pagam 10 EUR/mês."
-    ],
-    presentes: "Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
-}];
+const atas = [
+    {
+        data: "2 Out 2026", titulo: "Caso especial — Fábio Gonçalves (época 2026/27)",
+        tags: [["decisao", "Decisão"], ["urgente", "Urgente"]], destaque: false,
+        pontos: [
+            "Fábio Gonçalves — caso especial aprovado pela direção.",
+            "Inscrição AFA: a caixa paga os 50 EUR por inteiro (em vez dos 20 EUR habituais). Acresce 30 EUR à despesa AFA da época.",
+            "Quota de sócio: os 40 EUR são diluídos em 4 EUR/mês (Set a Jun), ficando a quota mensal em 24 EUR.",
+            "No total, o atleta paga 240 EUR até ao final da época (10 × 24 EUR).",
+            "Válido de Setembro 2026 a Junho 2027."
+        ],
+        presentes: "Direção dos Veteranos A.D.C. Lobão"
+    },
+    {
+        data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
+        tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: true,
+        pontos: [
+            "Caixa transitada da época anterior: 2.220 EUR.",
+            "Campo - custo anual de 1.000 EUR confirmado.",
+            "Inscrição na AFA - custo de 50 EUR por atleta: o atleta paga 30 EUR e a caixa dos veteranos cobre 20 EUR.",
+            "Massagista - valor a definir em reunião futura.",
+            "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
+            "Mensalidade definida em 20 EUR/mês a começar em Setembro.",
+            "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
+            "Atletas não inscritos pagam 10 EUR/mês."
+        ],
+        presentes: "Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
+    }
+];
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Tiago Mota pagou Setembro (20 EUR), a inscrição AFA (30 EUR) e a quota de sócio (40 EUR) diretamente ao clube principal - total 90 EUR." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Inácio pagou Setembro como não inscrito (10 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 50 EUR." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Sergio Rodrigues pagou o árbitro do amigável vs Paços de Ferreira (5 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 45 EUR. Árbitro do amigável 100% recebido (20/20)." },
@@ -345,7 +362,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
     { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
-    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (23 atletas x 20 EUR da caixa) - 460 EUR, a pagar em Setembro." }
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (23 atletas x 20 EUR da caixa + 30 EUR extra do caso especial Fábio Gonçalves) - 490 EUR, a pagar em Setembro." }
 ];
 
 // --- NOTÍCIAS ---
