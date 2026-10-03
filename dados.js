@@ -15,9 +15,7 @@ const valorSocio = 40;
 const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
     { nome: "Américo Oliveira", apelido: "AMÉRICO", num: 13, nasc: "10/08/1982" },
-    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
     { nome: "Mário Oliveira", apelido: "MÁRIO", num: 18, nasc: "11/11/1970" },
-    { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
     { nome: "Rui Rocha", apelido: "RUI ROCHA", num: 77, nasc: "12/11/1988" },
     { nome: "António Rocha", apelido: "ROCHINHA", num: 11, nasc: "08/04/1965" },
     { nome: "Pedro Cadete", apelido: "CADETE", num: 17, nasc: "10/07/1973" },
@@ -33,8 +31,6 @@ const inscritos = [
     { nome: "Sergio Rodrigues", apelido: "RODRIGUES", num: 25, nasc: "01/11/1983" },
     { nome: "Joel Tavares", apelido: "JOEL", num: 3, nasc: "27/09/1981" },
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
-    { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
-    { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" },
     { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" }
 ];
 
@@ -51,7 +47,11 @@ const naoInscritos = [
     { nome: "Zé Buraca", apelido: "ZÉ BURACA", num: null, nasc: "04/08/1980" },
     { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
     { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
-    { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" }
+    { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
+    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
+    { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
+    { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
+    { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" }
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
@@ -75,7 +75,7 @@ const pagamentos = {
     "Sérgio Freitas": [0],
     "José Eduardo": [0, 1, 2, 3],
     "António José Silva": [0, 1],
-    "Hugo André": [0],
+    "Hugo André": [0, 1],
     "Daniel Dias": [0],
     "Luís Paiva": [0],
     "Inácio": [0],
@@ -146,7 +146,7 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 490;   // 23 atletas × €20 + €30 extra (caso especial Fábio Gonçalves: caixa paga a inscrição por inteiro, €50 em vez de €20)
+const despesaAFA = 410;   // 19 atletas × €20 + €30 extra (caso especial Fábio Gonçalves: caixa paga a inscrição por inteiro, €50 em vez de €20)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -315,6 +315,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André, Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 19 atletas (€410)." },
+    { data: "3 Out 2026", tipo: "pagamento", desc: "✅ Hugo André — quota Setembro reformulada: os €20 já entregues passam a cobrir Setembro (€10) e Outubro (€10), já como não inscrito." },
     { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Tiago Mota pagou Setembro (20 EUR), a inscrição AFA (30 EUR) e a quota de sócio (40 EUR) diretamente ao clube principal - total 90 EUR." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Inácio pagou Setembro como não inscrito (10 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 50 EUR." },
@@ -362,7 +364,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
     { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
-    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (23 atletas x 20 EUR da caixa + 30 EUR extra do caso especial Fábio Gonçalves) - 490 EUR, a pagar em Setembro." }
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (19 atletas x 20 EUR da caixa + 30 EUR extra do caso especial Fábio Gonçalves) - 410 EUR, a pagar em Setembro." }
 ];
 
 // --- NOTÍCIAS ---
