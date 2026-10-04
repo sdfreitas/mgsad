@@ -161,6 +161,20 @@ const DESPESAS_PAGAS = {
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
     {
+        data: "3 Out 2026",
+        desc: "Regueifas - jogo de treino vs Sandim",
+        itens: "Regueifas",
+        valor: 42,
+        pago: true
+    },
+    {
+        data: "3 Out 2026",
+        desc: "Merenda do intervalo - jogo de treino vs Sandim",
+        itens: "Merenda do intervalo",
+        valor: 17,
+        pago: true
+    },
+    {
         data: "26 Set 2026",
         desc: "Merenda - jogo amigável vs Paços de Ferreira",
         itens: "Fruta, 2x água 5L, bolachas Maria, chá, 50 copos 200ml",
@@ -213,7 +227,10 @@ const treinosJogos = [
       extra: ["Marcelo", "Zé Buraca"] },
     { data: "30 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Luís Paiva", "Daniel Dias", "José Eduardo", "Hugo André"],
-      extra: ["Marcelo", "Zé Buraca", "Telmo"] }
+      extra: ["Marcelo", "Zé Buraca", "Telmo"] },
+    { data: "3 Out 2026", tipo: "jogo", titulo: "Jogo de treino vs Sandim", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Mário Oliveira", "Pedro Ferreira", "Rui Rocha", "Jorge Azevedo", "Amílcar André", "Pedro Costa", "Joel Tavares", "Américo Silva"],
+      extra: ["Marcelo", "Hugo André", "Telmo", "Luís Paiva"] }
 ];
 
 // --- COMPETIÇÃO ---
@@ -231,6 +248,14 @@ const torneios = [
 ];
 
 const amigaveis = [
+    {
+        data: "3 Out 2026",
+        adversario: "Sandim",
+        casa: true,
+        golosNos: 3,
+        golosEles: 4,
+        marcadores: ["Jorge Azevedo", "Jorge Azevedo", "Américo Oliveira"]
+    },
     {
         data: "26 Set 2026",
         adversario: "Paços de Ferreira",
@@ -315,6 +340,9 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 17 EUR." },
     { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André, Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 19 atletas (€410)." },
     { data: "3 Out 2026", tipo: "pagamento", desc: "✅ Hugo André — quota Setembro reformulada: os €20 já entregues passam a cobrir Setembro (€10) e Outubro (€10), já como não inscrito." },
     { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
