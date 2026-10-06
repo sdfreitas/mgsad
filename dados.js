@@ -70,7 +70,7 @@ const pagamentos = {
     "André Pinho": [0],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
-    "Jorge Azevedo": [0],
+    "Jorge Azevedo": [0, 1],
     "Pedro Ferreira": [0],
     "Sérgio Freitas": [0],
     "José Eduardo": [0, 1, 2, 3],
@@ -340,6 +340,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
     { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 17 EUR." },
