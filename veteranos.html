@@ -261,6 +261,30 @@
         }
         .estado-geral-item strong { color: #dc6843; margin-left: 2px; }
 
+        .whatsapp-card {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+            background: #fff; border-radius: 10px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 4px rgba(13,59,102,.06);
+            margin-bottom: 16px;
+            border-left: 4px solid #25D366;
+        }
+        .whatsapp-card-titulo { font-size: 14px; font-weight: 600; color: #0D3B66; }
+        .whatsapp-card-sub { font-size: 11px; color: #888; margin-top: 3px; }
+        .whatsapp-btn {
+            background: #25D366; color: #fff; border: none;
+            padding: 11px 20px; border-radius: 10px;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: background .15s, transform .1s;
+            letter-spacing: .3px;
+        }
+        .whatsapp-btn:hover { background: #1ea952; }
+        .whatsapp-btn:active { transform: scale(.97); }
+        .whatsapp-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
         #reciboContainer { display: none; }
         @media print {
             body > *:not(#reciboContainer) { display: none !important; }
@@ -416,9 +440,12 @@
         html[data-tema="escuro"] .bday-month-card,
         html[data-tema="escuro"] .modal-section,
         html[data-tema="escuro"] .noticia-card,
-        html[data-tema="escuro"] .estado-geral {
+        html[data-tema="escuro"] .estado-geral,
+        html[data-tema="escuro"] .whatsapp-card {
             background: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.35);
         }
+        html[data-tema="escuro"] .whatsapp-card-titulo { color: #93c5fd; }
+        html[data-tema="escuro"] .whatsapp-card-sub { color: #94a3b8; }
         html[data-tema="escuro"] .noticia-titulo { color: #93c5fd; }
         html[data-tema="escuro"] .noticia-corpo { color: #e2e8f0; }
         html[data-tema="escuro"] .noticia-data { color: #60a5fa; }
@@ -568,6 +595,8 @@
             .alerta-num { font-size: 26px; }
             .auth-box { padding: 26px 22px; }
             .auth-titulo { font-size: 20px; }
+            .whatsapp-card { flex-direction: column; align-items: stretch; }
+            .whatsapp-btn { justify-content: center; }
         }
     </style>
 </head>
@@ -627,6 +656,16 @@
     <div id="tab-resumo" class="tab-panel active">
         <div id="saldo-hero"></div>
         <div class="alertas-grid" id="resumo-alertas"></div>
+        <div class="whatsapp-card">
+            <div>
+                <div class="whatsapp-card-titulo">📲 Partilhar no WhatsApp</div>
+                <div class="whatsapp-card-sub">Abre o WhatsApp com um resumo dos números atuais — escolhes o grupo e envias</div>
+            </div>
+            <button class="whatsapp-btn" onclick="partilharWhatsApp()">
+                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Abrir WhatsApp
+            </button>
+        </div>
         <div class="section-card" id="resumo-noticias-seccao">
             <h2 class="section-title">📰 Notícias</h2>
             <div id="resumo-noticias"></div>
@@ -649,7 +688,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 2 de Outubro de 2026</p>
+        <p class="note">Última atualização: 6 de Outubro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -764,7 +803,7 @@
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 2 de Outubro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 6 de Outubro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -788,6 +827,7 @@ function aplicarGate() {
     if (siteAutenticado()) {
         gate.style.display = 'none';
         document.body.style.overflow = '';
+        window.scrollTo(0, 0);
     } else {
         gate.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -817,8 +857,11 @@ async function tentarEntrar() {
         if (hashInserido === hashGuardado) {
             try { localStorage.setItem('siteAuth', 'ok'); } catch (e) {}
             inp.value = '';
+            inp.blur();
             aplicarGate();
             inicializarSite();
+            window.scrollTo(0, 0);
+            setTimeout(() => window.scrollTo(0, 0), 60);
         } else {
             err.textContent = 'Password incorreta. Tenta outra vez.';
             inp.value = '';
@@ -1117,6 +1160,24 @@ function tornarNomesClicaveis(texto) {
         const canon = _nomeCanonico(match);
         return `<span class="clickable" onclick="abrirPerfil('${escapeAttr(canon)}')">${match}</span>`;
     });
+}
+
+// ═══════════════════════════════════════════
+// PARTILHA WHATSAPP
+// ═══════════════════════════════════════════
+function partilharWhatsApp() {
+    const dataFmt = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const texto =
+        '📊 *Veteranos A.D.C. Lobão* — Atualização\n' +
+        '\n' +
+        '💰 *Total em mãos:* ' + fmtEur(totalEmMaos) + '\n' +
+        '🟢 Livre: ' + fmtEur(livreVeteranos) + '\n' +
+        '🟠 Reservado: ' + fmtEur(compromissosPorPagar) + '\n' +
+        '🔵 Sócios em mãos: ' + fmtEur(sociosEmMaos) + '\n' +
+        '\n' +
+        '📅 ' + dataFmt;
+    const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
+    window.open(url, '_blank');
 }
 
 // ═══════════════════════════════════════════
