@@ -654,7 +654,7 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 6 de Outubro de 2026</p>
+        <p class="note">Última atualização: 7 de Outubro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -769,7 +769,7 @@
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 6 de Outubro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 7 de Outubro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -1046,6 +1046,8 @@ _prestNomesGlobal.forEach(n => { sociosEmMaos += _prestMapGlobal[n].jaPago; });
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
+// Após TODAS as despesas previstas (campo + AFA + sócios a entregar)
+const aposTudo = totalEmMaos - compromissosPorPagar - sociosEmMaos;
 
 const presencasPorJogador = (function() {
     const p = {};
@@ -1149,6 +1151,7 @@ function partilharUltimaEntrada() {
         ultima.desc + '\n' +
         '\n' +
         '💰 *Total em mãos:* ' + fmtEur(totalEmMaos) + '\n' +
+        '🟢 *Após todas as despesas previstas:* ' + fmtEur(aposTudo) + '\n' +
         '\n' +
         '📅 ' + dataFmt;
     const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
