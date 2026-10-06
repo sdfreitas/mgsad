@@ -15,6 +15,7 @@
             document.documentElement.setAttribute('data-tema', 'claro');
         }
     })();
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
@@ -47,7 +48,7 @@
         .search-panel { position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 95; background: rgba(20,30,48,0.98); max-height: 0; overflow: hidden; transition: max-height .4s ease; border-bottom: 1px solid rgba(255,255,255,.06); }
         .search-panel.open { max-height: 400px; }
         .search-box { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
-        .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 14px; outline: none; }
+        .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 16px; outline: none; }
         .search-box input::placeholder { color: rgba(255,255,255,.5); }
         .search-results { padding: 0 20px 16px; max-height: 300px; overflow-y: auto; }
         .search-result { display: block; padding: 10px 12px; border-radius: 6px; color: #fff; text-decoration: none; font-size: 13px; margin-bottom: 2px; transition: background .15s; }
@@ -329,7 +330,7 @@
         .auth-logo { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #0D3B66; margin-bottom: 8px; opacity: .7; }
         .auth-titulo { font-size: 22px; font-weight: 800; color: #0D3B66; margin-bottom: 6px; letter-spacing: -.3px; }
         .auth-sub { font-size: 13px; color: #64748b; margin-bottom: 22px; line-height: 1.5; }
-        .auth-input { width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s; text-align: center; letter-spacing: 1px; background: #fff; color: #1a1a1a; }
+        .auth-input { width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s; text-align: center; letter-spacing: 1px; background: #fff; color: #1a1a1a; }
         .auth-input:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.15); }
         .auth-btn { width: 100%; margin-top: 12px; padding: 13px; background: #0D3B66; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; font-family: inherit; text-transform: uppercase; transition: background .15s, transform .1s; }
         .auth-btn:hover { background: #1A6FB5; }
@@ -351,7 +352,7 @@
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
         .hist-search-wrap { position: relative; width: 100%; }
-        .hist-search { width: 100%; padding: 10px 40px 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1a1a1a; outline: none; transition: border-color .15s, box-shadow .15s; }
+        .hist-search { width: 100%; padding: 10px 40px 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 16px; font-family: inherit; background: #fff; color: #1a1a1a; outline: none; transition: border-color .15s, box-shadow .15s; }
         .hist-search:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.12); }
         .hist-search::placeholder { color: #94a3b8; }
         .hist-search-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: #888; padding: 6px 10px; border-radius: 6px; font-family: inherit; line-height: 1; }
@@ -821,13 +822,19 @@
 function siteAutenticado() {
     try { return localStorage.getItem('siteAuth') === 'ok'; } catch (e) { return false; }
 }
+function forcarTopo() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+}
 function aplicarGate() {
     const gate = document.getElementById('authGate');
     if (!gate) return;
     if (siteAutenticado()) {
         gate.style.display = 'none';
         document.body.style.overflow = '';
-        window.scrollTo(0, 0);
+        forcarTopo();
+        requestAnimationFrame(forcarTopo);
     } else {
         gate.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -860,8 +867,9 @@ async function tentarEntrar() {
             inp.blur();
             aplicarGate();
             inicializarSite();
-            window.scrollTo(0, 0);
-            setTimeout(() => window.scrollTo(0, 0), 60);
+            forcarTopo();
+            setTimeout(forcarTopo, 100);
+            setTimeout(forcarTopo, 300);
         } else {
             err.textContent = 'Password incorreta. Tenta outra vez.';
             inp.value = '';
