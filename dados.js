@@ -200,7 +200,7 @@ const listaPrecos = {
 const compras6Set = [
     { nome: "Telmo", itens: ["Calções saída", "Boné"], pago: false },
     { nome: "Mário Oliveira", itens: ["Boné"], pago: true },
-    { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: false },
+    { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: true },
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
     { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
 ];
@@ -340,6 +340,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Vitor Leite pagou o equipamento (Calções saída + Polo) - 32 EUR." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
     { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
