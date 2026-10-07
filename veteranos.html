@@ -1227,12 +1227,6 @@ const tipoInfo = {
     venda: { cor: '#0ea5e9', icon: '🛍️', label: 'Venda' }
 };
 
-const equipas = [
-    { nome: "Vet. A.D.C. Lobão", us: true }, { nome: "Vet. FC Fiães", us: false }, { nome: "Vet. SC Espinho", us: false },
-    { nome: "Vet. CD Feira", us: false }, { nome: "Vet. AD Sanjoanense", us: false }, { nome: "Vet. SC Salgueiros", us: false },
-    { nome: "Vet. FC Arouca", us: false }, { nome: "Vet. AD Oliveirense", us: false }
-];
-
 // ═══════════════════════════════════════════
 // NOTÍCIAS + RESUMO
 // ═══════════════════════════════════════════
@@ -1986,6 +1980,78 @@ function renderTorneios() {
 }
 
 // ═══════════════════════════════════════════
+// CALENDÁRIO + CLASSIFICAÇÃO DA LIGA
+// ═══════════════════════════════════════════
+function renderCalendario() {
+    const el = document.getElementById('sub-calendario');
+    const lista = (typeof calendario !== 'undefined' && Array.isArray(calendario)) ? calendario : [];
+
+    let html = '<div class="section-card"><h2 class="section-title">📅 Calendário · 1.ª Fase (Liga Masters)</h2>';
+
+    const proximo = lista.find(j => j.estado === 'agendado' && !j.folga);
+    if (proximo) {
+        const casaTxt = proximo.casa ? 'Casa' : 'Fora';
+        html += `<div style="background:linear-gradient(135deg,#0D3B66,#1A6FB5);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:16px">`;
+        html += `<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.85;font-weight:700">Próximo jogo · Jornada ${proximo.jornada}</div>`;
+        html += `<div style="font-size:20px;font-weight:800;margin:6px 0">ADC Lobão ${proximo.casa ? 'vs' : '@'} ${proximo.adversario}</div>`;
+        html += `<div style="font-size:12px;opacity:.9">📅 ${proximo.data} · 🕐 ${proximo.hora} · 📍 ${proximo.local} <span style="background:rgba(255,255,255,.2);padding:2px 8px;border-radius:8px;margin-left:6px;font-weight:700">${casaTxt}</span></div>`;
+        html += `</div>`;
+    }
+
+    html += '<div class="table-wrap"><table><thead><tr><th class="center" style="width:40px">J</th><th>Data</th><th>Hora</th><th>Adversário</th><th class="center">Local</th><th>Resultado</th></tr></thead><tbody>';
+    lista.forEach(j => {
+        if (j.folga) {
+            html += `<tr><td class="center" style="color:#999;font-size:12px">${j.jornada}</td><td style="color:#999">${j.data}</td><td colspan="4" style="color:#999;font-style:italic">Folga</td></tr>`;
+            return;
+        }
+        const casaTxt = j.casa ? '<span style="background:#dbeafe;color:#0D3B66;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700">CASA</span>' : '<span style="background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700">FORA</span>';
+        let res = '';
+        if (j.estado === 'agendado') {
+            res = '<span style="color:#999;font-size:11px">—</span>';
+        } else if (j.estado === 'vitoria') {
+            res = `<span style="background:#dcfce7;color:#166534;padding:2px 10px;border-radius:8px;font-weight:700">V ${j.golosNos}-${j.golosEles}</span>`;
+        } else if (j.estado === 'derrota') {
+            res = `<span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:8px;font-weight:700">D ${j.golosNos}-${j.golosEles}</span>`;
+        } else if (j.estado === 'empate') {
+            res = `<span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:8px;font-weight:700">E ${j.golosNos}-${j.golosEles}</span>`;
+        }
+        html += `<tr><td class="center" style="font-weight:700;color:#0D3B66">${j.jornada}</td><td style="white-space:nowrap">${j.data}</td><td style="color:#888;font-size:12px">${j.hora}</td><td style="font-weight:600">${j.adversario} ${casaTxt}</td><td class="center" style="font-size:11px;color:#888">${j.local}</td><td>${res}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+    html += '<p class="note" style="margin-top:12px">Liga Masters · 1.ª Fase · Novo grupo · 17 equipas · 17 jornadas (15 jogos + 2 folgas)</p>';
+    html += '</div>';
+    el.innerHTML = html;
+}
+
+function renderClassificacao() {
+    const el = document.getElementById('sub-classificacao');
+    const lista = (typeof equipasGrupo !== 'undefined' && Array.isArray(equipasGrupo)) ? equipasGrupo : [];
+
+    let ch = '<div class="section-card"><h2 class="section-title">🏆 Classificação · 1.ª Fase (Liga Masters)</h2>';
+    ch += '<div class="table-wrap"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
+
+    const nossa = 'ADC Lobão';
+    const outras = lista.filter(e => e !== nossa);
+
+    let idx = 0;
+    for (let i = 1; i <= lista.length; i++) {
+        let nome, us;
+        if (i === 8) {
+            nome = nossa; us = true;
+        } else {
+            nome = outras[idx]; us = false; idx++;
+        }
+        const rc = us ? 'class-row-us' : '';
+        ch += `<tr class="${rc}"><td><span class="class-pos">${i}</span></td><td style="text-align:left;white-space:nowrap">${us ? '⚽ ' : ''}<strong>${nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
+    }
+
+    ch += '</tbody></table></div>';
+    ch += '<p class="note" style="margin-top:12px">Classificação provisória — começa a contar a partir da Jornada 1 (17 Out 2026)</p>';
+    ch += '</div>';
+    el.innerHTML = ch;
+}
+
+// ═══════════════════════════════════════════
 // PERFIL
 // ═══════════════════════════════════════════
 function encontrarJogador(termo) {
@@ -2267,14 +2333,8 @@ function inicializarSite() {
     renderAtas();
     renderHistorico();
 
-    document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
-    let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
-    equipas.forEach((e, i) => {
-        const rc = e.us ? 'class-row-us' : '';
-        ch += `<tr class="${rc}"><td><span class="class-pos">${i + 1}</span></td><td style="text-align:left;white-space:nowrap">${e.us ? '⚽ ' : ''}<strong>${e.nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
-    });
-    ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
-    document.getElementById('sub-classificacao').innerHTML = ch;
+    renderCalendario();
+    renderClassificacao();
     document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
     renderTorneios();
