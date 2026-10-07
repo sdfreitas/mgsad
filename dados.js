@@ -83,7 +83,6 @@ const pagamentos = {
 };
 
 // --- INSCRIÇÕES PAGAS (pelo próprio atleta) ---
-// Caso especial "Fábio Gonçalves" (inscrição paga pela caixa) está no config.js
 const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira", "André Pinho",
@@ -98,7 +97,6 @@ const inscricoesPagas = [
 ];
 
 // --- SÓCIOS PAGOS ---
-// Caso especial "Fábio Gonçalves" (em prestações) está no config.js
 const sociosPagos = [
     "Pedro Cadete",
     "André Pinho",
@@ -146,7 +144,7 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 410;   // 19 atletas × €20 + €30 extra (caso especial Fábio Gonçalves: caixa paga a inscrição por inteiro, €50 em vez de €20)
+const despesaAFA = 410;
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -233,7 +231,52 @@ const treinosJogos = [
       extra: ["Marcelo", "Hugo André", "Telmo", "Luís Paiva"] }
 ];
 
-// --- COMPETIÇÃO ---
+// --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
+// Fonte: Comunicado Oficial Nº. N105AS (AF Aveiro, 7 Out 2026)
+// estado: "agendado" | "vitoria" | "derrota" | "empate"
+// Quando um jogo é disputado, adicionar golosNos e golosEles e mudar estado.
+const calendario = [
+    { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
+    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 4,  data: "7 Nov 2026",  folga: true },
+    { jornada: 5,  data: "14 Nov 2026", folga: true },
+    { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
+    { jornada: 8,  data: "5 Dez 2026",  casa: true,  adversario: "UD Fermedo",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 9,  data: "12 Dez 2026", casa: false, adversario: "CD Feirense",              hora: "15:30", local: "Sanfins",                     estado: "agendado" },
+    { jornada: 10, data: "19 Dez 2026", casa: true,  adversario: "Sc S. João Ver",           hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 11, data: "9 Jan 2027",  casa: false, adversario: "ARC S. Vicente Pereira",   hora: "17:30", local: "S. Vicente Pereira",          estado: "agendado" },
+    { jornada: 12, data: "16 Jan 2027", casa: true,  adversario: "Fiães SC",                 hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 13, data: "23 Jan 2027", casa: false, adversario: "AD Sanjoanense",           hora: "15:30", local: "S. João Madeira",             estado: "agendado" },
+    { jornada: 14, data: "30 Jan 2027", casa: true,  adversario: "Juv. Desp. Carregosense",  hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 15, data: "6 Fev 2027",  casa: false, adversario: "Lusitânia Lourosa FC",     hora: "15:30", local: "Lourosa",                     estado: "agendado" },
+    { jornada: 16, data: "13 Fev 2027", casa: true,  adversario: "A.C. Cucujães",            hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 17, data: "20 Fev 2027", casa: false, adversario: "AF União Lamas Veteranos", hora: "15:30", local: "Santa Maria de Lamas",        estado: "agendado" }
+];
+
+// --- EQUIPAS DO GRUPO (1.ª fase — Liga Masters) ---
+const equipasGrupo = [
+    "ARC S. Vicente Pereira",
+    "Fiães SC",
+    "Sc S. João Ver",
+    "AD Sanjoanense",
+    "CD Feirense",
+    "Juv. Desp. Carregosense",
+    "UD Fermedo",
+    "Lusitânia Lourosa FC",
+    "UD Oliveirense",
+    "A.C. Cucujães",
+    "Romariz FC",
+    "AF União Lamas Veteranos",
+    "ADC Lobão",
+    "CD Loureiro",
+    "Guisande FC",
+    "GD Fajões",
+    "ADC Sanguedo"
+];
+
+// --- COMPETIÇÃO (amigáveis e torneios — separado da Liga) ---
 const torneios = [
     {
         nome: "Torneio de Nelas",
@@ -340,6 +383,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "7 Out 2026", tipo: "aviso", desc: "📅 Calendário oficial da Liga Masters disponível. O campeonato começa a 17 Out em casa contra o CD Loureiro." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Vitor Leite pagou o equipamento (Calções saída + Polo) - 32 EUR." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
     { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
@@ -402,16 +446,16 @@ const historico = [
 // tag: "jogo" (azul) / "treino" (verde) / "aviso" (laranja) / "convivio" (dourado) / "info" (cinza)
 const noticias = [
     {
+        data: "7 Out 2026",
+        tag: "jogo",
+        titulo: "🏆 Calendário da Liga Masters já disponível",
+        corpo: "Já saiu o calendário oficial. Começamos a 17 Out em casa com o CD Loureiro. Vê todos os jogos no separador Competição."
+    },
+    {
         data: "24 Set 2026",
         tag: "jogo",
         titulo: "⚽ Jogo com o Bustelo a 10 de Outubro em casa",
         corpo: "No dia 10 de outubro temos jogo com o Bustelo no nosso estádio. Contamos com todos!"
-    },
-    {
-        data: "18 Set 2026",
-        tag: "jogo",
-        titulo: "🏆 O campeonato começa a 17 de Outubro",
-        corpo: "Já temos data para o arranque oficial. Vamos com tudo!"
     },
     {
         data: "18 Set 2026",
