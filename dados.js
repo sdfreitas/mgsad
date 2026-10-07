@@ -55,7 +55,7 @@ const naoInscritos = [
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
-// ATENÇÃO: Amílcar André (Set), Zé Buraca e Fábio Gonçalves NÃO entram aqui (ajustes em config.js)
+// Amílcar André (Set) e Zé Buraca (Set) estão em config.js, não aqui
 const pagamentos = {
     "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
@@ -83,7 +83,7 @@ const pagamentos = {
     "Amílcar André": [1]
 };
 
-// --- INSCRIÇÕES PAGAS (pelo próprio atleta) ---
+// --- INSCRIÇÕES PAGAS ---
 const inscricoesPagas = [
     "Mário Oliveira", "Américo Silva", "Sergio Rodrigues", "Américo Oliveira",
     "Joel Tavares", "António Oliveira", "André Pinho",
@@ -234,13 +234,12 @@ const treinosJogos = [
 
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
 // Fonte: Comunicado Oficial Nº. N105AS (AF Aveiro, 7 Out 2026)
-// estado: "agendado" | "vitoria" | "derrota" | "empate"
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
-    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",  ga estado: "agendado": },
-    { jorn trueada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
+    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
-    { jornada: 5,  data: "14 Nov 2026", fol },
+    { jornada: 5,  data: "14 Nov 2026", folga: true },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
     { jornada: 8,  data: "5 Dez 2026",  casa: true,  adversario: "UD Fermedo",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
