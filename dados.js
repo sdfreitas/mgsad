@@ -55,7 +55,7 @@ const naoInscritos = [
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
-// ATENÇÃO: Amílcar André, Zé Buraca e Fábio Gonçalves NÃO entram aqui (ajustes em config.js)
+// ATENÇÃO: Amílcar André (Set), Zé Buraca e Fábio Gonçalves NÃO entram aqui (ajustes em config.js)
 const pagamentos = {
     "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
@@ -79,7 +79,8 @@ const pagamentos = {
     "Daniel Dias": [0],
     "Luís Paiva": [0],
     "Inácio": [0],
-    "Tiago Mota": [0]
+    "Tiago Mota": [0],
+    "Amílcar André": [1]
 };
 
 // --- INSCRIÇÕES PAGAS (pelo próprio atleta) ---
@@ -234,13 +235,12 @@ const treinosJogos = [
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
 // Fonte: Comunicado Oficial Nº. N105AS (AF Aveiro, 7 Out 2026)
 // estado: "agendado" | "vitoria" | "derrota" | "empate"
-// Quando um jogo é disputado, adicionar golosNos e golosEles e mudar estado.
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
-    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
-    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",  ga estado: "agendado": },
+    { jorn trueada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
-    { jornada: 5,  data: "14 Nov 2026", folga: true },
+    { jornada: 5,  data: "14 Nov 2026", fol },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
     { jornada: 8,  data: "5 Dez 2026",  casa: true,  adversario: "UD Fermedo",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
@@ -383,6 +383,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "7 Out 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou Outubro - 20 EUR." },
     { data: "7 Out 2026", tipo: "aviso", desc: "📅 Calendário oficial da Liga Masters disponível. O campeonato começa a 17 Out em casa contra o CD Loureiro." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Vitor Leite pagou o equipamento (Calções saída + Polo) - 32 EUR." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
