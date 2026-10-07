@@ -239,7 +239,7 @@ const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
     { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
-    { jornada: 4,  data: "7 Nov 2026",  folga: true },
+    { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
@@ -442,8 +442,6 @@ const historico = [
 ];
 
 // --- NOTÍCIAS ---
-// Mostradas no Resumo (homepage). Ordem: da mais recente para a mais antiga.
-// tag: "jogo" (azul) / "treino" (verde) / "aviso" (laranja) / "convivio" (dourado) / "info" (cinza)
 const noticias = [
     {
         data: "7 Out 2026",
