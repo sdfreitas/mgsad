@@ -16,7 +16,7 @@ const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
     { nome: "Américo Oliveira", apelido: "AMÉRICO", num: 13, nasc: "10/08/1982" },
     { nome: "Mário Oliveira", apelido: "MÁRIO", num: 18, nasc: "11/11/1970" },
-    { nome: "Rui Rocha", apelido: "RUI ROCHA", num: 77, nasc: "12/11/1988" },
+    { nome: "Rui Rocha", apelido: "ROCHA", num: 77, nasc: "12/11/1988" },
     { nome: "António Rocha", apelido: "ROCHINHA", num: 11, nasc: "08/04/1965" },
     { nome: "Pedro Cadete", apelido: "CADETE", num: 17, nasc: "10/07/1973" },
     { nome: "António Oliveira", apelido: "OLIVEIRA", num: 8, nasc: "10/11/1988" },
@@ -169,7 +169,7 @@ const despesasExtras = [
     {
         data: "3 Out 2026",
         desc: "Merenda do intervalo - jogo de treino vs Sandim",
-        itens: "Merenda do intervalo",
+        itens: "2x Lipton c/ limão (20 saq) — €5,90 · Cuetra surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25",
         valor: 17,
         pago: true
     },
@@ -392,7 +392,7 @@ const historico = [
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
     { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
-    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 17 EUR." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 2x Lipton c/ limão (20 saq) — €5,90 · Cuetra surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25 — total 17 EUR." },
     { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André, Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 19 atletas (€410)." },
     { data: "3 Out 2026", tipo: "pagamento", desc: "✅ Hugo André — quota Setembro reformulada: os €20 já entregues passam a cobrir Setembro (€10) e Outubro (€10), já como não inscrito." },
     { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
