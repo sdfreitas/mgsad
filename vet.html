@@ -15,8 +15,11 @@
             document.documentElement.setAttribute('data-tema', 'claro');
         }
     })();
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -47,7 +50,7 @@
         .search-panel { position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 95; background: rgba(20,30,48,0.98); max-height: 0; overflow: hidden; transition: max-height .4s ease; border-bottom: 1px solid rgba(255,255,255,.06); }
         .search-panel.open { max-height: 400px; }
         .search-box { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
-        .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 14px; outline: none; }
+        .search-box input { flex: 1; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 16px; outline: none; }
         .search-box input::placeholder { color: rgba(255,255,255,.5); }
         .search-results { padding: 0 20px 16px; max-height: 300px; overflow-y: auto; }
         .search-result { display: block; padding: 10px 12px; border-radius: 6px; color: #fff; text-decoration: none; font-size: 13px; margin-bottom: 2px; transition: background .15s; }
@@ -162,6 +165,10 @@
         .hist-content { flex: 1; padding-bottom: 22px; }
         .hist-date { font-size: 11px; color: #1A6FB5; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
         .hist-desc { font-size: 13px; color: #333; line-height: 1.5; background: #fff; border-radius: 8px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(13,59,102,.05); }
+        .hist-share { margin-top: 8px; background: #25D366; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, transform .1s; letter-spacing: .3px; }
+        .hist-share:hover { background: #1ea952; }
+        .hist-share:active { transform: scale(.97); }
+        .hist-share svg { width: 14px; height: 14px; fill: currentColor; }
         .pres-card { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(13,59,102,.06); margin-bottom: 10px; overflow: hidden; }
         .pres-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; cursor: pointer; user-select: none; }
         .pres-head.treino { background: linear-gradient(135deg,#0D3B66,#1A6FB5); }
@@ -261,34 +268,13 @@
         }
         .estado-geral-item strong { color: #dc6843; margin-left: 2px; }
 
-        .whatsapp-card {
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 12px;
-            background: #fff; border-radius: 10px;
-            padding: 16px 18px;
-            box-shadow: 0 1px 4px rgba(13,59,102,.06);
-            margin-bottom: 16px;
-            border-left: 4px solid #25D366;
-        }
-        .whatsapp-card-titulo { font-size: 14px; font-weight: 600; color: #0D3B66; }
-        .whatsapp-card-sub { font-size: 11px; color: #888; margin-top: 3px; }
-        .whatsapp-btn {
-            background: #25D366; color: #fff; border: none;
-            padding: 11px 20px; border-radius: 10px;
-            font-size: 13px; font-weight: 700;
-            cursor: pointer; font-family: inherit;
-            display: inline-flex; align-items: center; gap: 8px;
-            transition: background .15s, transform .1s;
-            letter-spacing: .3px;
-        }
-        .whatsapp-btn:hover { background: #1ea952; }
-        .whatsapp-btn:active { transform: scale(.97); }
-        .whatsapp-btn svg { width: 18px; height: 18px; fill: currentColor; }
-
         #reciboContainer { display: none; }
+        #printSnap { display: none; }
+
+        /* Impressão: só o container marcado é visível */
         @media print {
-            body > *:not(#reciboContainer) { display: none !important; }
-            #reciboContainer { display: block !important; padding: 24px; color: #000; font-family: 'Inter', 'Segoe UI', sans-serif; }
+            body.printing > *:not(.printing-visible) { display: none !important; }
+            body.printing-recibo #reciboContainer { display: block !important; padding: 24px; color: #000; font-family: 'Inter', 'Segoe UI', sans-serif; }
             .recibo-header { text-align: center; margin-bottom: 28px; border-bottom: 2px solid #0D3B66; padding-bottom: 16px; }
             .recibo-header h1 { font-size: 22px; color: #0D3B66; margin: 0 0 6px; letter-spacing: 1px; }
             .recibo-header p { margin: 2px 0; font-size: 12px; color: #666; }
@@ -299,7 +285,47 @@
             .recibo-total { font-size: 16px; font-weight: 700; color: #0D3B66; text-align: right; margin-top: 10px; }
             .recibo-assinatura { margin-top: 70px; text-align: center; }
             .recibo-assinatura div { border-top: 1px solid #000; width: 260px; margin: 0 auto; padding-top: 6px; font-size: 11px; }
+
+            /* Snapshot PDF */
+            body.printing-snapshot { background: #fff !important; }
+            body.printing-snapshot #printSnap { display: block !important; padding: 18mm 14mm; font-family: 'Inter', 'Segoe UI', sans-serif; color: #000; font-size: 10pt; line-height: 1.4; }
+            #printSnap h1 { font-size: 20pt; color: #0D3B66; margin: 0 0 4px; letter-spacing: .5px; }
+            #printSnap .snap-meta { font-size: 9pt; color: #666; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #0D3B66; }
+            #printSnap h2 { font-size: 12pt; color: #0D3B66; margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #ccc; page-break-after: avoid; }
+            #printSnap table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9pt; }
+            #printSnap th, #printSnap td { border: 1px solid #ccc; padding: 4px 7px; text-align: left; }
+            #printSnap th { background: #f0f6ff; color: #0D3B66; font-weight: 700; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .3px; }
+            #printSnap td.center, #printSnap th.center { text-align: center; }
+            #printSnap td.right, #printSnap th.right { text-align: right; }
+            #printSnap .total-row td { font-weight: 700; background: #f8fafc; border-top: 2px solid #0D3B66; }
+            #printSnap .badge-pago { color: #166534; font-weight: 700; }
+            #printSnap .badge-falta { color: #9a3412; font-weight: 700; }
+            #printSnap .badge-clube { color: #0369a1; font-weight: 700; }
+            @page { size: A4; margin: 0; }
         }
+
+        /* Barra de botões do snapshot */
+        .snapshot-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .snapshot-bar button {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 14px; border: none; border-radius: 9px;
+            font-family: inherit; font-size: 12.5px; font-weight: 600;
+            cursor: pointer; transition: background .15s, transform .1s;
+            letter-spacing: .3px; color: #fff; text-align: center;
+        }
+        .snapshot-bar button:active { transform: scale(.97); }
+        .snapshot-bar button.snap-pdf { background: #0D3B66; }
+        .snapshot-bar button.snap-pdf:hover { background: #1A6FB5; }
+        .snapshot-bar button.snap-pdf-lib { background: #1A6FB5; }
+        .snapshot-bar button.snap-pdf-lib:hover { background: #5BA4D9; }
+        .snapshot-bar button.snap-csv { background: #16a34a; }
+        .snapshot-bar button.snap-csv:hover { background: #15803d; }
+        .snapshot-bar button.snap-xlsx { background: #15803d; }
+        .snapshot-bar button.snap-xlsx:hover { background: #166534; }
+        .snapshot-bar button:disabled { opacity: .55; cursor: wait; }
+        .snap-status { font-size: 11px; color: #16a34a; margin-top: 10px; min-height: 14px; font-weight: 600; text-align: center; }
+        .snap-status.erro { color: #c1121f; }
+        .snap-desc { font-size: 12px; color: #64748b; line-height: 1.55; margin: 0 0 14px 2px; }
 
         .tema-btn {
             position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px;
@@ -329,7 +355,7 @@
         .auth-logo { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #0D3B66; margin-bottom: 8px; opacity: .7; }
         .auth-titulo { font-size: 22px; font-weight: 800; color: #0D3B66; margin-bottom: 6px; letter-spacing: -.3px; }
         .auth-sub { font-size: 13px; color: #64748b; margin-bottom: 22px; line-height: 1.5; }
-        .auth-input { width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s; text-align: center; letter-spacing: 1px; background: #fff; color: #1a1a1a; }
+        .auth-input { width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s; text-align: center; letter-spacing: 1px; background: #fff; color: #1a1a1a; }
         .auth-input:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.15); }
         .auth-btn { width: 100%; margin-top: 12px; padding: 13px; background: #0D3B66; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; font-family: inherit; text-transform: uppercase; transition: background .15s, transform .1s; }
         .auth-btn:hover { background: #1A6FB5; }
@@ -351,7 +377,7 @@
         .filtro-bar .filtro-info strong { color: #0D3B66; }
 
         .hist-search-wrap { position: relative; width: 100%; }
-        .hist-search { width: 100%; padding: 10px 40px 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: #1a1a1a; outline: none; transition: border-color .15s, box-shadow .15s; }
+        .hist-search { width: 100%; padding: 10px 40px 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 16px; font-family: inherit; background: #fff; color: #1a1a1a; outline: none; transition: border-color .15s, box-shadow .15s; }
         .hist-search:focus { border-color: #1A6FB5; box-shadow: 0 0 0 3px rgba(26,111,181,.12); }
         .hist-search::placeholder { color: #94a3b8; }
         .hist-search-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: #888; padding: 6px 10px; border-radius: 6px; font-family: inherit; line-height: 1; }
@@ -378,7 +404,7 @@
         .saldo-hero-line-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .saldo-hero-line-value { font-weight: 700; font-size: 15px; }
 
-        .alertas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+        .alertas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
         .alerta-card { border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: transform .15s, box-shadow .15s; display: flex; flex-direction: column; gap: 3px; border: none; text-align: left; font-family: inherit; width: 100%; }
         .alerta-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.12); }
         .alerta-card.ok { background: #f0fdf4; border-left: 4px solid #16a34a; }
@@ -440,12 +466,9 @@
         html[data-tema="escuro"] .bday-month-card,
         html[data-tema="escuro"] .modal-section,
         html[data-tema="escuro"] .noticia-card,
-        html[data-tema="escuro"] .estado-geral,
-        html[data-tema="escuro"] .whatsapp-card {
+        html[data-tema="escuro"] .estado-geral {
             background: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.35);
         }
-        html[data-tema="escuro"] .whatsapp-card-titulo { color: #93c5fd; }
-        html[data-tema="escuro"] .whatsapp-card-sub { color: #94a3b8; }
         html[data-tema="escuro"] .noticia-titulo { color: #93c5fd; }
         html[data-tema="escuro"] .noticia-corpo { color: #e2e8f0; }
         html[data-tema="escuro"] .noticia-data { color: #60a5fa; }
@@ -532,7 +555,8 @@
         html[data-tema="escuro"] .match-date,
         html[data-tema="escuro"] .match-date span,
         html[data-tema="escuro"] .ata-presentes,
-        html[data-tema="escuro"] .modal-section h4 { color: #94a3b8; }
+        html[data-tema="escuro"] .modal-section h4,
+        html[data-tema="escuro"] .snap-desc { color: #94a3b8; }
 
         html[data-tema="escuro"] .pres-pending-msg { color: #94a3b8; }
         html[data-tema="escuro"] .bday-empty { color: #64748b; }
@@ -579,8 +603,7 @@
         html[data-tema="escuro"] .seg-btn:hover { color: #93c5fd; }
         html[data-tema="escuro"] .seg-btn.active { background: #1e293b; color: #93c5fd; }
 
-        @media(max-width:1000px) { .alertas-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media(max-width:700px) { .alertas-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width:1000px) { .alertas-grid { grid-template-columns: repeat(2, 1fr); } }
         @media(max-width:600px) {
             .cards-grid { grid-template-columns: 1fr 1fr; }
             .card-value { font-size: 22px; }
@@ -595,8 +618,7 @@
             .alerta-num { font-size: 26px; }
             .auth-box { padding: 26px 22px; }
             .auth-titulo { font-size: 20px; }
-            .whatsapp-card { flex-direction: column; align-items: stretch; }
-            .whatsapp-btn { justify-content: center; }
+            .snapshot-bar { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -656,16 +678,6 @@
     <div id="tab-resumo" class="tab-panel active">
         <div id="saldo-hero"></div>
         <div class="alertas-grid" id="resumo-alertas"></div>
-        <div class="whatsapp-card">
-            <div>
-                <div class="whatsapp-card-titulo">📲 Partilhar no WhatsApp</div>
-                <div class="whatsapp-card-sub">Abre o WhatsApp com um resumo dos números atuais — escolhes o grupo e envias</div>
-            </div>
-            <button class="whatsapp-btn" onclick="partilharWhatsApp()">
-                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                Abrir WhatsApp
-            </button>
-        </div>
         <div class="section-card" id="resumo-noticias-seccao">
             <h2 class="section-title">📰 Notícias</h2>
             <div id="resumo-noticias"></div>
@@ -688,7 +700,18 @@
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
         </div>
-        <p class="note">Última atualização: 6 de Outubro de 2026</p>
+        <div class="section-card" style="border-left:4px solid #0D3B66">
+            <h2 class="section-title">📸 Snapshot financeiro</h2>
+            <p class="snap-desc">Gera um relatório com o resumo, despesas, quotas, inscrições, sócios, vendas e movimentos financeiros. Escolhe o formato:</p>
+            <div class="snapshot-bar">
+                <button class="snap-pdf" onclick="exportPDFPrint()">🖨️ PDF (print)</button>
+                <button class="snap-pdf-lib" onclick="exportPDFjsPDF()">📄 PDF (direto)</button>
+                <button class="snap-csv" onclick="exportCSV()">📊 Excel (CSV)</button>
+                <button class="snap-xlsx" onclick="exportXLSX()">📗 Excel (XLSX)</button>
+            </div>
+            <div class="snap-status" id="snapStatus"></div>
+        </div>
+        <p class="note">Última atualização: 7 de Outubro de 2026</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -803,10 +826,11 @@
         <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
     </div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 6 de Outubro de 2026</span>
+    <span style="font-size:10px;opacity:.6">Última atualização: 7 de Outubro de 2026</span>
 </footer>
 
 <div id="reciboContainer"></div>
+<div id="printSnap"></div>
 
 <button class="tema-btn" id="temaBtn" onclick="ciclarTema()" title="Tema: Automático" aria-label="Alterar tema">
     <span id="temaIcon">🌓</span>
@@ -821,13 +845,19 @@
 function siteAutenticado() {
     try { return localStorage.getItem('siteAuth') === 'ok'; } catch (e) { return false; }
 }
+function forcarTopo() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+}
 function aplicarGate() {
     const gate = document.getElementById('authGate');
     if (!gate) return;
     if (siteAutenticado()) {
         gate.style.display = 'none';
         document.body.style.overflow = '';
-        window.scrollTo(0, 0);
+        forcarTopo();
+        requestAnimationFrame(forcarTopo);
     } else {
         gate.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -860,8 +890,9 @@ async function tentarEntrar() {
             inp.blur();
             aplicarGate();
             inicializarSite();
-            window.scrollTo(0, 0);
-            setTimeout(() => window.scrollTo(0, 0), 60);
+            forcarTopo();
+            setTimeout(forcarTopo, 100);
+            setTimeout(forcarTopo, 300);
         } else {
             err.textContent = 'Password incorreta. Tenta outra vez.';
             inp.value = '';
@@ -1073,6 +1104,8 @@ _prestNomesGlobal.forEach(n => { sociosEmMaos += _prestMapGlobal[n].jaPago; });
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
+// Após TODAS as despesas previstas (campo + AFA + sócios a entregar)
+const aposTudo = totalEmMaos - compromissosPorPagar - sociosEmMaos;
 
 const presencasPorJogador = (function() {
     const p = {};
@@ -1163,17 +1196,20 @@ function tornarNomesClicaveis(texto) {
 }
 
 // ═══════════════════════════════════════════
-// PARTILHA WHATSAPP
+// PARTILHA WHATSAPP (histórico)
 // ═══════════════════════════════════════════
-function partilharWhatsApp() {
+function partilharUltimaEntrada() {
+    const ultima = historico[0];
+    if (!ultima) return;
     const dataFmt = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
     const texto =
-        '📊 *Veteranos A.D.C. Lobão* — Atualização\n' +
+        '📊 *Veteranos A.D.C. Lobão*\n' +
+        '\n' +
+        '🕒 *Última entrada (' + ultima.data + '):*\n' +
+        ultima.desc + '\n' +
         '\n' +
         '💰 *Total em mãos:* ' + fmtEur(totalEmMaos) + '\n' +
-        '🟢 Livre: ' + fmtEur(livreVeteranos) + '\n' +
-        '🟠 Reservado: ' + fmtEur(compromissosPorPagar) + '\n' +
-        '🔵 Sócios em mãos: ' + fmtEur(sociosEmMaos) + '\n' +
+        '🟢 *Após todas as despesas previstas:* ' + fmtEur(aposTudo) + '\n' +
         '\n' +
         '📅 ' + dataFmt;
     const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
@@ -1249,12 +1285,6 @@ const tipoInfo = {
     venda: { cor: '#0ea5e9', icon: '🛍️', label: 'Venda' }
 };
 
-const equipas = [
-    { nome: "Vet. A.D.C. Lobão", us: true }, { nome: "Vet. FC Fiães", us: false }, { nome: "Vet. SC Espinho", us: false },
-    { nome: "Vet. CD Feira", us: false }, { nome: "Vet. AD Sanjoanense", us: false }, { nome: "Vet. SC Salgueiros", us: false },
-    { nome: "Vet. FC Arouca", us: false }, { nome: "Vet. AD Oliveirense", us: false }
-];
-
 // ═══════════════════════════════════════════
 // NOTÍCIAS + RESUMO
 // ═══════════════════════════════════════════
@@ -1290,14 +1320,6 @@ function renderResumo() {
     const totalDevedores = inscritos.filter(j => eDevedor(j.nome)).length + naoInscritos.filter(j => eDevedor(j.nome)).length;
     const inscPorPagar = inscritos.length - inscricoesPagas.length - (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined' ? INSCRICOES_PAGAS_CAIXA.length : 0);
     const inscValor = inscPorPagar * valorInscricao;
-
-    let faltaArbitroJogadores = 0, faltaArbitroTotal = 0;
-    amigaveis.forEach(a => {
-        if (!a.arbitro) return;
-        const emFalta = (a.arbitro.participantes || []).filter(n => !(a.arbitro.pagaram || []).includes(n));
-        faltaArbitroJogadores += emFalta.length;
-        faltaArbitroTotal += emFalta.length * a.arbitro.valorPorJogador;
-    });
 
     const _hoje = new Date();
     const _mesR = _hoje.getMonth() + 1;
@@ -1340,7 +1362,6 @@ function renderResumo() {
         <button class="alerta-card ${totalDevedores === 0 ? 'ok' : 'atencao'}" onclick="irPara('quotas')"><div class="alerta-num">${totalDevedores}</div><div class="alerta-label">Quotas em falta</div><div class="alerta-sub">${totalDevedores === 0 ? 'tudo em ordem' : 'jogadores com meses por pagar'}</div></button>
         <button class="alerta-card ${inscPorPagar === 0 ? 'ok' : 'atencao'}" onclick="irPara('inscricoes')"><div class="alerta-num">${inscPorPagar}</div><div class="alerta-label">Inscrições por pagar</div><div class="alerta-sub">${inscPorPagar === 0 ? 'tudo pago' : '€' + inscValor + ' em falta'}</div></button>
         <button class="alerta-card ${vendasPendentes.length === 0 ? 'ok' : 'atencao'}" onclick="irPara('vendas')"><div class="alerta-num">${vendasPendentes.length}</div><div class="alerta-label">Vendas por receber</div><div class="alerta-sub">${vendasPendentes.length === 0 ? 'tudo recebido' : '€' + totalVendasPendentes + ' em falta'}</div></button>
-        <button class="alerta-card ${faltaArbitroJogadores === 0 ? 'ok' : 'atencao'}" onclick="irPara('competicao')"><div class="alerta-num">${faltaArbitroJogadores}</div><div class="alerta-label">Árbitro por receber</div><div class="alerta-sub">${faltaArbitroJogadores === 0 ? 'tudo recebido' : '€' + faltaArbitroTotal + ' em falta'}</div></button>
         <button class="alerta-card ${_anivClasse}" onclick="irPara('aniversarios')" title="${_anivSub}"><div class="alerta-num">${_anivNum}</div><div class="alerta-label">${_anivLabel}</div><div class="alerta-sub">${_anivSubCurto}</div></button>`;
 
     let sd = '<div class="table-wrap"><table><thead><tr><th>Descrição</th><th class="center">Valor</th></tr></thead><tbody>';
@@ -1462,7 +1483,7 @@ function initTreinosCharts() {
         type: 'bar',
         data: { labels: labels1, datasets: [
             { label: 'Inscritos', data: dataIns, backgroundColor: '#1A6FB5', borderRadius: 4, stack: 'p' },
-            { label: 'Não inscritos (extra)', data: dataExt, backgroundColor: '#dc6843', borderRadius: 4, stack: 'p' }
+            { label: 'Não inscritos (extra)', data: meses dataExt, backgroundColor: '#dc6843', borderRadius: 4, stack: 'p' }
         ] },
         options: { responsive: true, maintainAspectRatio: true, ...animOpts, plugins: { legend: { display: true, labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 12 }, color: c.legenda } }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, color: c.texto } }, y: { stacked: true, grid: { color: c.grelha }, beginAtZero: true, ticks: { font: { size: 11 }, precision: 0, color: c.texto } } } }
     });
@@ -1605,7 +1626,7 @@ function _ordenarQuotas(lista) {
     if (quotasOrdem === 'nome') l.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
     else if (quotasOrdem === 'num') l.sort((a, b) => { const na = a.num == null ? 999 : a.num; const nb = b.num == null ? 999 : b.num; return na - nb; });
     else if (quotasOrdem === 'maisPagos') l.sort((a, b) => mesesPagos(b.nome).length - mesesPagos(a.nome).length);
-    else if (quotasOrdem === 'menosPagos') l.sort((a, b) => mesesPagos(a.nome).length - mesesPagos(b.nome).length);
+    else if (quotasOrdem === 'menosPagos') lP.sort((aagos, b) => mesesP(bagos(a.nome).length -.nome).length);
     else if (quotasOrdem === 'idade') l.sort((a, b) => { const da = a.nasc ? new Date(a.nasc.split('/').reverse().join('-')) : new Date(0); const db = b.nasc ? new Date(b.nasc.split('/').reverse().join('-')) : new Date(0); return da - db; });
     return l;
 }
@@ -1906,7 +1927,11 @@ function renderHistorico() {
     lista.forEach(h => {
         const ti = tipoInfo[h.tipo] || tipoInfo.caixa;
         const descComLinks = tornarNomesClicaveis(h.desc);
-        hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}</div></div></div>`;
+        const isMaisRecente = (h === historico[0]);
+        const shareBtn = isMaisRecente
+            ? `<div><button class="hist-share" onclick="partilharUltimaEntrada()" title="Partilhar esta entrada no WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Partilhar no WhatsApp</button></div>`
+            : '';
+        hh += `<div class="hist-item"><div class="hist-line"><div class="hist-dot" style="background:${ti.cor}"></div><div class="hist-track"></div></div><div class="hist-content"><div class="hist-date">${h.data} <span style="background:${ti.cor}1a;color:${ti.cor};padding:1px 8px;border-radius:8px;font-size:10px;margin-left:6px">${ti.icon} ${ti.label}</span></div><div class="hist-desc">${descComLinks}${shareBtn}</div></div></div>`;
     });
     el.innerHTML = hh;
 }
@@ -2001,6 +2026,78 @@ function renderTorneios() {
         html += '</div></div>';
     }
     document.getElementById('sub-torneios').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// CALENDÁRIO + CLASSIFICAÇÃO DA LIGA
+// ═══════════════════════════════════════════
+function renderCalendario() {
+    const el = document.getElementById('sub-calendario');
+    const lista = (typeof calendario !== 'undefined' && Array.isArray(calendario)) ? calendario : [];
+
+    let html = '<div class="section-card"><h2 class="section-title">📅 Calendário · 1.ª Fase (Liga Masters)</h2>';
+
+    const proximo = lista.find(j => j.estado === 'agendado' && !j.folga);
+    if (proximo) {
+        const casaTxt = proximo.casa ? 'Casa' : 'Fora';
+        html += `<div style="background:linear-gradient(135deg,#0D3B66,#1A6FB5);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:16px">`;
+        html += `<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.85;font-weight:700">Próximo jogo · Jornada ${proximo.jornada}</div>`;
+        html += `<div style="font-size:20px;font-weight:800;margin:6px 0">ADC Lobão ${proximo.casa ? 'vs' : '@'} ${proximo.adversario}</div>`;
+        html += `<div style="font-size:12px;opacity:.9">📅 ${proximo.data} · 🕐 ${proximo.hora} · 📍 ${proximo.local} <span style="background:rgba(255,255,255,.2);padding:2px 8px;border-radius:8px;margin-left:6px;font-weight:700">${casaTxt}</span></div>`;
+        html += `</div>`;
+    }
+
+    html += '<div class="table-wrap"><table><thead><tr><th class="center" style="width:40px">J</th><th>Data</th><th>Hora</th><th>Adversário</th><th class="center">Local</th><th>Resultado</th></tr></thead><tbody>';
+    lista.forEach(j => {
+        if (j.folga) {
+            html += `<tr><td class="center" style="color:#999;font-size:12px">${j.jornada}</td><td style="color:#999">${j.data}</td><td colspan="4" style="color:#999;font-style:italic">Folga</td></tr>`;
+            return;
+        }
+        const casaTxt = j.casa ? '<span style="background:#dbeafe;color:#0D3B66;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700">CASA</span>' : '<span style="background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700">FORA</span>';
+        let res = '';
+        if (j.estado === 'agendado') {
+            res = '<span style="color:#999;font-size:11px">—</span>';
+        } else if (j.estado === 'vitoria') {
+            res = `<span style="background:#dcfce7;color:#166534;padding:2px 10px;border-radius:8px;font-weight:700">V ${j.golosNos}-${j.golosEles}</span>`;
+        } else if (j.estado === 'derrota') {
+            res = `<span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:8px;font-weight:700">D ${j.golosNos}-${j.golosEles}</span>`;
+        } else if (j.estado === 'empate') {
+            res = `<span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:8px;font-weight:700">E ${j.golosNos}-${j.golosEles}</span>`;
+        }
+        html += `<tr><td class="center" style="font-weight:700;color:#0D3B66">${j.jornada}</td><td style="white-space:nowrap">${j.data}</td><td style="color:#888;font-size:12px">${j.hora}</td><td style="font-weight:600">${j.adversario} ${casaTxt}</td><td class="center" style="font-size:11px;color:#888">${j.local}</td><td>${res}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+    html += '<p class="note" style="margin-top:12px">Liga Masters · 1.ª Fase · Novo grupo · 17 equipas · 17 jornadas (16 jogos + 1 folga)</p>';
+    html += '</div>';
+    el.innerHTML = html;
+}
+
+function renderClassificacao() {
+    const el = document.getElementById('sub-classificacao');
+    const lista = (typeof equipasGrupo !== 'undefined' && Array.isArray(equipasGrupo)) ? equipasGrupo : [];
+
+    let ch = '<div class="section-card"><h2 class="section-title">🏆 Classificação · 1.ª Fase (Liga Masters)</h2>';
+    ch += '<div class="table-wrap"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
+
+    const nossa = 'ADC Lobão';
+    const outras = lista.filter(e => e !== nossa);
+
+    let idx = 0;
+    for (let i = 1; i <= lista.length; i++) {
+        let nome, us;
+        if (i === 8) {
+            nome = nossa; us = true;
+        } else {
+            nome = outras[idx]; us = false; idx++;
+        }
+        const rc = us ? 'class-row-us' : '';
+        ch += `<tr class="${rc}"><td><span class="class-pos">${i}</span></td><td style="text-align:left;white-space:nowrap">${us ? '⚽ ' : ''}<strong>${nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
+    }
+
+    ch += '</tbody></table></div>';
+    ch += '<p class="note" style="margin-top:12px">Classificação provisória — começa a contar a partir da Jornada 1 (17 Out 2026)</p>';
+    ch += '</div>';
+    el.innerHTML = ch;
 }
 
 // ═══════════════════════════════════════════
@@ -2202,7 +2299,382 @@ function imprimirRecibo(nome) {
     else linhas.forEach(l => { html += `<tr><td>${l[0]}</td><td style="text-align:right">${l[1]}</td></tr>`; });
     html += `</tbody></table><div class="recibo-total">Total: €${total}</div><div class="recibo-assinatura"><div>Tesoureiro</div></div></div>`;
     document.getElementById('reciboContainer').innerHTML = html;
-    setTimeout(() => window.print(), 60);
+    document.body.classList.add('printing', 'printing-recibo');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => document.body.classList.remove('printing', 'printing-recibo'), 500);
+    }, 60);
+}
+
+// ═══════════════════════════════════════════
+// SNAPSHOT FINANCEIRO (PDF + Excel)
+// ═══════════════════════════════════════════
+function buildSnapshot() {
+    const s = {};
+    const dataGer = hoje.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const horaGer = hoje.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    s.meta = {
+        titulo: 'Veteranos A.D.C. Lobão — Snapshot Financeiro',
+        dataGerado: dataGer + ' · ' + horaGer
+    };
+    s.resumo = [
+        ['Total em mãos (físico + banco)', fmtEur(totalEmMaos)],
+        ['  🟢 Livre (veteranos)', fmtEur(livreVeteranos)],
+        ['  🟠 Reservado (despesas por pagar)', fmtEur(compromissosPorPagar)],
+        ['  🔵 Sócios (a entregar ao clube)', fmtEur(sociosEmMaos)]
+    ];
+    s.decomposicao = [
+        ['Caixa inicial (transitada)', '+', fmtEur(SALDO_INICIAL)],
+        ['Quotas mensais recebidas', '+', fmtEur(recebidoReal)],
+        ['Inscrições recebidas (' + inscricoesPagas.length + ' × ' + fmtEur(valorInscricao) + ')', '+', fmtEur(inscricoesRecebidas)],
+        ['Vendas de equipamento — recebidas', '+', fmtEur(totalVendasPagas)],
+        ['Vendas de equipamento — por receber', '·', fmtEur(totalVendasPendentes)],
+        ['Árbitros de amigáveis — recebido', '+', fmtEur(totalArbitroRecebido)],
+        ['Árbitros de amigáveis — pago', '−', fmtEur(totalArbitroCusto)],
+        ['Despesas já pagas (fixas + extra)', '−', fmtEur(despesasJaPagas)],
+        ['Saldo em mãos (físico + banco)', '=', fmtEur(saldoEmMaosVeteranos)],
+        ['Compromissos por pagar', '−', fmtEur(compromissosPorPagar)],
+        ['Saldo livre dos veteranos', '=', fmtEur(livreVeteranos)]
+    ];
+    s.despesas = [
+        { desc: 'Campo (anual)', valor: despesaCampo, pago: despesaPaga('campo') },
+        { desc: 'Inscrição AFA (' + inscritos.length + ' atletas × €20 + €30 extra)', valor: despesaAFA, pago: despesaPaga('afa') },
+        { desc: 'Galhardetes do clube (20 unid.)', valor: despesaGalhardetes, pago: despesaPaga('galhardetes') },
+        { desc: 'Garrafões de água (4 × 6L)', valor: despesaAgua, pago: despesaPaga('agua') }
+    ];
+    if (totalArbitroCusto > 0) s.despesas.push({ desc: 'Árbitros de amigáveis', valor: totalArbitroCusto, pago: true });
+    _despesasExtrasArr.forEach(d => s.despesas.push({ desc: d.desc, valor: d.valor, pago: d.pago, data: d.data }));
+    s.quotas = todosJogadores.map(j => ({
+        nome: j.nome,
+        tipo: j.inscrito ? 'Inscrito' : 'NI',
+        meses: MESES.map((_, mIdx) => jaPagou(j.nome, mIdx) ? '✓' : ''),
+        numPagos: mesesPagos(j.nome).length
+    }));
+    s.inscricoes = inscritos.map(j => {
+        const pago = inscricoesPagas.includes(j.nome);
+        const caixa = inscricaoPagaPelaCaixa(j.nome);
+        return { nome: j.nome, valor: valorInscricao, estado: caixa ? 'Paga pela caixa' : (pago ? 'Pago' : 'Por pagar') };
+    });
+    s.socios = inscritos.map(j => {
+        const pago = sociosPagos.includes(j.nome);
+        const clube = socioPagouAoClube(j.nome);
+        const prest = sociosEmPrestacoes(j.nome);
+        let estado = 'Por pagar';
+        if (prest) estado = 'Em prestações (€' + prest.jaPago + '/' + prest.total + ')';
+        else if (pago && clube) estado = 'Pago ao clube';
+        else if (pago) estado = 'Pago (em mãos)';
+        return { nome: j.nome, valor: valorSocio, estado };
+    });
+    s.vendas = compras6Set.map(v => ({
+        nome: v.nome,
+        itens: v.itens.join(', '),
+        total: v.total,
+        estado: v.pago ? 'Pago' : 'Por receber'
+    }));
+    const tiposFin = ['pagamento', 'despesa', 'venda', 'caixa'];
+    s.movimentos = historico.filter(h => tiposFin.includes(h.tipo)).map(h => ({
+        data: h.data,
+        tipo: h.tipo,
+        desc: h.desc
+    }));
+    return s;
+}
+
+function setSnapStatus(msg, erro) {
+    const el = document.getElementById('snapStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'snap-status' + (erro ? ' erro' : '');
+    setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 5000);
+}
+
+// ─── PDF via print ───
+function exportPDFPrint() {
+    const s = buildSnapshot();
+    const el = document.getElementById('printSnap');
+    let h = '';
+    h += `<h1>${s.meta.titulo}</h1>`;
+    h += `<div class="snap-meta">Gerado em ${s.meta.dataGerado}</div>`;
+    h += `<h2>1. Resumo do Saldo</h2><table>`;
+    s.resumo.forEach(r => { h += `<tr><td>${r[0]}</td><td class="right"><strong>${r[1]}</strong></td></tr>`; });
+    h += `</table>`;
+    h += `<h2>2. Decomposição</h2><table><thead><tr><th>Descrição</th><th class="center" style="width:40px"></th><th class="right" style="width:120px">Valor</th></tr></thead><tbody>`;
+    s.decomposicao.forEach(r => {
+        const isTotal = r[1] === '=';
+        h += `<tr class="${isTotal ? 'total-row' : ''}"><td>${r[0]}</td><td class="center">${r[1]}</td><td class="right">${r[2]}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>3. Despesas</h2><table><thead><tr><th>Descrição</th><th class="right" style="width:100px">Valor</th><th class="center" style="width:100px">Estado</th></tr></thead><tbody>`;
+    s.despesas.forEach(d => {
+        const cls = d.pago ? 'badge-pago' : 'badge-falta';
+        h += `<tr><td>${d.desc}</td><td class="right">${fmtEur(d.valor)}</td><td class="center ${cls}">${d.pago ? 'Pago' : 'Por pagar'}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>4. Quotas por Jogador</h2><table><thead><tr><th>Nome</th><th class="center">Tipo</th>`;
+    MESES.forEach(m => { h += `<th class="center" style="width:28px">${m}</th>`; });
+    h += `<th class="center" style="width:60px">Pagos</th></tr></thead><tbody>`;
+    s.quotas.forEach(q => {
+        h += `<tr><td>${q.nome}</td><td class="center">${q.tipo}</td>`;
+        q.meses.forEach(c => { h += `<td class="center">${c}</td>`; });
+        h += `<td class="center">${q.numPagos}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>5. Inscrições</h2><table><thead><tr><th>Nome</th><th class="right" style="width:80px">Valor</th><th class="center" style="width:130px">Estado</th></tr></thead><tbody>`;
+    s.inscricoes.forEach(i => {
+        const cls = i.estado === 'Pago' ? 'badge-pago' : (i.estado === 'Por pagar' ? 'badge-falta' : 'badge-clube');
+        h += `<tr><td>${i.nome}</td><td class="right">${fmtEur(i.valor)}</td><td class="center ${cls}">${i.estado}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>6. Sócios</h2><table><thead><tr><th>Nome</th><th class="right" style="width:80px">Valor</th><th class="center" style="width:160px">Estado</th></tr></thead><tbody>`;
+    s.socios.forEach(x => {
+        const cls = x.estado === 'Por pagar' ? 'badge-falta' : (x.estado.includes('clube') ? 'badge-clube' : 'badge-pago');
+        h += `<tr><td>${x.nome}</td><td class="right">${fmtEur(x.valor)}</td><td class="center ${cls}">${x.estado}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>7. Vendas de Equipamento</h2><table><thead><tr><th>Nome</th><th>Itens</th><th class="right" style="width:80px">Total</th><th class="center" style="width:110px">Estado</th></tr></thead><tbody>`;
+    s.vendas.forEach(v => {
+        const cls = v.estado === 'Pago' ? 'badge-pago' : 'badge-falta';
+        h += `<tr><td>${v.nome}</td><td>${v.itens}</td><td class="right">${fmtEur(v.total)}</td><td class="center ${cls}">${v.estado}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    h += `<h2>8. Movimentos Financeiros</h2><table><thead><tr><th style="width:90px">Data</th><th style="width:90px">Tipo</th><th>Descrição</th></tr></thead><tbody>`;
+    s.movimentos.forEach(m => {
+        h += `<tr><td>${m.data}</td><td>${m.tipo}</td><td>${m.desc}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+    el.innerHTML = h;
+    document.body.classList.add('printing', 'printing-snapshot');
+    setSnapStatus('A abrir diálogo de impressão...');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => document.body.classList.remove('printing', 'printing-snapshot'), 500);
+    }, 100);
+}
+
+// ─── PDF via jsPDF ───
+function exportPDFjsPDF() {
+    if (!window.jspdf || !window.jspdf.jsPDF) { setSnapStatus('jsPDF não carregou', true); return; }
+    setSnapStatus('A gerar...');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const s = buildSnapshot();
+    const ML = 14, MR = 14;
+    const PW = doc.internal.pageSize.getWidth();
+    const PH = doc.internal.pageSize.getHeight();
+    const CW = PW - ML - MR;
+    let y = 20;
+
+    function checkPage(need) {
+        if (y + need > PH - 15) { doc.addPage(); y = 20; }
+    }
+    function titulo(txt) {
+        checkPage(12);
+        doc.setFontSize(11);
+        doc.setTextColor(13, 59, 102);
+        doc.setFont(undefined, 'bold');
+        doc.text(txt, ML, y);
+        y += 1.5;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(ML, y, PW - MR, y);
+        y += 5;
+        doc.setTextColor(50, 50, 50);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(9);
+    }
+    function tabela(headers, rows, colW, aligns) {
+        const rowH = 5.5;
+        checkPage(rowH * 2 + 4);
+        doc.setFillColor(13, 59, 102);
+        doc.rect(ML, y, CW, 6, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont(undefined, 'bold');
+        let x = ML + 2;
+        headers.forEach((h, i) => {
+            const a = aligns && aligns[i];
+            const tx = a === 'right' ? x + colW[i] - 4 : (a === 'center' ? x + colW[i] / 2 : x);
+            doc.text(h, tx, y + 4, { align: a === 'right' ? 'right' : (a === 'center' ? 'center' : 'left') });
+            x += colW[i];
+        });
+        y += 6;
+        doc.setTextColor(50, 50, 50);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(8);
+        rows.forEach((row, ri) => {
+            if (y + rowH > PH - 15) { doc.addPage(); y = 20; }
+            if (ri % 2 === 0) { doc.setFillColor(248, 250, 252); doc.rect(ML, y, CW, rowH, 'F'); }
+            let cx = ML + 2;
+            row.forEach((cell, i) => {
+                const a = aligns && aligns[i];
+                const tx = a === 'right' ? cx + colW[i] - 4 : (a === 'center' ? cx + colW[i] / 2 : cx);
+                const txt = String(cell);
+                const maxChars = Math.floor(colW[i] / 1.6);
+                const t = txt.length > maxChars ? txt.slice(0, maxChars - 1) + '…' : txt;
+                doc.text(t, tx, y + 4, { align: a === 'right' ? 'right' : (a === 'center' ? 'center' : 'left') });
+                cx += colW[i];
+            });
+            y += rowH;
+        });
+        y += 4;
+    }
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(13, 59, 102);
+    doc.text(s.meta.titulo, ML, y);
+    y += 6;
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('Gerado em ' + s.meta.dataGerado, ML, y);
+    y += 3;
+    doc.setDrawColor(13, 59, 102);
+    doc.setLineWidth(0.5);
+    doc.line(ML, y, PW - MR, y);
+    y += 8;
+
+    titulo('1. Resumo do Saldo');
+    tabela(['Descrição', 'Valor'], s.resumo.map(r => [r[0], r[1]]), [CW * 0.7, CW * 0.3], ['left', 'right']);
+
+    titulo('2. Decomposição');
+    tabela(['Descrição', '', 'Valor'], s.decomposicao.map(r => [r[0], r[1], r[2]]), [CW * 0.68, CW * 0.07, CW * 0.25], ['left', 'center', 'right']);
+
+    titulo('3. Despesas');
+    tabela(['Descrição', 'Valor', 'Estado'], s.despesas.map(d => [d.desc, fmtEur(d.valor), d.pago ? 'Pago' : 'Por pagar']), [CW * 0.6, CW * 0.2, CW * 0.2], ['left', 'right', 'center']);
+
+    titulo('4. Quotas por Jogador');
+    const qHeaders = ['Nome', 'Tipo', ...MESES, 'Pagos'];
+    const nomeW = 42, tipoW = 14, mesW = (CW - nomeW - tipoW - 12) / MESES.length, totW = 12;
+    const qCols = [nomeW, tipoW, ...MESES.map(() => mesW), totW];
+    const qRows = s.quotas.map(q => [q.nome, q.tipo, ...q.meses, String(q.numPagos)]);
+    tabela(qHeaders, qRows, qCols, ['left', 'center', ...MESES.map(() => 'center'), 'center']);
+
+    titulo('5. Inscrições');
+    tabela(['Nome', 'Valor', 'Estado'], s.inscricoes.map(i => [i.nome, fmtEur(i.valor), i.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
+
+    titulo('6. Sócios');
+    tabela(['Nome', 'Valor', 'Estado'], s.socios.map(x => [x.nome, fmtEur(x.valor), x.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
+
+    titulo('7. Vendas de Equipamento');
+    tabela(['Nome', 'Itens', 'Total', 'Estado'], s.vendas.map(v => [v.nome, v.itens, fmtEur(v.total), v.estado]), [CW * 0.2, CW * 0.45, CW * 0.15, CW * 0.2], ['left', 'left', 'right', 'center']);
+
+    titulo('8. Movimentos Financeiros');
+    tabela(['Data', 'Tipo', 'Descrição'], s.movimentos.map(m => [m.data, m.tipo, m.desc]), [CW * 0.12, CW * 0.13, CW * 0.75], ['left', 'left', 'left']);
+
+    const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.pdf';
+    doc.save(fname);
+    setSnapStatus('✓ Descarregado: ' + fname);
+}
+
+// ─── Excel CSV ───
+function exportCSV() {
+    const s = buildSnapshot();
+    const linhas = [];
+    const esc = v => {
+        const t = String(v == null ? '' : v);
+        return '"' + t.replace(/"/g, '""') + '"';
+    };
+    const addLinha = arr => linhas.push(arr.map(esc).join(';'));
+    const secao = titulo => { linhas.push(''); linhas.push('=== ' + titulo + ' ==='); };
+
+    addLinha(['Veteranos A.D.C. Lobão — Snapshot Financeiro']);
+    addLinha(['Gerado em', s.meta.dataGerado]);
+
+    secao('1. RESUMO DO SALDO');
+    addLinha(['Descrição', 'Valor']);
+    s.resumo.forEach(r => addLinha([r[0].trim(), r[1]]));
+
+    secao('2. DECOMPOSIÇÃO');
+    addLinha(['Descrição', 'Sinal', 'Valor']);
+    s.decomposicao.forEach(r => addLinha([r[0], r[1], r[2]]));
+
+    secao('3. DESPESAS');
+    addLinha(['Descrição', 'Data', 'Valor', 'Estado']);
+    s.despesas.forEach(d => addLinha([d.desc, d.data || '—', fmtEur(d.valor), d.pago ? 'Pago' : 'Por pagar']));
+
+    secao('4. QUOTAS POR JOGADOR');
+    addLinha(['Nome', 'Tipo', ...MESES, 'Total Pagos']);
+    s.quotas.forEach(q => addLinha([q.nome, q.tipo, ...q.meses, q.numPagos]));
+
+    secao('5. INSCRIÇÕES');
+    addLinha(['Nome', 'Valor', 'Estado']);
+    s.inscricoes.forEach(i => addLinha([i.nome, fmtEur(i.valor), i.estado]));
+
+    secao('6. SÓCIOS');
+    addLinha(['Nome', 'Valor', 'Estado']);
+    s.socios.forEach(x => addLinha([x.nome, fmtEur(x.valor), x.estado]));
+
+    secao('7. VENDAS DE EQUIPAMENTO');
+    addLinha(['Nome', 'Itens', 'Total', 'Estado']);
+    s.vendas.forEach(v => addLinha([v.nome, v.itens, fmtEur(v.total), v.estado]));
+
+    secao('8. MOVIMENTOS FINANCEIROS');
+    addLinha(['Data', 'Tipo', 'Descrição']);
+    s.movimentos.forEach(m => addLinha([m.data, m.tipo, m.desc]));
+
+    const csv = '\uFEFF' + linhas.join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setSnapStatus('✓ Descarregado: ' + fname);
+}
+
+// ─── Excel XLSX ───
+function exportXLSX() {
+    if (typeof XLSX === 'undefined') { setSnapStatus('SheetJS não carregou', true); return; }
+    setSnapStatus('A gerar...');
+    const s = buildSnapshot();
+    const wb = XLSX.utils.book_new();
+    const addSheet = (nome, aoa, opts) => {
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        if (opts && opts.cols) ws['!cols'] = opts.cols;
+        XLSX.utils.book_append_sheet(wb, ws, nome);
+    };
+    addSheet('Resumo', [
+        ['Veteranos A.D.C. Lobão — Snapshot Financeiro'],
+        ['Gerado em', s.meta.dataGerado],
+        [],
+        ['Resumo do Saldo'],
+        ['Descrição', 'Valor'],
+        ...s.resumo.map(r => [r[0].trim(), r[1]]),
+        [],
+        ['Decomposição'],
+        ['Descrição', 'Sinal', 'Valor'],
+        ...s.decomposicao.map(r => [r[0], r[1], r[2]])
+    ], { cols: [{ wch: 48 }, { wch: 6 }, { wch: 14 }] });
+    addSheet('Despesas', [
+        ['Descrição', 'Data', 'Valor', 'Estado'],
+        ...s.despesas.map(d => [d.desc, d.data || '—', d.valor, d.pago ? 'Pago' : 'Por pagar'])
+    ], { cols: [{ wch: 50 }, { wch: 14 }, { wch: 12 }, { wch: 12 }] });
+    addSheet('Quotas', [
+        ['Nome', 'Tipo', ...MESES, 'Total Pagos'],
+        ...s.quotas.map(q => [q.nome, q.tipo, ...q.meses, q.numPagos])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, ...MESES.map(() => ({ wch: 5 })), { wch: 12 }] });
+    addSheet('Inscricoes', [
+        ['Nome', 'Valor', 'Estado'],
+        ...s.inscricoes.map(i => [i.nome, i.valor, i.estado])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 18 }] });
+    addSheet('Socios', [
+        ['Nome', 'Valor', 'Estado'],
+        ...s.socios.map(x => [x.nome, x.valor, x.estado])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 24 }] });
+    addSheet('Vendas', [
+        ['Nome', 'Itens', 'Total', 'Estado'],
+        ...s.vendas.map(v => [v.nome, v.itens, v.total, v.estado])
+    ], { cols: [{ wch: 20 }, { wch: 45 }, { wch: 10 }, { wch: 14 }] });
+    addSheet('Movimentos', [
+        ['Data', 'Tipo', 'Descrição'],
+        ...s.movimentos.map(m => [m.data, m.tipo, m.desc])
+    ], { cols: [{ wch: 14 }, { wch: 14 }, { wch: 100 }] });
+    const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+    XLSX.writeFile(wb, fname);
+    setSnapStatus('✓ Descarregado: ' + fname);
 }
 
 // ═══════════════════════════════════════════
@@ -2285,14 +2757,8 @@ function inicializarSite() {
     renderAtas();
     renderHistorico();
 
-    document.getElementById('sub-calendario').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Calendário por definir</div><div style="font-size:13px;color:#999">A época começa em Setembro 2026.</div></div>';
-    let ch = '<div class="section-card" style="overflow-x:auto"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
-    equipas.forEach((e, i) => {
-        const rc = e.us ? 'class-row-us' : '';
-        ch += `<tr class="${rc}"><td><span class="class-pos">${i + 1}</span></td><td style="text-align:left;white-space:nowrap">${e.us ? '⚽ ' : ''}<strong>${e.nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
-    });
-    ch += '</tbody></table></div><p class="note" style="margin-top:12px">Liga de Veteranos — A época inicia em Setembro 2026</p>';
-    document.getElementById('sub-classificacao').innerHTML = ch;
+    renderCalendario();
+    renderClassificacao();
     document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
 
     renderTorneios();
