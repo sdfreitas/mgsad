@@ -206,6 +206,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "7 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues"],
+      extra: ["Marcelo", "Zé Buraca", "Telmo", "Inácio", "Luís Paiva", "Hugo André", "António José Silva"] },
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
       extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
@@ -382,6 +385,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 14 atletas presentes + 7 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, Hugo André, António José Silva)." },
     { data: "7 Out 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou Outubro - 20 EUR." },
     { data: "7 Out 2026", tipo: "aviso", desc: "📅 Calendário oficial da Liga Masters disponível. O campeonato começa a 17 Out em casa contra o CD Loureiro." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Vitor Leite pagou o equipamento (Calções saída + Polo) - 32 EUR." },
