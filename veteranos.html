@@ -267,9 +267,11 @@
         .estado-geral-item strong { color: #dc6843; margin-left: 2px; }
 
         #reciboContainer { display: none; }
+        #printSnap { display: none; }
+
         @media print {
-            body > *:not(#reciboContainer) { display: none !important; }
-            #reciboContainer { display: block !important; padding: 24px; color: #000; font-family: 'Inter', 'Segoe UI', sans-serif; }
+            body.printing > *:not(.printing-visible) { display: none !important; }
+            body.printing-recibo #reciboContainer { display: block !important; padding: 24px; color: #000; font-family: 'Inter', 'Segoe UI', sans-serif; }
             .recibo-header { text-align: center; margin-bottom: 28px; border-bottom: 2px solid #0D3B66; padding-bottom: 16px; }
             .recibo-header h1 { font-size: 22px; color: #0D3B66; margin: 0 0 6px; letter-spacing: 1px; }
             .recibo-header p { margin: 2px 0; font-size: 12px; color: #666; }
@@ -280,7 +282,45 @@
             .recibo-total { font-size: 16px; font-weight: 700; color: #0D3B66; text-align: right; margin-top: 10px; }
             .recibo-assinatura { margin-top: 70px; text-align: center; }
             .recibo-assinatura div { border-top: 1px solid #000; width: 260px; margin: 0 auto; padding-top: 6px; font-size: 11px; }
+
+            body.printing-snapshot { background: #fff !important; }
+            body.printing-snapshot #printSnap { display: block !important; padding: 18mm 14mm; font-family: 'Inter', 'Segoe UI', sans-serif; color: #000; font-size: 10pt; line-height: 1.4; }
+            #printSnap h1 { font-size: 20pt; color: #0D3B66; margin: 0 0 4px; letter-spacing: .5px; }
+            #printSnap .snap-meta { font-size: 9pt; color: #666; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #0D3B66; }
+            #printSnap h2 { font-size: 12pt; color: #0D3B66; margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #ccc; page-break-after: avoid; }
+            #printSnap table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9pt; }
+            #printSnap th, #printSnap td { border: 1px solid #ccc; padding: 4px 7px; text-align: left; }
+            #printSnap th { background: #f0f6ff; color: #0D3B66; font-weight: 700; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .3px; }
+            #printSnap td.center, #printSnap th.center { text-align: center; }
+            #printSnap td.right, #printSnap th.right { text-align: right; }
+            #printSnap .total-row td { font-weight: 700; background: #f8fafc; border-top: 2px solid #0D3B66; }
+            #printSnap .badge-pago { color: #166534; font-weight: 700; }
+            #printSnap .badge-falta { color: #9a3412; font-weight: 700; }
+            #printSnap .badge-clube { color: #0369a1; font-weight: 700; }
+            @page { size: A4; margin: 0; }
         }
+
+        .snapshot-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .snapshot-bar button {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 14px; border: none; border-radius: 9px;
+            font-family: inherit; font-size: 12.5px; font-weight: 600;
+            cursor: pointer; transition: background .15s, transform .1s;
+            letter-spacing: .3px; color: #fff; text-align: center;
+        }
+        .snapshot-bar button:active { transform: scale(.97); }
+        .snapshot-bar button.snap-pdf { background: #0D3B66; }
+        .snapshot-bar button.snap-pdf:hover { background: #1A6FB5; }
+        .snapshot-bar button.snap-pdf-lib { background: #1A6FB5; }
+        .snapshot-bar button.snap-pdf-lib:hover { background: #5BA4D9; }
+        .snapshot-bar button.snap-xlsx { background: #15803d; }
+        .snapshot-bar button.snap-xlsx:hover { background: #166534; }
+        .snapshot-bar button.snap-json { background: #7c3aed; }
+        .snapshot-bar button.snap-json:hover { background: #6d28d9; }
+        .snapshot-bar button:disabled { opacity: .55; cursor: wait; }
+        .snap-status { font-size: 11px; color: #16a34a; margin-top: 10px; min-height: 14px; font-weight: 600; text-align: center; }
+        .snap-status.erro { color: #c1121f; }
+        .snap-desc { font-size: 12px; color: #64748b; line-height: 1.55; margin: 0 0 14px 2px; }
 
         .tema-btn {
             position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px;
@@ -510,7 +550,8 @@
         html[data-tema="escuro"] .match-date,
         html[data-tema="escuro"] .match-date span,
         html[data-tema="escuro"] .ata-presentes,
-        html[data-tema="escuro"] .modal-section h4 { color: #94a3b8; }
+        html[data-tema="escuro"] .modal-section h4,
+        html[data-tema="escuro"] .snap-desc { color: #94a3b8; }
 
         html[data-tema="escuro"] .pres-pending-msg { color: #94a3b8; }
         html[data-tema="escuro"] .bday-empty { color: #64748b; }
@@ -572,6 +613,7 @@
             .alerta-num { font-size: 26px; }
             .auth-box { padding: 26px 22px; }
             .auth-titulo { font-size: 20px; }
+            .snapshot-bar { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -579,11 +621,11 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v2</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
-        <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')tentarEntrar()">
-        <button class="auth-btn" id="authBtn" onclick="tentarEntrar()">Entrar</button>
+        <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
+        <button class="auth-btn" id="authBtn" type="button">Entrar</button>
         <div id="authErro" class="auth-erro"></div>
     </div>
 </div>
@@ -652,6 +694,17 @@
             <h2 class="section-title">📈 Evolução Prevista do Saldo</h2>
             <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
             <p class="note">Projeção — os valores reais serão atualizados mensalmente</p>
+        </div>
+        <div class="section-card" style="border-left:4px solid #0D3B66">
+            <h2 class="section-title">📸 Snapshot financeiro</h2>
+            <p class="snap-desc">Gera um relatório com o resumo, despesas, quotas, inscrições, sócios, vendas e movimentos financeiros. Escolhe o formato:</p>
+            <div class="snapshot-bar">
+                <button class="snap-pdf" onclick="exportPDFPrint()">🖨️ PDF (print)</button>
+                <button class="snap-pdf-lib" onclick="exportPDFjsPDF()">📄 PDF (direto)</button>
+                <button class="snap-xlsx" onclick="exportXLSX()">📗 Excel (XLSX)</button>
+                <button class="snap-json" onclick="exportJSON()">💾 Backup (JSON)</button>
+            </div>
+            <div class="snap-status" id="snapStatus"></div>
         </div>
         <p class="note">Última atualização: 7 de Outubro de 2026</p>
     </div>
@@ -772,14 +825,45 @@
 </footer>
 
 <div id="reciboContainer"></div>
+<div id="printSnap"></div>
 
 <button class="tema-btn" id="temaBtn" onclick="ciclarTema()" title="Tema: Automático" aria-label="Alterar tema">
     <span id="temaIcon">🌓</span>
 </button>
 
+<script>
+// ═══════════════════════════════════════════
+// DIAGNÓSTICO — mostra erros no ecrã da password
+// ═══════════════════════════════════════════
+window.addEventListener('error', function (e) {
+    var el = document.getElementById('authErro');
+    if (el) el.textContent = '⚠️ Erro: ' + (e.message || 'desconhecido') + ' (' + (e.filename || '').split('/').pop() + ':' + e.lineno + ')';
+});
+window.addEventListener('unhandledrejection', function (e) {
+    var el = document.getElementById('authErro');
+    if (el) el.textContent = '⚠️ Erro: ' + (e.reason && e.reason.message ? e.reason.message : 'promessa rejeitada');
+});
+</script>
+
 <script src="dados.js"></script>
 <script src="config.js"></script>
+
 <script>
+// ═══════════════════════════════════════════
+// VERIFICAÇÃO DE DEPENDÊNCIAS
+// ═══════════════════════════════════════════
+(function () {
+    var problemas = [];
+    if (typeof SENHA_HASH === 'undefined' || !SENHA_HASH) problemas.push('config.js (SENHA_HASH)');
+    if (typeof inscritos === 'undefined') problemas.push('dados.js (inscritos)');
+    if (typeof pagamentos === 'undefined') problemas.push('dados.js (pagamentos)');
+    if (typeof historico === 'undefined') problemas.push('dados.js (historico)');
+    if (problemas.length > 0) {
+        var el = document.getElementById('authErro');
+        if (el) el.textContent = '⚠️ Ficheiros em falta ou mal carregados: ' + problemas.join(', ') + '. Confirma que estão na mesma pasta do vet.html.';
+    }
+})();
+
 // ═══════════════════════════════════════════
 // AUTENTICAÇÃO
 // ═══════════════════════════════════════════
@@ -807,6 +891,9 @@ function aplicarGate() {
     }
 }
 async function hashSHA256(texto) {
+    if (!window.crypto || !window.crypto.subtle) {
+        throw new Error('crypto.subtle indisponível — abre o site via HTTPS ou localhost');
+    }
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
     return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
@@ -814,23 +901,28 @@ async function tentarEntrar() {
     const inp = document.getElementById('authInput');
     const err = document.getElementById('authErro');
     const btn = document.getElementById('authBtn');
-    if (!inp || !err) return;
-    const hashGuardado = (typeof SENHA_HASH !== 'undefined') ? SENHA_HASH : null;
-    if (!hashGuardado || hashGuardado === '') {
+    if (!inp) { alert('Erro: input da password não encontrado no DOM'); return; }
+    if (!err) { alert('Erro: caixa de erro não encontrada no DOM'); return; }
+    if (typeof SENHA_HASH === 'undefined' || !SENHA_HASH) {
         err.textContent = 'Erro: senha não configurada (config.js).';
         return;
     }
     if (!inp.value) { err.textContent = 'Escreve a password.'; return; }
     if (btn) btn.disabled = true;
-    err.textContent = '';
+    err.textContent = 'A validar...';
     try {
         const hashInserido = await hashSHA256(inp.value);
-        if (hashInserido === hashGuardado) {
+        if (hashInserido === SENHA_HASH) {
             try { localStorage.setItem('siteAuth', 'ok'); } catch (e) {}
             inp.value = '';
             inp.blur();
+            err.textContent = '';
             aplicarGate();
-            inicializarSite();
+            try { inicializarSite(); } catch (e) {
+                err.textContent = '⚠️ Erro ao inicializar o site: ' + (e && e.message ? e.message : e);
+                alert('Erro ao inicializar o site: ' + (e && e.message ? e.message : e));
+                return;
+            }
             forcarTopo();
             setTimeout(forcarTopo, 100);
             setTimeout(forcarTopo, 300);
@@ -840,7 +932,7 @@ async function tentarEntrar() {
             inp.focus();
         }
     } catch (e) {
-        err.textContent = 'Erro ao validar. Tenta outra vez.';
+        err.textContent = '⚠️ Erro ao validar: ' + (e && e.message ? e.message : e);
     } finally {
         if (btn) btn.disabled = false;
     }
@@ -849,6 +941,14 @@ function bloquearSite() {
     try { localStorage.removeItem('siteAuth'); } catch (e) {}
     aplicarGate();
 }
+
+// Liga o botão e o Enter do input (mais fiável que onclick inline)
+document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('authBtn');
+    if (btn) btn.addEventListener('click', tentarEntrar);
+    var inp = document.getElementById('authInput');
+    if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') tentarEntrar(); });
+});
 
 // ═══════════════════════════════════════════
 // MENU
@@ -1045,7 +1145,6 @@ _prestNomesGlobal.forEach(n => { sociosEmMaos += _prestMapGlobal[n].jaPago; });
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
 const compromissosPorPagar = despesasPorPagar;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
-// Após TODAS as despesas previstas (campo + AFA + sócios a entregar)
 const aposTudo = totalEmMaos - compromissosPorPagar - sociosEmMaos;
 
 const presencasPorJogador = (function() {
@@ -1338,6 +1437,7 @@ function renderResumo() {
 // CHARTS (init)
 // ═══════════════════════════════════════════
 function initResumoCharts() {
+    if (typeof Chart === 'undefined') return;
     const prevRec = MESES.map(() => receitaMensalEsperada);
     const prevDesp = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
     chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
@@ -1354,6 +1454,7 @@ function initResumoCharts() {
     });
 }
 function initDespesasChart() {
+    if (typeof Chart === 'undefined') return;
     const pd = [
         { name: 'Campo', value: despesaCampo, color: '#0D3B66' },
         { name: 'Inscrição AFA', value: despesaAFA, color: '#1A6FB5' },
@@ -1368,6 +1469,7 @@ function initDespesasChart() {
     });
 }
 function initInscricoesChart() {
+    if (typeof Chart === 'undefined') return;
     const total = inscritos.length;
     const pagas = inscricoesPagas.length + (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined' ? INSCRICOES_PAGAS_CAIXA.length : 0);
     const porPagar = total - pagas;
@@ -1382,7 +1484,7 @@ function initInscricoesChart() {
     });
 }
 function initQuotasCharts() {
-    if (typeof todosParaQuotas === 'undefined') return;
+    if (typeof Chart === 'undefined' || typeof todosParaQuotas === 'undefined') return;
     const c = chartThemeColors();
     const totalEsperado = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length;
     const pago = recebidoReal;
@@ -1414,6 +1516,7 @@ function initQuotasCharts() {
     });
 }
 function initTreinosCharts() {
+    if (typeof Chart === 'undefined') return;
     const eventos = treinosJogos.filter(t => t.estado === 'registado');
     if (eventos.length === 0) return;
     const c = chartThemeColors();
@@ -2240,7 +2343,424 @@ function imprimirRecibo(nome) {
     else linhas.forEach(l => { html += `<tr><td>${l[0]}</td><td style="text-align:right">${l[1]}</td></tr>`; });
     html += `</tbody></table><div class="recibo-total">Total: €${total}</div><div class="recibo-assinatura"><div>Tesoureiro</div></div></div>`;
     document.getElementById('reciboContainer').innerHTML = html;
-    setTimeout(() => window.print(), 60);
+    document.body.classList.add('printing', 'printing-recibo');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => document.body.classList.remove('printing', 'printing-recibo'), 500);
+    }, 60);
+}
+
+// ═══════════════════════════════════════════
+// SNAPSHOT FINANCEIRO (PDF + Excel + JSON)
+// ═══════════════════════════════════════════
+
+function carregarLib(url) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector('script[src="' + url + '"]')) { resolve(); return; }
+        const s = document.createElement('script');
+        s.src = url;
+        s.onload = function () { resolve(); };
+        s.onerror = function () { reject(new Error('Não foi possível carregar ' + url)); };
+        document.head.appendChild(s);
+    });
+}
+
+function buildSnapshot() {
+    const s = {};
+    const dataGer = hoje.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const horaGer = hoje.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    s.meta = {
+        titulo: 'Veteranos A.D.C. Lobão — Snapshot Financeiro',
+        dataGerado: dataGer + ' · ' + horaGer
+    };
+    s.resumo = [
+        ['Total em mãos (físico + banco)', fmtEur(totalEmMaos)],
+        ['  Livre (veteranos)', fmtEur(livreVeteranos)],
+        ['  Reservado (despesas por pagar)', fmtEur(compromissosPorPagar)],
+        ['  Sócios (a entregar ao clube)', fmtEur(sociosEmMaos)]
+    ];
+    s.decomposicao = [
+        ['Caixa inicial (transitada)', '+', fmtEur(SALDO_INICIAL)],
+        ['Quotas mensais recebidas', '+', fmtEur(recebidoReal)],
+        ['Inscrições recebidas (' + inscricoesPagas.length + ' × ' + fmtEur(valorInscricao) + ')', '+', fmtEur(inscricoesRecebidas)],
+        ['Vendas de equipamento — recebidas', '+', fmtEur(totalVendasPagas)],
+        ['Vendas de equipamento — por receber', '·', fmtEur(totalVendasPendentes)],
+        ['Árbitros de amigáveis — recebido', '+', fmtEur(totalArbitroRecebido)],
+        ['Árbitros de amigáveis — pago', '−', fmtEur(totalArbitroCusto)],
+        ['Despesas já pagas (fixas + extra)', '−', fmtEur(despesasJaPagas)],
+        ['Saldo em mãos (físico + banco)', '=', fmtEur(saldoEmMaosVeteranos)],
+        ['Compromissos por pagar', '−', fmtEur(compromissosPorPagar)],
+        ['Saldo livre dos veteranos', '=', fmtEur(livreVeteranos)]
+    ];
+    s.despesas = [
+        { desc: 'Campo (anual)', valor: despesaCampo, pago: despesaPaga('campo') },
+        { desc: 'Inscrição AFA (' + inscritos.length + ' atletas × €20 + €30 extra)', valor: despesaAFA, pago: despesaPaga('afa') },
+        { desc: 'Galhardetes do clube (20 unid.)', valor: despesaGalhardetes, pago: despesaPaga('galhardetes') },
+        { desc: 'Garrafões de água (4 × 6L)', valor: despesaAgua, pago: despesaPaga('agua') }
+    ];
+    if (totalArbitroCusto > 0) s.despesas.push({ desc: 'Árbitros de amigáveis', valor: totalArbitroCusto, pago: true });
+    _despesasExtrasArr.forEach(d => s.despesas.push({ desc: d.desc, valor: d.valor, pago: d.pago, data: d.data }));
+    s.quotas = todosJogadores.map(j => ({
+        nome: j.nome,
+        tipo: j.inscrito ? 'Inscrito' : 'NI',
+        meses: MESES.map((_, mIdx) => jaPagou(j.nome, mIdx) ? '✓' : ''),
+        numPagos: mesesPagos(j.nome).length
+    }));
+    s.inscricoes = inscritos.map(j => {
+        const pago = inscricoesPagas.includes(j.nome);
+        const caixa = inscricaoPagaPelaCaixa(j.nome);
+        return { nome: j.nome, valor: valorInscricao, estado: caixa ? 'Paga pela caixa' : (pago ? 'Pago' : 'Por pagar') };
+    });
+    s.socios = inscritos.map(j => {
+        const pago = sociosPagos.includes(j.nome);
+        const clube = socioPagouAoClube(j.nome);
+        const prest = sociosEmPrestacoes(j.nome);
+        let estado = 'Por pagar';
+        if (prest) estado = 'Em prestações (€' + prest.jaPago + '/' + prest.total + ')';
+        else if (pago && clube) estado = 'Pago ao clube';
+        else if (pago) estado = 'Pago (em mãos)';
+        return { nome: j.nome, valor: valorSocio, estado };
+    });
+    s.vendas = compras6Set.map(v => ({
+        nome: v.nome,
+        itens: v.itens.join(', '),
+        total: v.total,
+        estado: v.pago ? 'Pago' : 'Por receber'
+    }));
+    const tiposFin = ['pagamento', 'despesa', 'venda', 'caixa'];
+    s.movimentos = historico.filter(h => tiposFin.includes(h.tipo)).map(h => ({
+        data: h.data,
+        tipo: h.tipo,
+        desc: h.desc
+    }));
+    return s;
+}
+
+function setSnapStatus(msg, erro) {
+    const el = document.getElementById('snapStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'snap-status' + (erro ? ' erro' : '');
+    if (!erro) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 5000);
+}
+
+// ─── PDF via print ───
+function exportPDFPrint() {
+    const s = buildSnapshot();
+    const el = document.getElementById('printSnap');
+    let h = '';
+    h += '<h1>' + s.meta.titulo + '</h1>';
+    h += '<div class="snap-meta">Gerado em ' + s.meta.dataGerado + '</div>';
+    h += '<h2>1. Resumo do Saldo</h2><table>';
+    s.resumo.forEach(r => { h += '<tr><td>' + r[0] + '</td><td class="right"><strong>' + r[1] + '</strong></td></tr>'; });
+    h += '</table>';
+    h += '<h2>2. Decomposição</h2><table><thead><tr><th>Descrição</th><th class="center" style="width:40px"></th><th class="right" style="width:120px">Valor</th></tr></thead><tbody>';
+    s.decomposicao.forEach(r => {
+        const isTotal = r[1] === '=';
+        h += '<tr class="' + (isTotal ? 'total-row' : '') + '"><td>' + r[0] + '</td><td class="center">' + r[1] + '</td><td class="right">' + r[2] + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>3. Despesas</h2><table><thead><tr><th>Descrição</th><th class="right" style="width:100px">Valor</th><th class="center" style="width:100px">Estado</th></tr></thead><tbody>';
+    s.despesas.forEach(d => {
+        const cls = d.pago ? 'badge-pago' : 'badge-falta';
+        h += '<tr><td>' + d.desc + '</td><td class="right">' + fmtEur(d.valor) + '</td><td class="center ' + cls + '">' + (d.pago ? 'Pago' : 'Por pagar') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>4. Quotas por Jogador</h2><table><thead><tr><th>Nome</th><th class="center">Tipo</th>';
+    MESES.forEach(m => { h += '<th class="center" style="width:28px">' + m + '</th>'; });
+    h += '<th class="center" style="width:60px">Pagos</th></tr></thead><tbody>';
+    s.quotas.forEach(q => {
+        h += '<tr><td>' + q.nome + '</td><td class="center">' + q.tipo + '</td>';
+        q.meses.forEach(c => { h += '<td class="center">' + c + '</td>'; });
+        h += '<td class="center">' + q.numPagos + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>5. Inscrições</h2><table><thead><tr><th>Nome</th><th class="right" style="width:80px">Valor</th><th class="center" style="width:130px">Estado</th></tr></thead><tbody>';
+    s.inscricoes.forEach(i => {
+        const cls = i.estado === 'Pago' ? 'badge-pago' : (i.estado === 'Por pagar' ? 'badge-falta' : 'badge-clube');
+        h += '<tr><td>' + i.nome + '</td><td class="right">' + fmtEur(i.valor) + '</td><td class="center ' + cls + '">' + i.estado + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>6. Sócios</h2><table><thead><tr><th>Nome</th><th class="right" style="width:80px">Valor</th><th class="center" style="width:160px">Estado</th></tr></thead><tbody>';
+    s.socios.forEach(x => {
+        const cls = x.estado === 'Por pagar' ? 'badge-falta' : (x.estado.indexOf('clube') >= 0 ? 'badge-clube' : 'badge-pago');
+        h += '<tr><td>' + x.nome + '</td><td class="right">' + fmtEur(x.valor) + '</td><td class="center ' + cls + '">' + x.estado + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>7. Vendas de Equipamento</h2><table><thead><tr><th>Nome</th><th>Itens</th><th class="right" style="width:80px">Total</th><th class="center" style="width:110px">Estado</th></tr></thead><tbody>';
+    s.vendas.forEach(v => {
+        const cls = v.estado === 'Pago' ? 'badge-pago' : 'badge-falta';
+        h += '<tr><td>' + v.nome + '</td><td>' + v.itens + '</td><td class="right">' + fmtEur(v.total) + '</td><td class="center ' + cls + '">' + v.estado + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<h2>8. Movimentos Financeiros</h2><table><thead><tr><th style="width:90px">Data</th><th style="width:90px">Tipo</th><th>Descrição</th></tr></thead><tbody>';
+    s.movimentos.forEach(m => {
+        h += '<tr><td>' + m.data + '</td><td>' + m.tipo + '</td><td>' + m.desc + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    el.innerHTML = h;
+    document.body.classList.add('printing', 'printing-snapshot');
+    setSnapStatus('A abrir diálogo de impressão...');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => document.body.classList.remove('printing', 'printing-snapshot'), 500);
+    }, 100);
+}
+
+// ─── PDF via jsPDF (carregamento dinâmico) ───
+async function exportPDFjsPDF() {
+    setSnapStatus('A carregar biblioteca PDF...');
+    try {
+        await carregarLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    } catch (e) {
+        setSnapStatus('⚠️ Não foi possível carregar a biblioteca PDF (jsPDF). Verifica a ligação à internet.', true);
+        return;
+    }
+    if (!window.jspdf || !window.jspdf.jsPDF) { setSnapStatus('jsPDF não está disponível', true); return; }
+    setSnapStatus('A gerar PDF...');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const s = buildSnapshot();
+    const ML = 14, MR = 14;
+    const PW = doc.internal.pageSize.getWidth();
+    const PH = doc.internal.pageSize.getHeight();
+    const CW = PW - ML - MR;
+    let y = 20;
+
+    function checkPage(need) { if (y + need > PH - 15) { doc.addPage(); y = 20; } }
+    function titulo(txt) {
+        checkPage(12);
+        doc.setFontSize(11);
+        doc.setTextColor(13, 59, 102);
+        doc.setFont(undefined, 'bold');
+        doc.text(txt, ML, y);
+        y += 1.5;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(ML, y, PW - MR, y);
+        y += 5;
+        doc.setTextColor(50, 50, 50);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(9);
+    }
+    function tabela(headers, rows, colW, aligns) {
+        const rowH = 5.5;
+        checkPage(rowH * 2 + 4);
+        doc.setFillColor(13, 59, 102);
+        doc.rect(ML, y, CW, 6, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont(undefined, 'bold');
+        let x = ML + 2;
+        headers.forEach((h, i) => {
+            const a = aligns && aligns[i];
+            const tx = a === 'right' ? x + colW[i] - 4 : (a === 'center' ? x + colW[i] / 2 : x);
+            doc.text(h, tx, y + 4, { align: a === 'right' ? 'right' : (a === 'center' ? 'center' : 'left') });
+            x += colW[i];
+        });
+        y += 6;
+        doc.setTextColor(50, 50, 50);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(8);
+        rows.forEach((row, ri) => {
+            if (y + rowH > PH - 15) { doc.addPage(); y = 20; }
+            if (ri % 2 === 0) { doc.setFillColor(248, 250, 252); doc.rect(ML, y, CW, rowH, 'F'); }
+            let cx = ML + 2;
+            row.forEach((cell, i) => {
+                const a = aligns && aligns[i];
+                const tx = a === 'right' ? cx + colW[i] - 4 : (a === 'center' ? cx + colW[i] / 2 : cx);
+                const txt = String(cell);
+                const maxChars = Math.floor(colW[i] / 1.6);
+                const t = txt.length > maxChars ? txt.slice(0, maxChars - 1) + '…' : txt;
+                doc.text(t, tx, y + 4, { align: a === 'right' ? 'right' : (a === 'center' ? 'center' : 'left') });
+                cx += colW[i];
+            });
+            y += rowH;
+        });
+        y += 4;
+    }
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(13, 59, 102);
+    doc.text(s.meta.titulo, ML, y);
+    y += 6;
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('Gerado em ' + s.meta.dataGerado, ML, y);
+    y += 3;
+    doc.setDrawColor(13, 59, 102);
+    doc.setLineWidth(0.5);
+    doc.line(ML, y, PW - MR, y);
+    y += 8;
+
+    titulo('1. Resumo do Saldo');
+    tabela(['Descrição', 'Valor'], s.resumo.map(r => [r[0], r[1]]), [CW * 0.7, CW * 0.3], ['left', 'right']);
+
+    titulo('2. Decomposição');
+    tabela(['Descrição', '', 'Valor'], s.decomposicao.map(r => [r[0], r[1], r[2]]), [CW * 0.68, CW * 0.07, CW * 0.25], ['left', 'center', 'right']);
+
+    titulo('3. Despesas');
+    tabela(['Descrição', 'Valor', 'Estado'], s.despesas.map(d => [d.desc, fmtEur(d.valor), d.pago ? 'Pago' : 'Por pagar']), [CW * 0.6, CW * 0.2, CW * 0.2], ['left', 'right', 'center']);
+
+    titulo('4. Quotas por Jogador');
+    const qHeaders = ['Nome', 'Tipo', ...MESES, 'Pagos'];
+    const nomeW = 42, tipoW = 14, mesW = (CW - nomeW - tipoW - 12) / MESES.length, totW = 12;
+    const qCols = [nomeW, tipoW, ...MESES.map(() => mesW), totW];
+    const qRows = s.quotas.map(q => [q.nome, q.tipo, ...q.meses, String(q.numPagos)]);
+    tabela(qHeaders, qRows, qCols, ['left', 'center', ...MESES.map(() => 'center'), 'center']);
+
+    titulo('5. Inscrições');
+    tabela(['Nome', 'Valor', 'Estado'], s.inscricoes.map(i => [i.nome, fmtEur(i.valor), i.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
+
+    titulo('6. Sócios');
+    tabela(['Nome', 'Valor', 'Estado'], s.socios.map(x => [x.nome, fmtEur(x.valor), x.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
+
+    titulo('7. Vendas de Equipamento');
+    tabela(['Nome', 'Itens', 'Total', 'Estado'], s.vendas.map(v => [v.nome, v.itens, fmtEur(v.total), v.estado]), [CW * 0.2, CW * 0.45, CW * 0.15, CW * 0.2], ['left', 'left', 'right', 'center']);
+
+    titulo('8. Movimentos Financeiros');
+    tabela(['Data', 'Tipo', 'Descrição'], s.movimentos.map(m => [m.data, m.tipo, m.desc]), [CW * 0.12, CW * 0.13, CW * 0.75], ['left', 'left', 'left']);
+
+    const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.pdf';
+    doc.save(fname);
+    setSnapStatus('✓ Descarregado: ' + fname);
+}
+
+// ─── Excel XLSX (carregamento dinâmico) ───
+async function exportXLSX() {
+    setSnapStatus('A carregar biblioteca Excel...');
+    try {
+        await carregarLib('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js');
+    } catch (e) {
+        setSnapStatus('⚠️ Não foi possível carregar a biblioteca Excel (SheetJS). Verifica a ligação à internet.', true);
+        return;
+    }
+    if (typeof XLSX === 'undefined') { setSnapStatus('SheetJS não está disponível', true); return; }
+    setSnapStatus('A gerar Excel...');
+    const s = buildSnapshot();
+    const wb = XLSX.utils.book_new();
+    const addSheet = (nome, aoa, opts) => {
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        if (opts && opts.cols) ws['!cols'] = opts.cols;
+        XLSX.utils.book_append_sheet(wb, ws, nome);
+    };
+    addSheet('Resumo', [
+        ['Veteranos A.D.C. Lobão — Snapshot Financeiro'],
+        ['Gerado em', s.meta.dataGerado],
+        [],
+        ['Resumo do Saldo'],
+        ['Descrição', 'Valor'],
+        ...s.resumo.map(r => [r[0].trim(), r[1]]),
+        [],
+        ['Decomposição'],
+        ['Descrição', 'Sinal', 'Valor'],
+        ...s.decomposicao.map(r => [r[0], r[1], r[2]])
+    ], { cols: [{ wch: 48 }, { wch: 6 }, { wch: 14 }] });
+    addSheet('Despesas', [
+        ['Descrição', 'Data', 'Valor', 'Estado'],
+        ...s.despesas.map(d => [d.desc, d.data || '—', d.valor, d.pago ? 'Pago' : 'Por pagar'])
+    ], { cols: [{ wch: 50 }, { wch: 14 }, { wch: 12 }, { wch: 12 }] });
+    addSheet('Quotas', [
+        ['Nome', 'Tipo', ...MESES, 'Total Pagos'],
+        ...s.quotas.map(q => [q.nome, q.tipo, ...q.meses, q.numPagos])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, ...MESES.map(() => ({ wch: 5 })), { wch: 12 }] });
+    addSheet('Inscricoes', [
+        ['Nome', 'Valor', 'Estado'],
+        ...s.inscricoes.map(i => [i.nome, i.valor, i.estado])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 18 }] });
+    addSheet('Socios', [
+        ['Nome', 'Valor', 'Estado'],
+        ...s.socios.map(x => [x.nome, x.valor, x.estado])
+    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 24 }] });
+    addSheet('Vendas', [
+        ['Nome', 'Itens', 'Total', 'Estado'],
+        ...s.vendas.map(v => [v.nome, v.itens, v.total, v.estado])
+    ], { cols: [{ wch: 20 }, { wch: 45 }, { wch: 10 }, { wch: 14 }] });
+    addSheet('Movimentos', [
+        ['Data', 'Tipo', 'Descrição'],
+        ...s.movimentos.map(m => [m.data, m.tipo, m.desc])
+    ], { cols: [{ wch: 14 }, { wch: 14 }, { wch: 100 }] });
+    const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+    XLSX.writeFile(wb, fname);
+    setSnapStatus('✓ Descarregado: ' + fname);
+}
+
+// ─── Backup JSON (dados.js + config.js completo) ───
+function exportJSON() {
+    const dataGer = hoje.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const horaGer = hoje.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    const infoEpoca = _infoEpoca();
+
+    const backup = {
+        meta: {
+            titulo: 'Veteranos A.D.C. Lobão — Backup de Dados',
+            geradoEm: dataGer + ' · ' + horaGer,
+            epoca: infoEpoca.epoca,
+            versao: '1.0',
+            descricao: 'Backup completo dos dados editáveis (dados.js + config.js). Pode ser usado para restaurar, arquivar ou migrar.'
+        },
+        constantes: {
+            MESES: MESES,
+            mesesAno: mesesAno,
+            QUOTA: QUOTA,
+            QUOTA_NI: QUOTA_NI,
+            SALDO_INICIAL: SALDO_INICIAL,
+            valorInscricao: valorInscricao,
+            valorSocio: valorSocio
+        },
+        plantel: {
+            inscritos: inscritos,
+            naoInscritos: naoInscritos
+        },
+        quotas: {
+            pagamentos: pagamentos,
+            ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {},
+            QUOTAS_REDUZIDAS: (typeof QUOTAS_REDUZIDAS !== 'undefined') ? QUOTAS_REDUZIDAS : {},
+            INSCRICOES_PAGAS_CAIXA: (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [],
+            SOCIOS_EM_PRESTACOES: (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {}
+        },
+        inscricoesPagas: inscricoesPagas,
+        socios: {
+            sociosPagos: sociosPagos,
+            sociosPagoAoClube: (typeof sociosPagoAoClube !== 'undefined') ? sociosPagoAoClube : []
+        },
+        merendaPaga: (typeof merendaPaga !== 'undefined') ? merendaPaga : [],
+        despesas: {
+            despesaCampo: despesaCampo,
+            despesaAFA: despesaAFA,
+            despesaAgua: despesaAgua,
+            despesaGalhardetes: despesaGalhardetes,
+            DESPESAS_PAGAS: (typeof DESPESAS_PAGAS !== 'undefined') ? DESPESAS_PAGAS : {},
+            despesasExtras: _despesasExtrasArr
+        },
+        vendas: {
+            listaPrecos: listaPrecos,
+            compras6Set: compras6Set
+        },
+        treinosJogos: treinosJogos,
+        competicao: {
+            calendario: (typeof calendario !== 'undefined') ? calendario : [],
+            equipasGrupo: (typeof equipasGrupo !== 'undefined') ? equipasGrupo : [],
+            torneios: torneios,
+            amigaveis: amigaveis
+        },
+        atas: atas,
+        historico: historico,
+        noticias: noticias
+    };
+
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fname = 'Veteranos_Lobao_Backup_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setSnapStatus('✓ Descarregado: ' + fname);
 }
 
 // ═══════════════════════════════════════════
@@ -2333,10 +2853,23 @@ function inicializarSite() {
     setTimeout(initDespesasChart, 50);
 }
 
-aplicarGate();
-if (siteAutenticado()) {
-    inicializarSite();
-}
+// Arrancar
+(function () {
+    try {
+        aplicarGate();
+        if (siteAutenticado()) {
+            try { inicializarSite(); } catch (e) {
+                console.error('Erro ao inicializar:', e);
+                var errEl = document.getElementById('authErro');
+                if (errEl) errEl.textContent = '⚠️ Erro ao carregar o site: ' + (e && e.message ? e.message : e);
+            }
+        }
+    } catch (e) {
+        console.error('Erro no arranque:', e);
+        var errEl = document.getElementById('authErro');
+        if (errEl) errEl.textContent = '⚠️ Erro no arranque: ' + (e && e.message ? e.message : e);
+    }
+})();
 </script>
 </body>
 </html>
