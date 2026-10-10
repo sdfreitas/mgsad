@@ -11,6 +11,15 @@ const SALDO_INICIAL = 2220;
 const valorInscricao = 30;
 const valorSocio = 40;
 
+// --- CONFIGURAÇÃO DA ÉPOCA ---
+const EPOCA_ATUAL = "2026/27";
+const DATA_ULTIMA_ATUALIZACAO = "7 Out 2026";
+const DIA_TREINO = "Quarta 21h";
+
+// --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
+// Estimativa por mês (Set a Jun) usada nos gráficos de projeção
+const PROJECAO_DESPESAS_MENSAIS = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+
 // --- PLANTEL ---
 const inscritos = [
     { nome: "André Pinho", apelido: "PINHO", num: 30, nasc: "13/12/1984" },
@@ -53,6 +62,28 @@ const naoInscritos = [
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" }
 ];
+
+// --- MUDANÇAS DE ESTATUTO (inscrito ↔ não inscrito) ---
+// Registar AQUI quem mudou de estatuto a meio da época.
+// O plantel (inscritos/naoInscritos) reflete o estatuto ATUAL.
+// Esta lista serve para o cálculo das quotas de meses anteriores à mudança.
+//
+// Formato:
+//   "Nome": { desde: mesIdx, estatutoAnterior: true|false }
+//   - mesIdx: 0 = Set, 1 = Out, ..., 9 = Jun
+//   - estatutoAnterior: true = inscrito (€20) · false = NI (€10)
+//
+// Significado: para meses < `desde` → usa `estatutoAnterior`.
+//              para meses >= `desde` → usa o estatuto atual do plantel.
+//
+// Se o jogador não está nesta lista, todos os meses usam o estatuto atual.
+//
+// ⚠️ Exemplo futuro:
+//    "Nome X": { desde: 2, estatutoAnterior: false }
+//    → Out e anteriores eram NI; Nov em diante é inscrito.
+const MUDANCAS_ESTATUTO = {
+    // (vazio por agora — todas as mudanças da época 2026/27 valem desde Setembro)
+};
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
 // Amílcar André (Set) e Zé Buraca (Set) estão em config.js, não aqui
@@ -145,7 +176,15 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-const despesaAFA = 410;
+
+// Despesa AFA — calculada automaticamente:
+//   cada inscrito custa €20 à caixa dos veteranos
+//   + AFA_EXTRA_FABIO = €30 do caso especial Fábio Gonçalves (caixa paga €50 em vez de €20)
+// Se um dia sair o caso especial, basta pôr AFA_EXTRA_FABIO = 0.
+// Se entrarem/saírem inscritos, o valor ajusta-se sozinho.
+const AFA_EXTRA_FABIO = 30;
+const despesaAFA = inscritos.length * QUOTA + AFA_EXTRA_FABIO;
+
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -442,7 +481,7 @@ const historico = [
     { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
     { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
     { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
-    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (19 atletas x 20 EUR da caixa + 30 EUR extra do caso especial Fábio Gonçalves) - 410 EUR, a pagar em Setembro." }
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (calculada automaticamente: nº inscritos × €20 + €30 extra do caso especial Fábio Gonçalves)." }
 ];
 
 // --- NOTÍCIAS ---
