@@ -13,7 +13,7 @@ const valorSocio = 40;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "7 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "10 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -40,7 +40,8 @@ const inscritos = [
     { nome: "Sergio Rodrigues", apelido: "RODRIGUES", num: 25, nasc: "01/11/1983" },
     { nome: "Joel Tavares", apelido: "JOEL", num: 3, nasc: "27/09/1981" },
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
-    { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" }
+    { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" },
+    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" }
 ];
 
 const naoInscritos = [
@@ -57,7 +58,6 @@ const naoInscritos = [
     { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
     { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
     { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
-    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
     { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" }
@@ -106,7 +106,7 @@ const pagamentos = {
     "Sérgio Freitas": [0],
     "José Eduardo": [0, 1, 2, 3],
     "António José Silva": [0, 1],
-    "Hugo André": [0, 1],
+    "Hugo André": [0],
     "Daniel Dias": [0],
     "Luís Paiva": [0],
     "Inácio": [0],
@@ -246,8 +246,8 @@ const compras6Set = [
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
     { data: "7 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
-      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues"],
-      extra: ["Marcelo", "Zé Buraca", "Telmo", "Inácio", "Luís Paiva", "Hugo André", "António José Silva"] },
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "Hugo André"],
+      extra: ["Marcelo", "Zé Buraca", "Telmo", "Inácio", "Luís Paiva", "António José Silva"] },
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
       extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
@@ -270,8 +270,8 @@ const treinosJogos = [
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Luís Paiva", "Daniel Dias", "José Eduardo", "Hugo André"],
       extra: ["Marcelo", "Zé Buraca", "Telmo"] },
     { data: "3 Out 2026", tipo: "jogo", titulo: "Jogo de treino vs Sandim", estado: "registado",
-      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Mário Oliveira", "Pedro Ferreira", "Rui Rocha", "Jorge Azevedo", "Amílcar André", "Pedro Costa", "Joel Tavares", "Américo Silva"],
-      extra: ["Marcelo", "Hugo André", "Telmo", "Luís Paiva"] }
+      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Mário Oliveira", "Pedro Ferreira", "Rui Rocha", "Jorge Azevedo", "Amílcar André", "Pedro Costa", "Joel Tavares", "Américo Silva", "Hugo André"],
+      extra: ["Marcelo", "Telmo", "Luís Paiva"] }
 ];
 
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
@@ -424,16 +424,16 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 14 atletas presentes + 7 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, Hugo André, António José Silva)." },
+    { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
+    { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 15 atletas presentes + 6 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, António José Silva)." },
     { data: "7 Out 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou Outubro - 20 EUR." },
     { data: "7 Out 2026", tipo: "aviso", desc: "📅 Calendário oficial da Liga Masters disponível. O campeonato começa a 17 Out em casa contra o CD Loureiro." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Vitor Leite pagou o equipamento (Calções saída + Polo) - 32 EUR." },
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Jorge Azevedo pagou Outubro - 20 EUR." },
-    { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 10 inscritos + 4 extra (Marcelo, Hugo André, Telmo, Luís Paiva)." },
+    { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 11 inscritos + 3 extra (Marcelo, Telmo, Luís Paiva)." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 2x Lipton c/ limão (20 saq) — €5,90 · Cuetra surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25 — total 17 EUR." },
-    { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André, Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 19 atletas (€410)." },
-    { data: "3 Out 2026", tipo: "pagamento", desc: "✅ Hugo André — quota Setembro reformulada: os €20 já entregues passam a cobrir Setembro (€10) e Outubro (€10), já como não inscrito." },
+    { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 20 atletas (€430)." },
     { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Tiago Mota pagou Setembro (20 EUR), a inscrição AFA (30 EUR) e a quota de sócio (40 EUR) diretamente ao clube principal - total 90 EUR." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Inácio pagou Setembro como não inscrito (10 EUR) e a quota de sócio (40 EUR) ao tesoureiro - total 50 EUR." },
