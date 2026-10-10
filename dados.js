@@ -63,13 +63,6 @@ const naoInscritos = [
 ];
 
 // --- MUDANÇAS DE ESTATUTO (inscrito ↔ não inscrito) ---
-// Registar AQUI quem mudou de estatuto a meio da época.
-// O plantel (inscritos/naoInscritos) reflete o estatuto ATUAL.
-// Esta lista serve para o cálculo das quotas de meses anteriores à mudança.
-//
-// Formato: "Nome": { desde: mesIdx, estatutoAnterior: true|false }
-//   mesIdx: 0 = Set, 1 = Out, ..., 9 = Jun
-//   estatutoAnterior: true = inscrito (€20) · false = NI (€10)
 const MUDANCAS_ESTATUTO = {
     // (vazio por agora — todas as mudanças da época 2026/27 valem desde Setembro)
 };
@@ -165,13 +158,8 @@ const merendaPaga = [
 
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
-
-// Despesa AFA — calculada automaticamente:
-//   cada inscrito custa €20 à caixa dos veteranos
-//   + AFA_EXTRA_FABIO = €30 do caso especial Fábio Gonçalves (caixa paga €50 em vez de €20)
 const AFA_EXTRA_FABIO = 30;
 const despesaAFA = inscritos.length * QUOTA + AFA_EXTRA_FABIO;
-
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -185,6 +173,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "10 Out 2026",
+        desc: "Merenda - jogo vs Bustelo (partilhada com Veteranos do Bustelo)",
+        itens: "Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40",
+        valor: 37.12,
+        pago: true
+    },
     {
         data: "3 Out 2026",
         desc: "Regueifas - jogo de treino vs Sandim",
@@ -262,7 +257,6 @@ const treinosJogos = [
 ];
 
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
-// Fonte: Comunicado Oficial Nº. N105AS (AF Aveiro, 7 Out 2026)
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
@@ -412,6 +406,7 @@ const atas = [
 // --- HISTÓRICO ---
 // Regra: vários pagamentos do mesmo dia aparecem agrupados numa só linha.
 const historico = [
+    { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
     { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
     { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
     { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 15 atletas presentes + 6 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, António José Silva)." },
