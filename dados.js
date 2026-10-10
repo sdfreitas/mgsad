@@ -227,6 +227,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "10 Out 2026", tipo: "jogo", titulo: "Jogo de treino vs Bustelo", estado: "registado",
+      presentes: ["Fábio Gonçalves", "António Rocha", "Pedro Ferreira", "Américo Oliveira", "Joel Tavares", "Jorge Azevedo", "António Oliveira", "Sergio Rodrigues", "Amílcar André", "Pedro Costa", "Rui Rocha", "Mário Oliveira", "Sérgio Freitas", "Hugo André", "André Pinho", "José Eduardo", "Américo Silva"],
+      extra: ["Marcelo", "Zé Buraca"] },
     { data: "7 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "Hugo André"],
       extra: ["Marcelo", "Zé Buraca", "Telmo", "Inácio", "Luís Paiva", "António José Silva"] },
@@ -313,6 +316,14 @@ const torneios = [
 ];
 
 const amigaveis = [
+    {
+        data: "10 Out 2026",
+        adversario: "Bustelo",
+        casa: true,
+        golosNos: 3,
+        golosEles: 2,
+        marcadores: ["Zé Buraca", "Pedro Costa", "José Eduardo"]
+    },
     {
         data: "3 Out 2026",
         adversario: "Sandim",
@@ -406,6 +417,7 @@ const atas = [
 // --- HISTÓRICO ---
 // Regra: vários pagamentos do mesmo dia aparecem agrupados numa só linha.
 const historico = [
+    { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e José Eduardo. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
     { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
     { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
@@ -464,6 +476,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "10 Out 2026",
+        tag: "jogo",
+        titulo: "✅ Vitória 3-2 frente ao Bustelo (jogo de treino)",
+        corpo: "Golos de Zé Buraca, Pedro Costa e José Eduardo. Bom teste antes do arranque do campeonato."
+    },
     {
         data: "7 Out 2026",
         tag: "jogo",
