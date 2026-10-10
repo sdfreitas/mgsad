@@ -94,7 +94,7 @@ const pagamentos = {
     "Américo Silva": [0],
     "Sergio Rodrigues": [0],
     "Américo Oliveira": [0, 1, 2],
-    "Joel Tavares": [0],
+    "Joel Tavares": [0, 1],
     "Marcelo": [0],
     "Pedro Cadete": [0],
     "António Oliveira": [0],
@@ -125,7 +125,8 @@ const inscricoesPagas = [
     "Sérgio Freitas",
     "José Eduardo",
     "Daniel Dias",
-    "Tiago Mota"
+    "Tiago Mota",
+    "Hugo André"
 ];
 
 // --- SÓCIOS PAGOS ---
@@ -250,13 +251,13 @@ const treinosJogos = [
       extra: ["Marcelo", "Zé Buraca", "Telmo", "Inácio", "Luís Paiva", "António José Silva"] },
     { data: "2 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Joel Tavares", "Hugo André", "Pedro Costa", "António Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Luís Paiva", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "Amílcar André", "Rui Rocha", "Sérgio Freitas", "André Pinho"],
-      extra: ["Telmo", "Marcelo", "Daniel Dias", "Zé Buraca"] },
+      extra: ["Telmo", "Marcelo", "eloDaniel Dias", "Zé Buraca"] },
     { data: "9 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Joel Tavares", "Hugo André", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Sergio Rodrigues", "Pedro Ferreira", "Américo Silva", "Tiago Mota", "José Eduardo"],
       extra: ["Marcelo", "Zé Buraca", "Inácio"] },
     { data: "12 Set 2026", tipo: "jogo", titulo: "Jogo de treino vs Paços de Ferreira", estado: "registado",
       presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Hugo André", "André Pinho", "Jorge Azevedo", "Sergio Rodrigues", "José Eduardo", "Pedro Costa", "Mário Oliveira", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha", "Rui Rocha", "Américo Silva"],
-      extra: ["Zé Buraca", "Marcelo"] },
+      extra: ["Zé Buraca", "Marc"] },
     { data: "16 Set 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Joel Tavares", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "André Pinho", "Fábio Gonçalves"],
       extra: ["Marcelo", "Zé Buraca", "Telmo"] },
@@ -424,6 +425,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Hugo André pagou a inscrição AFA (30 EUR)." },
+    { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Joel Tavares pagou Outubro - 20 EUR." },
     { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
     { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 15 atletas presentes + 6 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, António José Silva)." },
     { data: "7 Out 2026", tipo: "pagamento", desc: "✅ Amílcar André pagou Outubro - 20 EUR." },
