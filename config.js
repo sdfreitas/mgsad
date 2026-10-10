@@ -54,3 +54,17 @@ const INSCRICOES_PAGAS_CAIXA = [
 const SOCIOS_EM_PRESTACOES = {
     "Fábio Gonçalves": { total: 40, jaPago: 4 }
 };
+
+// ─── MÉTODOS DE PAGAMENTO (mostrados no separador Quotas) ───
+// Ordem apresentada = ordem deste array
+const METODOS_PAGAMENTO = [
+    { label: "MBWay",     valor: "918 792 243" },
+    { label: "IBAN",      valor: "PT50 3560 0001 9001 8817 3283 5" },
+    { label: "Numerário", valor: "Entregar ao tesoureiro" }
+];
+
+// ─── REDES SOCIAIS (mostradas no rodapé) ───
+const REDES_SOCIAIS = [
+    { nome: "Instagram", url: "https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" },
+    { nome: "Facebook",  url: "https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" }
+];
