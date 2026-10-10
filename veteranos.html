@@ -322,6 +322,14 @@
         .snap-status.erro { color: #c1121f; }
         .snap-desc { font-size: 12px; color: #64748b; line-height: 1.55; margin: 0 0 14px 2px; }
 
+        .metodos-pagamento { display: flex; flex-wrap: wrap; gap: 12px; }
+        .metodos-pagamento .metodo { flex: 1; min-width: 200px; background: #f0f6ff; border-radius: 8px; padding: 14px 16px; }
+        .metodos-pagamento .metodo-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 6px; }
+        .metodos-pagamento .metodo-valor { font-size: 14px; font-weight: 700; color: #0D3B66; letter-spacing: .3px; word-break: break-all; }
+        .metodos-pagamento .metodo.mbway .metodo-valor { font-size: 18px; }
+        html[data-tema="escuro"] .metodos-pagamento .metodo { background: #1e3a5f; }
+        html[data-tema="escuro"] .metodos-pagamento .metodo-valor { color: #93c5fd; }
+
         .tema-btn {
             position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px;
             border-radius: 50%; background: #0D3B66; color: #fff; border: none;
@@ -621,7 +629,7 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão · v2</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v3</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
         <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
@@ -706,7 +714,7 @@
             </div>
             <div class="snap-status" id="snapStatus"></div>
         </div>
-        <p class="note">Última atualização: 7 de Outubro de 2026</p>
+        <p class="note" id="notaUltimaAtualizacao">Última atualização: —</p>
     </div>
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
@@ -816,12 +824,9 @@
 
 <footer>
     <strong>Veteranos A.D.C. Lobão</strong><br>Lobão, Santa Maria da Feira<br>
-    <div style="margin:12px 0 6px;display:flex;justify-content:center;gap:16px">
-        <a href="https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Instagram</a>
-        <a href="https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">Facebook</a>
-    </div>
+    <div id="footerRedes" style="margin:12px 0 6px;display:flex;justify-content:center;gap:16px"></div>
     <div id="footerEpoca" style="font-size:11px;opacity:.85;margin-bottom:6px;color:rgba(255,255,255,.8)"></div>
-    <span style="font-size:10px;opacity:.6">Última atualização: 7 de Outubro de 2026</span>
+    <span id="footerUltimaAtualizacao" style="font-size:10px;opacity:.6">Última atualização: —</span>
 </footer>
 
 <div id="reciboContainer"></div>
@@ -858,9 +863,10 @@ window.addEventListener('unhandledrejection', function (e) {
     if (typeof inscritos === 'undefined') problemas.push('dados.js (inscritos)');
     if (typeof pagamentos === 'undefined') problemas.push('dados.js (pagamentos)');
     if (typeof historico === 'undefined') problemas.push('dados.js (historico)');
+    if (typeof MUDANCAS_ESTATUTO === 'undefined') problemas.push('dados.js (MUDANCAS_ESTATUTO)');
     if (problemas.length > 0) {
         var el = document.getElementById('authErro');
-        if (el) el.textContent = '⚠️ Ficheiros em falta ou mal carregados: ' + problemas.join(', ') + '. Confirma que estão na mesma pasta do vet.html.';
+        if (el) el.textContent = '⚠️ Ficheiros em falta ou mal carregados: ' + problemas.join(', ') + '. Confirma que estão na mesma pasta do veteranos.html.';
     }
 })();
 
@@ -901,8 +907,7 @@ async function tentarEntrar() {
     const inp = document.getElementById('authInput');
     const err = document.getElementById('authErro');
     const btn = document.getElementById('authBtn');
-    if (!inp) { alert('Erro: input da password não encontrado no DOM'); return; }
-    if (!err) { alert('Erro: caixa de erro não encontrada no DOM'); return; }
+    if (!inp || !err) return;
     if (typeof SENHA_HASH === 'undefined' || !SENHA_HASH) {
         err.textContent = 'Erro: senha não configurada (config.js).';
         return;
@@ -942,7 +947,6 @@ function bloquearSite() {
     aplicarGate();
 }
 
-// Liga o botão e o Enter do input (mais fiável que onclick inline)
 document.addEventListener('DOMContentLoaded', function () {
     var btn = document.getElementById('authBtn');
     if (btn) btn.addEventListener('click', tentarEntrar);
@@ -1051,11 +1055,27 @@ function inscricaoPagaPelaCaixa(nome) { if (typeof INSCRICOES_PAGAS_CAIXA === 'u
 function sociosEmPrestacoes(nome) { if (typeof SOCIOS_EM_PRESTACOES === 'undefined') return null; return SOCIOS_EM_PRESTACOES[nome] || null; }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome) || inscricaoPagaPelaCaixa(nome); }
 function socioPagouAoClube(nome) { if (typeof sociosPagoAoClube === 'undefined') return false; return sociosPagoAoClube.includes(nome); }
-function valorQuotaMes(nome, mIdx, inscrito) {
+
+// ─── ESTATUTO POR MÊS ───
+// Devolve true (inscrito → €20) ou false (NI → €10) para um mês específico.
+// Consulta MUDANCAS_ESTATUTO; se o jogador não estiver lá, usa o estatuto atual.
+function estatutoNoMes(nome, mIdx) {
+    const jogador = todosJogadores.find(j => j.nome === nome);
+    const estatutoAtual = jogador ? jogador.inscrito : false;
+    if (typeof MUDANCAS_ESTATUTO === 'undefined') return estatutoAtual;
+    const m = MUDANCAS_ESTATUTO[nome];
+    if (!m) return estatutoAtual;
+    // Se o mês é anterior à mudança, usa o estatuto anterior; senão o atual.
+    return mIdx >= m.desde ? estatutoAtual : m.estatutoAnterior;
+}
+
+// ─── VALOR DA QUOTA PARA UM MÊS ───
+// Ordem: isenção → quota reduzida → estatuto do mês
+function valorQuotaMes(nome, mIdx) {
     if (isencoesDe(nome).includes(mIdx)) return 0;
     const red = quotasReduzidasDe(nome);
     if (red[mIdx] !== undefined) return red[mIdx];
-    return inscrito ? QUOTA : QUOTA_NI;
+    return estatutoNoMes(nome, mIdx) ? QUOTA : QUOTA_NI;
 }
 function mesEpocaAtualIdx() { const m = new Date().getMonth() + 1; if (m >= 9) return m - 9; if (m <= 6) return m + 3; return -1; }
 function mesFechado(mIdx) { const atual = mesEpocaAtualIdx(); if (atual === -1) return true; return mIdx < atual; }
@@ -1106,13 +1126,7 @@ function ultimoPagamentoHistorico(nome) {
     return null;
 }
 const recebidoReal = todosJogadores.reduce((tot, j) => {
-    const meses = mesesPagos(j.nome);
-    return tot + meses.reduce((s, m) => {
-        if (isencoesDe(j.nome).includes(m)) return s;
-        const red = quotasReduzidasDe(j.nome);
-        if (red[m] !== undefined) return s + red[m];
-        return s + (j.inscrito ? QUOTA : QUOTA_NI);
-    }, 0);
+    return tot + MESES.reduce((s, _, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0);
 }, 0);
 function calcularTotalVenda(itens) { return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0); }
 compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
@@ -1189,11 +1203,21 @@ function renderFooterEpoca() {
     const el = document.getElementById('footerEpoca');
     if (!el) return;
     const info = _infoEpoca();
-    if (info.mesNome) {
-        el.textContent = '📅 Época ' + info.epoca + ' · mês em curso: ' + info.mesNome;
-    } else {
-        el.textContent = '📅 Época ' + info.epoca + ' · fora da época (Jul–Ago)';
-    }
+    if (info.mesNome) el.textContent = '📅 Época ' + info.epoca + ' · mês em curso: ' + info.mesNome;
+    else el.textContent = '📅 Época ' + info.epoca + ' · fora da época (Jul–Ago)';
+}
+function renderFooterRedes() {
+    const el = document.getElementById('footerRedes');
+    if (!el || typeof REDES_SOCIAIS === 'undefined') return;
+    el.innerHTML = REDES_SOCIAIS.map(r =>
+        `<a href="${r.url}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">${r.nome}</a>`
+    ).join('');
+}
+function renderFooterUltimaAtualizacao() {
+    const el = document.getElementById('footerUltimaAtualizacao');
+    if (el && typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') el.textContent = 'Última atualização: ' + DATA_ULTIMA_ATUALIZACAO;
+    const nota = document.getElementById('notaUltimaAtualizacao');
+    if (nota && typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') nota.textContent = 'Última atualização: ' + DATA_ULTIMA_ATUALIZACAO;
 }
 
 // ═══════════════════════════════════════════
@@ -1309,9 +1333,10 @@ let histPesquisa = '';
 let nomeAtualPerfil = null;
 let searchOpen = false;
 
+// Nota: já não tem `quota` fixa — o valor é calculado por mês via estatutoNoMes
 const todosParaQuotas = [
-    ...inscritos.map(j => ({ ...j, ni: false, quota: QUOTA })),
-    ...naoInscritos.map(j => ({ ...j, ni: true, quota: QUOTA_NI }))
+    ...inscritos.map(j => ({ ...j, ni: false })),
+    ...naoInscritos.map(j => ({ ...j, ni: true }))
 ];
 const totalParaQuotas = todosParaQuotas.length;
 
@@ -1439,7 +1464,7 @@ function renderResumo() {
 function initResumoCharts() {
     if (typeof Chart === 'undefined') return;
     const prevRec = MESES.map(() => receitaMensalEsperada);
-    const prevDesp = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+    const prevDesp = (typeof PROJECAO_DESPESAS_MENSAIS !== 'undefined') ? PROJECAO_DESPESAS_MENSAIS : MESES.map(() => 0);
     chartInstances.bar = new Chart(freshCanvas('chartBarMensal'), {
         type: 'bar', data: { labels: MESES, datasets: [
             { label: 'Receita Esperada', data: prevRec, backgroundColor: '#1A6FB5', borderRadius: 4, barPercentage: .45 },
@@ -1486,7 +1511,9 @@ function initInscricoesChart() {
 function initQuotasCharts() {
     if (typeof Chart === 'undefined' || typeof todosParaQuotas === 'undefined') return;
     const c = chartThemeColors();
-    const totalEsperado = (inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI) * MESES.length;
+    // Total esperado: soma mês a mês do estatuto de cada jogador nesse mês
+    const totalEsperado = todosParaQuotas.reduce((acc, j) =>
+        acc + MESES.reduce((s, _, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0), 0);
     const pago = recebidoReal;
     const porReceber = Math.max(0, totalEsperado - pago);
     chartInstances.quotasBolo = new Chart(freshCanvas('chartQuotasBolo'), {
@@ -1497,9 +1524,11 @@ function initQuotasCharts() {
             tooltip: { callbacks: { label: ctx => { const tot = pago + porReceber; const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0; return `${ctx.label}: €${ctx.raw} (${pct}%)`; } } }
         } }
     });
-    const esperadoMes = inscritos.length * QUOTA + naoInscritos.length * QUOTA_NI;
-    const esperadoData = MESES.map(() => esperadoMes);
-    const recebidoData = MESES.map((_, mIdx) => todosParaQuotas.reduce((s, j) => jaPagou(j.nome, mIdx) ? s + (j.inscrito ? QUOTA : QUOTA_NI) : s, 0));
+    // Esperado mensal: soma do estatuto de cada jogador naquele mês
+    const esperadoData = MESES.map((_, mIdx) =>
+        todosParaQuotas.reduce((s, j) => s + valorQuotaMes(j.nome, mIdx), 0));
+    const recebidoData = MESES.map((_, mIdx) =>
+        todosParaQuotas.reduce((s, j) => jaPagou(j.nome, mIdx) ? s + valorQuotaMes(j.nome, mIdx) : s, 0));
     chartInstances.quotasMes = new Chart(freshCanvas('chartQuotasMes'), {
         type: 'bar',
         data: { labels: MESES, datasets: [
@@ -1573,7 +1602,7 @@ function renderDespesas() {
         return tr;
     }
     dh += linhaDespesa('Campo (anual)', despesaCampo, 'campo');
-    dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' atletas × €20 + €30 extra)', despesaAFA, 'afa', 'Inclui caso especial Fábio Gonçalves (caixa paga €50 em vez de €20)');
+    dh += linhaDespesa('Inscrição AFA (' + inscritos.length + ' × €20 + €' + AFA_EXTRA_FABIO + ' extra)', despesaAFA, 'afa', 'Valor calculado automaticamente: cada inscrito custa €20 à caixa + €' + AFA_EXTRA_FABIO + ' do caso especial Fábio Gonçalves');
     dh += linhaDespesa('Galhardetes do clube (20 unid.)', despesaGalhardetes, 'galhardetes');
     dh += linhaDespesa('Garrafões de água (4 × 6L)', despesaAgua, 'agua');
     if (totalArbitroCusto > 0) dh += `<tr><td><strong style="color:#0D3B66">Árbitros de amigáveis</strong></td><td class="center" style="font-weight:700">${fmtEur(totalArbitroCusto)}</td><td class="center"><span class="badge badge-pago">Pago</span></td></tr>`;
@@ -1608,10 +1637,7 @@ function renderVerificacaoMensal() {
             else if (isentoPorFaltaPresenca(j.nome, mIdx)) isentos.push({ nome: j.nome, pres });
             else devedores.push({ nome: j.nome, pres });
         });
-        const valorIsento = isentos.reduce((s, i) => {
-            const j = todosJogadores.find(x => x.nome === i.nome);
-            return s + (j && j.inscrito ? QUOTA : QUOTA_NI);
-        }, 0);
+        const valorIsento = isentos.reduce((s, i) => s + valorQuotaMes(i.nome, mIdx), 0);
         html += `<div class="verif-mes"><div class="verif-mes-header"><span class="verif-mes-titulo">📅 ${mesesAno[mIdx + 8]} 2026</span><div class="verif-mes-stats"><span class="verif-mes-stat">${isentos.length} isento(s) · €${valorIsento}</span><span class="verif-mes-stat">${pagos.length} pago(s)</span><span class="verif-mes-stat">${devedores.length} por pagar</span></div></div>`;
         if (isentos.length === 0) html += `<div style="font-size:12px;color:#888">Ninguém isento por falta de presença.</div>`;
         else {
@@ -1677,6 +1703,17 @@ function _ordenarQuotas(lista) {
 function setQuotasFiltro(f) { quotasFiltro = f; renderQuotas(); }
 function setQuotasOrdem(o) { quotasOrdem = o; renderQuotas(); }
 
+function renderMetodosPagamento() {
+    if (typeof METODOS_PAGAMENTO === 'undefined' || !METODOS_PAGAMENTO.length) return '';
+    let h = '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div class="metodos-pagamento">';
+    METODOS_PAGAMENTO.forEach(m => {
+        const cls = m.label.toLowerCase() === 'mbway' ? 'metodo mbway' : 'metodo';
+        h += `<div class="${cls}"><div class="metodo-label">${m.label}</div><div class="metodo-valor">${m.valor}</div></div>`;
+    });
+    h += '</div></div>';
+    return h;
+}
+
 function renderQuotas() {
     document.getElementById('quotas-cards').innerHTML =
         makeCard('Inscritos', inscritos.length, '€20/mês', '#0D3B66') +
@@ -1714,7 +1751,7 @@ function renderQuotas() {
         if (inscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(inscritosFiltrados, 'Inscritos (€20/mês)', '#0D3B66');
         if (naoInscritosFiltrados.length > 0) qh += renderTabelaQuotasSecao(naoInscritosFiltrados, 'Não Inscritos (€10/mês)', '#dc6843');
     }
-    qh += '<div class="section-card" style="margin-top:20px;border-left:4px solid #1A6FB5"><h3 style="font-size:14px;font-weight:600;color:#0D3B66;margin:0 0 12px">💳 Métodos de Pagamento</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">MBWay</div><div style="font-size:18px;font-weight:700;color:#0D3B66;letter-spacing:.5px">918 792 243</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">IBAN</div><div style="font-size:13px;font-weight:700;color:#0D3B66;letter-spacing:.3px;word-break:break-all">PT50 3560 0001 9001 8817 3283 5</div></div><div style="flex:1;min-width:200px;background:#f0f6ff;border-radius:8px;padding:14px 16px"><div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">Numerário</div><div style="font-size:13px;font-weight:600;color:#0D3B66">Entregar ao tesoureiro</div></div></div></div>';
+    qh += renderMetodosPagamento();
     qh += '<p class="note" style="margin-top:12px">Quota: €20/mês (inscritos) · €10/mês (não inscritos) · <strong>Válido para todos:</strong> quem não compareça a nenhum treino nem jogo num mês fechado fica isento · ✓ Pago · I Isento (mês fechado) · <span style="color:#0369a1;font-weight:700">•</span> Por apurar (mês em curso, ainda sem treino/jogo)</p>';
     document.getElementById('tabela-quotas').innerHTML = qh;
 }
@@ -1814,10 +1851,11 @@ function renderBlocoPresencas(titulo, cor, lista) {
     return html;
 }
 function renderTreinos() {
+    const diaTreino = (typeof DIA_TREINO !== 'undefined') ? DIA_TREINO : '—';
     document.getElementById('treinos-cards').innerHTML =
         makeCard('Treinos Registados', totalEventos, 'sessões registadas', '#0D3B66') +
         makeCard('Por Definir', pendentes, 'presenças a marcar', '#dc6843') +
-        makeCard('Dia de Treino', 'Quarta 21h', 'todas as semanas', '#1A6FB5');
+        makeCard('Dia de Treino', diaTreino, 'todas as semanas', '#1A6FB5');
 
     function processarListaPresencas(lista) {
         return lista.map(j => {
@@ -2129,11 +2167,8 @@ function renderClassificacao() {
     let idx = 0;
     for (let i = 1; i <= lista.length; i++) {
         let nome, us;
-        if (i === 8) {
-            nome = nossa; us = true;
-        } else {
-            nome = outras[idx]; us = false; idx++;
-        }
+        if (i === 8) { nome = nossa; us = true; }
+        else { nome = outras[idx]; us = false; idx++; }
         const rc = us ? 'class-row-us' : '';
         ch += `<tr class="${rc}"><td><span class="class-pos">${i}</span></td><td style="text-align:left;white-space:nowrap">${us ? '⚽ ' : ''}<strong>${nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
     }
@@ -2158,7 +2193,6 @@ function encontrarJogador(termo) {
 }
 function calcularEstadoJogador(jogador) {
     const nomeC = jogador.nome;
-    const inscrito = jogador.inscrito;
     const limite = mesEpocaAtualIdx();
     const itens = [];
     if (limite !== -1) {
@@ -2166,12 +2200,12 @@ function calcularEstadoJogador(jogador) {
             if (jaPagou(nomeC, m)) continue;
             if (isentoPorFaltaPresenca(nomeC, m)) continue;
             if (aguardaPresenca(nomeC, m)) continue;
-            itens.push({ tipo: 'quota', label: `Quota ${MESES[m]}`, valor: valorQuotaMes(nomeC, m, inscrito) });
+            itens.push({ tipo: 'quota', label: `Quota ${MESES[m]}`, valor: valorQuotaMes(nomeC, m) });
         }
     }
-    if (inscrito && !jaPagouInscricao(nomeC)) itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
+    if (jogador.inscrito && !jaPagouInscricao(nomeC)) itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
     const prest = sociosEmPrestacoes(nomeC);
-    if (inscrito && !sociosPagos.includes(nomeC) && !prest) itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
+    if (jogador.inscrito && !sociosPagos.includes(nomeC) && !prest) itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
     const compra = compras6Set.find(c => c.nome === nomeC);
     if (compra && !compra.pago) itens.push({ tipo: 'equipamento', label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`, valor: compra.total });
     amigaveis.forEach(a => {
@@ -2225,13 +2259,14 @@ function abrirPerfil(nome) {
         conteudo += `</div>`;
     }
     const mesesPagosJogador = mesesPagos(nomeCompleto);
-    const totalMensalidades = mesesPagosJogador.reduce((s, m) => s + valorQuotaMes(nomeCompleto, m, jogador.inscrito), 0);
+    const totalMensalidades = mesesPagosJogador.reduce((s, m) => s + valorQuotaMes(nomeCompleto, m), 0);
     const ultPag = ultimoPagamentoHistorico(nomeCompleto);
     conteudo += `<div class="modal-section"><h4>💰 Mensalidades (€${totalMensalidades} pago)</h4><div class="modal-row"><span>Último pagamento registado</span><strong style="font-size:12px;color:#0D3B66">${ultPag || '—'}</strong></div>`;
     if (mesesPagosJogador.length === 0) conteudo += `<div class="modal-row"><span>Sem pagamentos registados</span></div>`;
     else mesesPagosJogador.forEach(mIdx => {
-        const v = valorQuotaMes(nomeCompleto, mIdx, jogador.inscrito);
-        const extra = v !== (jogador.inscrito ? QUOTA : QUOTA_NI) && v !== 0 ? ' (€' + v + ')' : '';
+        const v = valorQuotaMes(nomeCompleto, mIdx);
+        const padrao = estatutoNoMes(nomeCompleto, mIdx) ? QUOTA : QUOTA_NI;
+        const extra = v !== padrao && v !== 0 ? ' (€' + v + ')' : '';
         conteudo += `<div class="modal-row"><span>${MESES[mIdx]}</span><span class="modal-badge badge-ok">Pago${extra}</span></div>`;
     });
     for (let mIdx = 0; mIdx < MESES.length; mIdx++) {
@@ -2312,6 +2347,11 @@ function goToTab(tab) { if (searchOpen) toggleSearch(); setTimeout(() => { showT
 // ═══════════════════════════════════════════
 // RECIBO
 // ═══════════════════════════════════════════
+function _anoDoMes(mIdx) {
+    // Set-Dez → ano de início (ex: 2026) · Jan-Jun → ano seguinte (ex: 2027)
+    const anoInicio = parseInt((typeof EPOCA_ATUAL !== 'undefined' ? EPOCA_ATUAL.split('/')[0] : '2026'));
+    return mIdx <= 3 ? anoInicio : anoInicio + 1;
+}
 function imprimirRecibo(nome) {
     const j = encontrarJogador(nome);
     if (!j) return;
@@ -2324,9 +2364,9 @@ function imprimirRecibo(nome) {
     const linhas = [];
     let total = 0;
     mesesPagosJ.forEach(m => {
-        const v = valorQuotaMes(j.nome, m, inscrito);
+        const v = valorQuotaMes(j.nome, m);
         if (v === 0) return;
-        linhas.push([`Quota mensal — ${MESES[m]} 2026`, `€${v}`]);
+        linhas.push([`Quota mensal — ${MESES[m]} ${_anoDoMes(m)}`, `€${v}`]);
         total += v;
     });
     if (inscricaoPaga && !inscricaoPagaPelaCaixa(j.nome)) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
@@ -2394,7 +2434,7 @@ function buildSnapshot() {
     ];
     s.despesas = [
         { desc: 'Campo (anual)', valor: despesaCampo, pago: despesaPaga('campo') },
-        { desc: 'Inscrição AFA (' + inscritos.length + ' atletas × €20 + €30 extra)', valor: despesaAFA, pago: despesaPaga('afa') },
+        { desc: 'Inscrição AFA (' + inscritos.length + ' × €20 + €' + AFA_EXTRA_FABIO + ' extra)', valor: despesaAFA, pago: despesaPaga('afa') },
         { desc: 'Galhardetes do clube (20 unid.)', valor: despesaGalhardetes, pago: despesaPaga('galhardetes') },
         { desc: 'Garrafões de água (4 × 6L)', valor: despesaAgua, pago: despesaPaga('agua') }
     ];
@@ -2402,7 +2442,7 @@ function buildSnapshot() {
     _despesasExtrasArr.forEach(d => s.despesas.push({ desc: d.desc, valor: d.valor, pago: d.pago, data: d.data }));
     s.quotas = todosJogadores.map(j => ({
         nome: j.nome,
-        tipo: j.inscrito ? 'Inscrito' : 'NI',
+        tipo: estatutoNoMes(j.nome, mesEpocaAtualIdx() >= 0 ? mesEpocaAtualIdx() : 0) ? 'Inscrito' : 'NI',
         meses: MESES.map((_, mIdx) => jaPagou(j.nome, mIdx) ? '✓' : ''),
         numPagos: mesesPagos(j.nome).length
     }));
@@ -2698,7 +2738,7 @@ function exportJSON() {
             titulo: 'Veteranos A.D.C. Lobão — Backup de Dados',
             geradoEm: dataGer + ' · ' + horaGer,
             epoca: infoEpoca.epoca,
-            versao: '1.0',
+            versao: '1.1',
             descricao: 'Backup completo dos dados editáveis (dados.js + config.js). Pode ser usado para restaurar, arquivar ou migrar.'
         },
         constantes: {
@@ -2708,12 +2748,17 @@ function exportJSON() {
             QUOTA_NI: QUOTA_NI,
             SALDO_INICIAL: SALDO_INICIAL,
             valorInscricao: valorInscricao,
-            valorSocio: valorSocio
+            valorSocio: valorSocio,
+            EPOCA_ATUAL: (typeof EPOCA_ATUAL !== 'undefined') ? EPOCA_ATUAL : null,
+            DATA_ULTIMA_ATUALIZACAO: (typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') ? DATA_ULTIMA_ATUALIZACAO : null,
+            DIA_TREINO: (typeof DIA_TREINO !== 'undefined') ? DIA_TREINO : null,
+            PROJECAO_DESPESAS_MENSAIS: (typeof PROJECAO_DESPESAS_MENSAIS !== 'undefined') ? PROJECAO_DESPESAS_MENSAIS : []
         },
         plantel: {
             inscritos: inscritos,
             naoInscritos: naoInscritos
         },
+        mudancasEstatuto: (typeof MUDANCAS_ESTATUTO !== 'undefined') ? MUDANCAS_ESTATUTO : {},
         quotas: {
             pagamentos: pagamentos,
             ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {},
@@ -2729,6 +2774,7 @@ function exportJSON() {
         merendaPaga: (typeof merendaPaga !== 'undefined') ? merendaPaga : [],
         despesas: {
             despesaCampo: despesaCampo,
+            AFA_EXTRA_FABIO: (typeof AFA_EXTRA_FABIO !== 'undefined') ? AFA_EXTRA_FABIO : 0,
             despesaAFA: despesaAFA,
             despesaAgua: despesaAgua,
             despesaGalhardetes: despesaGalhardetes,
@@ -2772,6 +2818,8 @@ function inicializarSite() {
     _siteInicializado = true;
 
     renderFooterEpoca();
+    renderFooterRedes();
+    renderFooterUltimaAtualizacao();
     renderNoticias();
     renderResumo();
     initResumoCharts();
@@ -2793,14 +2841,14 @@ function inicializarSite() {
             else if (isento) isentosCount++;
             else if (aberto) abertosCount++;
             let statusHtml, statusCls;
-            if (pago) { statusHtml = `✓ Pago (€${j.quota})`; statusCls = 'pago'; }
+            if (pago) { statusHtml = `✓ Pago (€${valorQuotaMes(j.nome, mIdx)})`; statusCls = 'pago'; }
             else if (isento) { statusHtml = 'Isento (não compareceu)'; statusCls = 'isento'; }
             else if (aberto) { statusHtml = 'Por apurar'; statusCls = 'aberto'; }
             else { statusHtml = 'Por pagar'; statusCls = 'nao'; }
             const nameCls = j.ni ? 'mes-player-name ni-tag' : 'mes-player-name';
             rowsHtml += `<div class="mes-player-row"><span class="${nameCls} clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span><span class="mes-player-status ${statusCls}">${statusHtml}</span></div>`;
         });
-        const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? j.quota : 0), 0);
+        const receitaMes = todosParaQuotas.reduce((s, j) => s + (jaPagou(j.nome, mIdx) ? valorQuotaMes(j.nome, mIdx) : 0), 0);
         const faltam = totalParaQuotas - pagosCount - isentosCount - abertosCount;
         let badgeCls, badgeTxt;
         const partes = [`${pagosCount} pago(s)`];
@@ -2853,7 +2901,6 @@ function inicializarSite() {
     setTimeout(initDespesasChart, 50);
 }
 
-// Arrancar
 (function () {
     try {
         aplicarGate();
