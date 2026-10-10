@@ -629,7 +629,7 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão · v3</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v3.1</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
         <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
@@ -1125,8 +1125,9 @@ function ultimoPagamentoHistorico(nome) {
     }
     return null;
 }
+// ⚠️ Só soma os meses que o jogador efetivamente pagou.
 const recebidoReal = todosJogadores.reduce((tot, j) => {
-    return tot + MESES.reduce((s, _, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0);
+    return tot + mesesPagos(j.nome).reduce((s, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0);
 }, 0);
 function calcularTotalVenda(itens) { return itens.reduce((s, item) => s + (listaPrecos[item] || 0), 0); }
 compras6Set.forEach(v => { v.total = calcularTotalVenda(v.itens); });
@@ -1333,7 +1334,6 @@ let histPesquisa = '';
 let nomeAtualPerfil = null;
 let searchOpen = false;
 
-// Nota: já não tem `quota` fixa — o valor é calculado por mês via estatutoNoMes
 const todosParaQuotas = [
     ...inscritos.map(j => ({ ...j, ni: false })),
     ...naoInscritos.map(j => ({ ...j, ni: true }))
