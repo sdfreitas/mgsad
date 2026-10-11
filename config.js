@@ -37,7 +37,9 @@ const ISENCOES = {
 // { "Nome": { índiceMes: valorEfetivo } }
 const QUOTAS_REDUZIDAS = {
     "Amílcar André": { 0: 10 },  // Setembro — €10 (excesso da quota de sócio, €50 pagos ao clube)
-    "Fábio Gonçalves": { 0: 24 } // Setembro — €20 cota + €4 (1ª prestação dos €40 de sócio, diluído em 10 meses)
+    // Fábio Gonçalves — caso especial: €24/mês durante toda a época
+    // (€20 de quota + €4 de 1ª prestação dos €40 de sócio, diluído em 10 meses)
+    "Fábio Gonçalves": { 0: 24, 1: 24, 2: 24, 3: 24, 4: 24, 5: 24, 6: 24, 7: 24, 8: 24, 9: 24 }
 };
 
 // ─── INSCRIÇÕES PAGAS PELA CAIXA ───
