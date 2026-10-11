@@ -80,6 +80,7 @@
         .badge-isento { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
         .badge-clube { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .badge-aberto { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-porjogo { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .player-name { font-weight: 500; white-space: nowrap; }
         .player-name.em-falta { color: var(--vermelho); font-weight: 600; }
         .tab-panel { display: none; }
@@ -574,6 +575,7 @@
         html[data-tema="escuro"] .badge-isento { background: #2e1065; color: #c4b5fd; border-color: #4c1d95; }
         html[data-tema="escuro"] .badge-clube { background: #164e63; color: #67e8f9; border-color: #155e75; }
         html[data-tema="escuro"] .badge-aberto { background: #164e63; color: #67e8f9; border-color: #155e75; }
+        html[data-tema="escuro"] .badge-porjogo { background: #422006; color: #fcd34d; border-color: #78350f; }
         html[data-tema="escuro"] .match-badge.v { background: #14532d; color: #86efac; }
         html[data-tema="escuro"] .match-badge.d { background: #422006; color: #fcd34d; }
         html[data-tema="escuro"] .match-badge.e { background: #450a0a; color: #fca5a5; }
@@ -629,7 +631,7 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão · v3.1</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v3.2</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
         <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
@@ -1044,33 +1046,30 @@ function fmtEur(v) {
 }
 function isencoesDe(nome) { if (typeof ISENCOES === 'undefined') return []; return ISENCOES[nome] || []; }
 function quotasReduzidasDe(nome) { if (typeof QUOTAS_REDUZIDAS === 'undefined') return {}; return QUOTAS_REDUZIDAS[nome] || {}; }
+
+// ⚠️ mesesPagos — SÓ conta meses efetivamente pagos (pagamentos + isenções).
+// As QUOTAS_REDUZIDAS só alteram o VALOR de um mês, não indicam que foi pago.
 function mesesPagos(nome) {
     const pag = pagamentos[nome] || [];
     const isen = isencoesDe(nome);
-    const red = Object.keys(quotasReduzidasDe(nome)).map(Number);
-    return [...new Set([...pag, ...isen, ...red])];
+    return [...new Set([...pag, ...isen])];
 }
+
 function jaPagou(nome, mIdx) { return mesesPagos(nome).includes(mIdx); }
 function inscricaoPagaPelaCaixa(nome) { if (typeof INSCRICOES_PAGAS_CAIXA === 'undefined') return false; return INSCRICOES_PAGAS_CAIXA.includes(nome); }
 function sociosEmPrestacoes(nome) { if (typeof SOCIOS_EM_PRESTACOES === 'undefined') return null; return SOCIOS_EM_PRESTACOES[nome] || null; }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome) || inscricaoPagaPelaCaixa(nome); }
 function socioPagouAoClube(nome) { if (typeof sociosPagoAoClube === 'undefined') return false; return sociosPagoAoClube.includes(nome); }
 
-// ─── ESTATUTO POR MÊS ───
-// Devolve true (inscrito → €20) ou false (NI → €10) para um mês específico.
-// Consulta MUDANCAS_ESTATUTO; se o jogador não estiver lá, usa o estatuto atual.
 function estatutoNoMes(nome, mIdx) {
     const jogador = todosJogadores.find(j => j.nome === nome);
     const estatutoAtual = jogador ? jogador.inscrito : false;
     if (typeof MUDANCAS_ESTATUTO === 'undefined') return estatutoAtual;
     const m = MUDANCAS_ESTATUTO[nome];
     if (!m) return estatutoAtual;
-    // Se o mês é anterior à mudança, usa o estatuto anterior; senão o atual.
     return mIdx >= m.desde ? estatutoAtual : m.estatutoAnterior;
 }
 
-// ─── VALOR DA QUOTA PARA UM MÊS ───
-// Ordem: isenção → quota reduzida → estatuto do mês
 function valorQuotaMes(nome, mIdx) {
     if (isencoesDe(nome).includes(mIdx)) return 0;
     const red = quotasReduzidasDe(nome);
@@ -1511,7 +1510,6 @@ function initInscricoesChart() {
 function initQuotasCharts() {
     if (typeof Chart === 'undefined' || typeof todosParaQuotas === 'undefined') return;
     const c = chartThemeColors();
-    // Total esperado: soma mês a mês do estatuto de cada jogador nesse mês
     const totalEsperado = todosParaQuotas.reduce((acc, j) =>
         acc + MESES.reduce((s, _, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0), 0);
     const pago = recebidoReal;
@@ -1524,7 +1522,6 @@ function initQuotasCharts() {
             tooltip: { callbacks: { label: ctx => { const tot = pago + porReceber; const pct = tot > 0 ? Math.round((ctx.raw / tot) * 100) : 0; return `${ctx.label}: €${ctx.raw} (${pct}%)`; } } }
         } }
     });
-    // Esperado mensal: soma do estatuto de cada jogador naquele mês
     const esperadoData = MESES.map((_, mIdx) =>
         todosParaQuotas.reduce((s, j) => s + valorQuotaMes(j.nome, mIdx), 0));
     const recebidoData = MESES.map((_, mIdx) =>
@@ -1613,7 +1610,11 @@ function renderDespesas() {
             dh += `<tr><td><strong style="color:#0D3B66">${d.desc}</strong><br><span style="font-size:11px;color:#888">${d.data}${d.itens ? ' · ' + d.itens : ''}</span></td><td class="center" style="font-weight:700">${fmtEur(d.valor)}</td><td class="center">${badge}</td></tr>`;
         });
     }
-    dh += '<tr><td><strong style="color:#0D3B66">Massagista</strong></td><td class="center" style="color:#999">A definir</td><td class="center"></td></tr>';
+    // Massagista — €25 por jogo em casa, só se paga no dia do jogo (não é compromisso fixo)
+    const _massagistaPorJogo = (typeof MASSA_AGISTA_POR_JOGO !== 'undefined') ? MASSA_AGISTA_POR_JOGO : 25;
+    const _jogosCasa = (typeof calendario !== 'undefined') ? calendario.filter(j => j.casa && !j.folga).length : 0;
+    const _massagistaValor = _jogosCasa * _massagistaPorJogo;
+    dh += `<tr><td><strong style="color:#0D3B66">Massagista (€${_massagistaPorJogo}/jogo em casa)</strong><br><span style="font-size:11px;color:#888">${_jogosCasa} jogos previstos · pago no dia de cada jogo</span></td><td class="center" style="font-weight:700">${fmtEur(_massagistaValor)}</td><td class="center"><span class="badge badge-porjogo">Por jogo</span></td></tr>`;
     dh += '</tbody><tfoot><tr><td>Total (despesas + árbitros)</td><td class="center" style="font-size:14px">' + fmtEur(despesasTotais + totalArbitroCusto) + '</td><td class="center"><span style="color:#16a34a">pago ' + fmtEur(despesasJaPagas + totalArbitroCusto) + '</span> · <span style="color:#d97706">por pagar ' + fmtEur(despesasPorPagar) + '</span></td></tr></tfoot></table>';
     document.getElementById('tabela-despesas').innerHTML = dh;
 }
@@ -2348,7 +2349,6 @@ function goToTab(tab) { if (searchOpen) toggleSearch(); setTimeout(() => { showT
 // RECIBO
 // ═══════════════════════════════════════════
 function _anoDoMes(mIdx) {
-    // Set-Dez → ano de início (ex: 2026) · Jan-Jun → ano seguinte (ex: 2027)
     const anoInicio = parseInt((typeof EPOCA_ATUAL !== 'undefined' ? EPOCA_ATUAL.split('/')[0] : '2026'));
     return mIdx <= 3 ? anoInicio : anoInicio + 1;
 }
@@ -2484,7 +2484,6 @@ function setSnapStatus(msg, erro) {
     if (!erro) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 5000);
 }
 
-// ─── PDF via print ───
 function exportPDFPrint() {
     const s = buildSnapshot();
     const el = document.getElementById('printSnap');
@@ -2547,7 +2546,6 @@ function exportPDFPrint() {
     }, 100);
 }
 
-// ─── PDF via jsPDF (carregamento dinâmico) ───
 async function exportPDFjsPDF() {
     setSnapStatus('A carregar biblioteca PDF...');
     try {
@@ -2637,29 +2635,22 @@ async function exportPDFjsPDF() {
 
     titulo('1. Resumo do Saldo');
     tabela(['Descrição', 'Valor'], s.resumo.map(r => [r[0], r[1]]), [CW * 0.7, CW * 0.3], ['left', 'right']);
-
     titulo('2. Decomposição');
     tabela(['Descrição', '', 'Valor'], s.decomposicao.map(r => [r[0], r[1], r[2]]), [CW * 0.68, CW * 0.07, CW * 0.25], ['left', 'center', 'right']);
-
     titulo('3. Despesas');
     tabela(['Descrição', 'Valor', 'Estado'], s.despesas.map(d => [d.desc, fmtEur(d.valor), d.pago ? 'Pago' : 'Por pagar']), [CW * 0.6, CW * 0.2, CW * 0.2], ['left', 'right', 'center']);
-
     titulo('4. Quotas por Jogador');
     const qHeaders = ['Nome', 'Tipo', ...MESES, 'Pagos'];
     const nomeW = 42, tipoW = 14, mesW = (CW - nomeW - tipoW - 12) / MESES.length, totW = 12;
     const qCols = [nomeW, tipoW, ...MESES.map(() => mesW), totW];
     const qRows = s.quotas.map(q => [q.nome, q.tipo, ...q.meses, String(q.numPagos)]);
     tabela(qHeaders, qRows, qCols, ['left', 'center', ...MESES.map(() => 'center'), 'center']);
-
     titulo('5. Inscrições');
     tabela(['Nome', 'Valor', 'Estado'], s.inscricoes.map(i => [i.nome, fmtEur(i.valor), i.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
-
     titulo('6. Sócios');
     tabela(['Nome', 'Valor', 'Estado'], s.socios.map(x => [x.nome, fmtEur(x.valor), x.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
-
     titulo('7. Vendas de Equipamento');
     tabela(['Nome', 'Itens', 'Total', 'Estado'], s.vendas.map(v => [v.nome, v.itens, fmtEur(v.total), v.estado]), [CW * 0.2, CW * 0.45, CW * 0.15, CW * 0.2], ['left', 'left', 'right', 'center']);
-
     titulo('8. Movimentos Financeiros');
     tabela(['Data', 'Tipo', 'Descrição'], s.movimentos.map(m => [m.data, m.tipo, m.desc]), [CW * 0.12, CW * 0.13, CW * 0.75], ['left', 'left', 'left']);
 
@@ -2668,7 +2659,6 @@ async function exportPDFjsPDF() {
     setSnapStatus('✓ Descarregado: ' + fname);
 }
 
-// ─── Excel XLSX (carregamento dinâmico) ───
 async function exportXLSX() {
     setSnapStatus('A carregar biblioteca Excel...');
     try {
@@ -2686,117 +2676,37 @@ async function exportXLSX() {
         if (opts && opts.cols) ws['!cols'] = opts.cols;
         XLSX.utils.book_append_sheet(wb, ws, nome);
     };
-    addSheet('Resumo', [
-        ['Veteranos A.D.C. Lobão — Snapshot Financeiro'],
-        ['Gerado em', s.meta.dataGerado],
-        [],
-        ['Resumo do Saldo'],
-        ['Descrição', 'Valor'],
-        ...s.resumo.map(r => [r[0].trim(), r[1]]),
-        [],
-        ['Decomposição'],
-        ['Descrição', 'Sinal', 'Valor'],
-        ...s.decomposicao.map(r => [r[0], r[1], r[2]])
-    ], { cols: [{ wch: 48 }, { wch: 6 }, { wch: 14 }] });
-    addSheet('Despesas', [
-        ['Descrição', 'Data', 'Valor', 'Estado'],
-        ...s.despesas.map(d => [d.desc, d.data || '—', d.valor, d.pago ? 'Pago' : 'Por pagar'])
-    ], { cols: [{ wch: 50 }, { wch: 14 }, { wch: 12 }, { wch: 12 }] });
-    addSheet('Quotas', [
-        ['Nome', 'Tipo', ...MESES, 'Total Pagos'],
-        ...s.quotas.map(q => [q.nome, q.tipo, ...q.meses, q.numPagos])
-    ], { cols: [{ wch: 22 }, { wch: 10 }, ...MESES.map(() => ({ wch: 5 })), { wch: 12 }] });
-    addSheet('Inscricoes', [
-        ['Nome', 'Valor', 'Estado'],
-        ...s.inscricoes.map(i => [i.nome, i.valor, i.estado])
-    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 18 }] });
-    addSheet('Socios', [
-        ['Nome', 'Valor', 'Estado'],
-        ...s.socios.map(x => [x.nome, x.valor, x.estado])
-    ], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 24 }] });
-    addSheet('Vendas', [
-        ['Nome', 'Itens', 'Total', 'Estado'],
-        ...s.vendas.map(v => [v.nome, v.itens, v.total, v.estado])
-    ], { cols: [{ wch: 20 }, { wch: 45 }, { wch: 10 }, { wch: 14 }] });
-    addSheet('Movimentos', [
-        ['Data', 'Tipo', 'Descrição'],
-        ...s.movimentos.map(m => [m.data, m.tipo, m.desc])
-    ], { cols: [{ wch: 14 }, { wch: 14 }, { wch: 100 }] });
+    addSheet('Resumo', [['Veteranos A.D.C. Lobão — Snapshot Financeiro'],['Gerado em', s.meta.dataGerado],[],['Resumo do Saldo'],['Descrição', 'Valor'],...s.resumo.map(r => [r[0].trim(), r[1]]),[],['Decomposição'],['Descrição', 'Sinal', 'Valor'],...s.decomposicao.map(r => [r[0], r[1], r[2]])], { cols: [{ wch: 48 }, { wch: 6 }, { wch: 14 }] });
+    addSheet('Despesas', [['Descrição', 'Data', 'Valor', 'Estado'],...s.despesas.map(d => [d.desc, d.data || '—', d.valor, d.pago ? 'Pago' : 'Por pagar'])], { cols: [{ wch: 50 }, { wch: 14 }, { wch: 12 }, { wch: 12 }] });
+    addSheet('Quotas', [['Nome', 'Tipo', ...MESES, 'Total Pagos'],...s.quotas.map(q => [q.nome, q.tipo, ...q.meses, q.numPagos])], { cols: [{ wch: 22 }, { wch: 10 }, ...MESES.map(() => ({ wch: 5 })), { wch: 12 }] });
+    addSheet('Inscricoes', [['Nome', 'Valor', 'Estado'],...s.inscricoes.map(i => [i.nome, i.valor, i.estado])], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 18 }] });
+    addSheet('Socios', [['Nome', 'Valor', 'Estado'],...s.socios.map(x => [x.nome, x.valor, x.estado])], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 24 }] });
+    addSheet('Vendas', [['Nome', 'Itens', 'Total', 'Estado'],...s.vendas.map(v => [v.nome, v.itens, v.total, v.estado])], { cols: [{ wch: 20 }, { wch: 45 }, { wch: 10 }, { wch: 14 }] });
+    addSheet('Movimentos', [['Data', 'Tipo', 'Descrição'],...s.movimentos.map(m => [m.data, m.tipo, m.desc])], { cols: [{ wch: 14 }, { wch: 14 }, { wch: 100 }] });
     const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.xlsx';
     XLSX.writeFile(wb, fname);
     setSnapStatus('✓ Descarregado: ' + fname);
 }
 
-// ─── Backup JSON (dados.js + config.js completo) ───
 function exportJSON() {
     const dataGer = hoje.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
     const horaGer = hoje.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
     const infoEpoca = _infoEpoca();
-
     const backup = {
-        meta: {
-            titulo: 'Veteranos A.D.C. Lobão — Backup de Dados',
-            geradoEm: dataGer + ' · ' + horaGer,
-            epoca: infoEpoca.epoca,
-            versao: '1.1',
-            descricao: 'Backup completo dos dados editáveis (dados.js + config.js). Pode ser usado para restaurar, arquivar ou migrar.'
-        },
-        constantes: {
-            MESES: MESES,
-            mesesAno: mesesAno,
-            QUOTA: QUOTA,
-            QUOTA_NI: QUOTA_NI,
-            SALDO_INICIAL: SALDO_INICIAL,
-            valorInscricao: valorInscricao,
-            valorSocio: valorSocio,
-            EPOCA_ATUAL: (typeof EPOCA_ATUAL !== 'undefined') ? EPOCA_ATUAL : null,
-            DATA_ULTIMA_ATUALIZACAO: (typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') ? DATA_ULTIMA_ATUALIZACAO : null,
-            DIA_TREINO: (typeof DIA_TREINO !== 'undefined') ? DIA_TREINO : null,
-            PROJECAO_DESPESAS_MENSAIS: (typeof PROJECAO_DESPESAS_MENSAIS !== 'undefined') ? PROJECAO_DESPESAS_MENSAIS : []
-        },
-        plantel: {
-            inscritos: inscritos,
-            naoInscritos: naoInscritos
-        },
+        meta: { titulo: 'Veteranos A.D.C. Lobão — Backup de Dados', geradoEm: dataGer + ' · ' + horaGer, epoca: infoEpoca.epoca, versao: '1.1', descricao: 'Backup completo dos dados editáveis (dados.js + config.js). Pode ser usado para restaurar, arquivar ou migrar.' },
+        constantes: { MESES: MESES, mesesAno: mesesAno, QUOTA: QUOTA, QUOTA_NI: QUOTA_NI, SALDO_INICIAL: SALDO_INICIAL, valorInscricao: valorInscricao, valorSocio: valorSocio, EPOCA_ATUAL: (typeof EPOCA_ATUAL !== 'undefined') ? EPOCA_ATUAL : null, DATA_ULTIMA_ATUALIZACAO: (typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') ? DATA_ULTIMA_ATUALIZACAO : null, DIA_TREINO: (typeof DIA_TREINO !== 'undefined') ? DIA_TREINO : null, PROJECAO_DESPESAS_MENSAIS: (typeof PROJECAO_DESPESAS_MENSAIS !== 'undefined') ? PROJECAO_DESPESAS_MENSAIS : [] },
+        plantel: { inscritos: inscritos, naoInscritos: naoInscritos },
         mudancasEstatuto: (typeof MUDANCAS_ESTATUTO !== 'undefined') ? MUDANCAS_ESTATUTO : {},
-        quotas: {
-            pagamentos: pagamentos,
-            ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {},
-            QUOTAS_REDUZIDAS: (typeof QUOTAS_REDUZIDAS !== 'undefined') ? QUOTAS_REDUZIDAS : {},
-            INSCRICOES_PAGAS_CAIXA: (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [],
-            SOCIOS_EM_PRESTACOES: (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {}
-        },
+        quotas: { pagamentos: pagamentos, ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {}, QUOTAS_REDUZIDAS: (typeof QUOTAS_REDUZIDAS !== 'undefined') ? QUOTAS_REDUZIDAS : {}, INSCRICOES_PAGAS_CAIXA: (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [], SOCIOS_EM_PRESTACOES: (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {} },
         inscricoesPagas: inscricoesPagas,
-        socios: {
-            sociosPagos: sociosPagos,
-            sociosPagoAoClube: (typeof sociosPagoAoClube !== 'undefined') ? sociosPagoAoClube : []
-        },
+        socios: { sociosPagos: sociosPagos, sociosPagoAoClube: (typeof sociosPagoAoClube !== 'undefined') ? sociosPagoAoClube : [] },
         merendaPaga: (typeof merendaPaga !== 'undefined') ? merendaPaga : [],
-        despesas: {
-            despesaCampo: despesaCampo,
-            AFA_EXTRA_FABIO: (typeof AFA_EXTRA_FABIO !== 'undefined') ? AFA_EXTRA_FABIO : 0,
-            despesaAFA: despesaAFA,
-            despesaAgua: despesaAgua,
-            despesaGalhardetes: despesaGalhardetes,
-            DESPESAS_PAGAS: (typeof DESPESAS_PAGAS !== 'undefined') ? DESPESAS_PAGAS : {},
-            despesasExtras: _despesasExtrasArr
-        },
-        vendas: {
-            listaPrecos: listaPrecos,
-            compras6Set: compras6Set
-        },
+        despesas: { despesaCampo: despesaCampo, AFA_EXTRA_FABIO: (typeof AFA_EXTRA_FABIO !== 'undefined') ? AFA_EXTRA_FABIO : 0, despesaAFA: despesaAFA, despesaAgua: despesaAgua, despesaGalhardetes: despesaGalhardetes, MASSA_AGISTA_POR_JOGO: (typeof MASSA_AGISTA_POR_JOGO !== 'undefined') ? MASSA_AGISTA_POR_JOGO : 0, DESPESAS_PAGAS: (typeof DESPESAS_PAGAS !== 'undefined') ? DESPESAS_PAGAS : {}, despesasExtras: _despesasExtrasArr },
+        vendas: { listaPrecos: listaPrecos, compras6Set: compras6Set },
         treinosJogos: treinosJogos,
-        competicao: {
-            calendario: (typeof calendario !== 'undefined') ? calendario : [],
-            equipasGrupo: (typeof equipasGrupo !== 'undefined') ? equipasGrupo : [],
-            torneios: torneios,
-            amigaveis: amigaveis
-        },
-        atas: atas,
-        historico: historico,
-        noticias: noticias
+        competicao: { calendario: (typeof calendario !== 'undefined') ? calendario : [], equipasGrupo: (typeof equipasGrupo !== 'undefined') ? equipasGrupo : [], torneios: torneios, amigaveis: amigaveis },
+        atas: atas, historico: historico, noticias: noticias
     };
-
     const json = JSON.stringify(backup, null, 2);
     const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
