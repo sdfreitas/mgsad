@@ -13,11 +13,15 @@ const valorSocio = 40;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "10 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "11 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
 const PROJECAO_DESPESAS_MENSAIS = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
+
+// --- MASSAGISTA ---
+// Valor por jogo em casa. Pago no dia de cada jogo (não é compromisso fixo).
+const MASSA_AGISTA_POR_JOGO = 25;
 
 // --- PLANTEL ---
 const inscritos = [
@@ -68,6 +72,7 @@ const MUDANCAS_ESTATUTO = {
 };
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
+// ⚠️ Só entra aqui quem PAGOU. Para valores diferentes do padrão, ver QUOTAS_REDUZIDAS em config.js
 const pagamentos = {
     "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
@@ -92,7 +97,8 @@ const pagamentos = {
     "Luís Paiva": [0],
     "Inácio": [0],
     "Tiago Mota": [0],
-    "Amílcar André": [1]
+    "Amílcar André": [0, 1],
+    "Fábio Gonçalves": [0]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -112,48 +118,22 @@ const inscricoesPagas = [
 
 // --- SÓCIOS PAGOS ---
 const sociosPagos = [
-    "Pedro Cadete",
-    "André Pinho",
-    "José Eduardo",
-    "Jorge Azevedo",
-    "Joel Tavares",
-    "Amílcar André",
-    "Hugo André",
-    "Pedro Ferreira",
-    "Mário Oliveira",
-    "Américo Oliveira",
-    "António Oliveira",
-    "Américo Silva",
-    "Sérgio Freitas",
-    "António José Silva",
-    "Rui Rocha",
-    "António Rocha",
-    "Daniel Dias",
-    "Luís Paiva",
-    "Sergio Rodrigues",
-    "Inácio",
-    "Tiago Mota"
+    "Pedro Cadete", "André Pinho", "José Eduardo", "Jorge Azevedo",
+    "Joel Tavares", "Amílcar André", "Hugo André", "Pedro Ferreira",
+    "Mário Oliveira", "Américo Oliveira", "António Oliveira", "Américo Silva",
+    "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
+    "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
 const sociosPagoAoClube = [
-    "André Pinho",
-    "Jorge Azevedo",
-    "Hugo André",
-    "Amílcar André",
-    "José Eduardo",
-    "Joel Tavares",
-    "Luís Paiva",
-    "Tiago Mota"
+    "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André",
+    "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
 const merendaPaga = [
-    "Zé Buraca",
-    "Américo Oliveira",
-    "José Eduardo",
-    "Joel Tavares",
-    "Jorge Azevedo"
+    "Zé Buraca", "Américo Oliveira", "José Eduardo", "Joel Tavares", "Jorge Azevedo"
 ];
 
 // --- DESPESAS CONFIRMADAS ---
@@ -282,26 +262,13 @@ const calendario = [
 
 // --- EQUIPAS DO GRUPO (1.ª fase — Liga Masters) ---
 const equipasGrupo = [
-    "ARC S. Vicente Pereira",
-    "Fiães SC",
-    "Sc S. João Ver",
-    "AD Sanjoanense",
-    "CD Feirense",
-    "Juv. Desp. Carregosense",
-    "UD Fermedo",
-    "Lusitânia Lourosa FC",
-    "UD Oliveirense",
-    "A.C. Cucujães",
-    "Romariz FC",
-    "AF União Lamas Veteranos",
-    "ADC Lobão",
-    "CD Loureiro",
-    "Guisande FC",
-    "GD Fajões",
-    "ADC Sanguedo"
+    "ARC S. Vicente Pereira", "Fiães SC", "Sc S. João Ver", "AD Sanjoanense",
+    "CD Feirense", "Juv. Desp. Carregosense", "UD Fermedo", "Lusitânia Lourosa FC",
+    "UD Oliveirense", "A.C. Cucujães", "Romariz FC", "AF União Lamas Veteranos",
+    "ADC Lobão", "CD Loureiro", "Guisande FC", "GD Fajões", "ADC Sanguedo"
 ];
 
-// --- COMPETIÇÃO (amigáveis e torneios — separado da Liga) ---
+// --- COMPETIÇÃO ---
 const torneios = [
     {
         nome: "Torneio de Nelas",
@@ -358,26 +325,11 @@ const amigaveis = [
                 "Rui Rocha", "Américo Silva", "Zé Buraca", "Marcelo"
             ],
             pagaram: [
-                "André Pinho",
-                "Pedro Cadete",
-                "Jorge Azevedo",
-                "Rui Rocha",
-                "António Rocha",
-                "Mário Oliveira",
-                "Sérgio Freitas",
-                "Américo Silva",
-                "Pedro Ferreira",
-                "Joel Tavares",
-                "Zé Buraca",
-                "Amílcar André",
-                "José Eduardo",
-                "Hugo André",
-                "Daniel Dias",
-                "Américo Oliveira",
-                "Fábio Gonçalves",
-                "Pedro Costa",
-                "Marcelo",
-                "Sergio Rodrigues"
+                "André Pinho", "Pedro Cadete", "Jorge Azevedo", "Rui Rocha",
+                "António Rocha", "Mário Oliveira", "Sérgio Freitas", "Américo Silva",
+                "Pedro Ferreira", "Joel Tavares", "Zé Buraca", "Amílcar André",
+                "José Eduardo", "Hugo André", "Daniel Dias", "Américo Oliveira",
+                "Fábio Gonçalves", "Pedro Costa", "Marcelo", "Sergio Rodrigues"
             ]
         }
     }
@@ -415,8 +367,8 @@ const atas = [
 ];
 
 // --- HISTÓRICO ---
-// Regra: vários pagamentos do mesmo dia aparecem agrupados numa só linha.
 const historico = [
+    { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado (não entra no saldo livre até ser efetivamente pago)." },
     { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
     { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
@@ -476,6 +428,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "11 Out 2026",
+        tag: "info",
+        titulo: "💆 Massagista definido: €25 por jogo em casa",
+        corpo: "A partir do primeiro jogo da Liga Masters, temos massagista a €25 por jogo em casa, pago no dia. São 8 jogos em casa previstos."
+    },
     {
         data: "10 Out 2026",
         tag: "jogo",
