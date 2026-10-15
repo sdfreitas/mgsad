@@ -13,7 +13,7 @@ const valorSocio = 40;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "11 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "15 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -207,6 +207,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "14 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Hugo André", "Sergio Rodrigues", "Daniel Dias", "André Pinho"],
+      extra: ["Luís Paiva", "António José Silva", "Marcelo", "Zé Buraca"] },
     { data: "10 Out 2026", tipo: "jogo", titulo: "Jogo de treino vs Bustelo", estado: "registado",
       presentes: ["Fábio Gonçalves", "António Rocha", "Pedro Ferreira", "Américo Oliveira", "Joel Tavares", "Jorge Azevedo", "António Oliveira", "Sergio Rodrigues", "Amílcar André", "Pedro Costa", "Rui Rocha", "Mário Oliveira", "Sérgio Freitas", "Hugo André", "André Pinho", "José Eduardo", "Américo Silva"],
       extra: ["Marcelo", "Zé Buraca"] },
@@ -368,6 +371,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
     { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado (não entra no saldo livre até ser efetivamente pago)." },
     { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
