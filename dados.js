@@ -454,7 +454,7 @@ const noticias = [
         data: "17 Out 2026",
         tag: "info",
         titulo: "🤝 Quota de sócio subiu para 50€",
-        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ deve entregar a diferença de 10€. Mário Oliveira e Pedro Cadete já liquidaram."
+        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ ao tesoureiro deve entregar a diferença de 10€. Quem entregou ao clube já está regularizado. Mário Oliveira e Pedro Cadete já liquidaram."
     },
     {
         data: "17 Out 2026",
