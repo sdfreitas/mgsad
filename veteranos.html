@@ -1732,7 +1732,6 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
     function estaPago(nome) { return pagos.includes(nome); }
     function pagoPelaCaixa(nome) { return caixaInscr.includes(nome); }
     function emPrestacoes(nome) { return prestacoes[nome] || null; }
-    // No contexto de sócios, quem deu 40€ em mãos e deve os 10€ NÃO conta como "pago"
     function deveOsDez(nome) {
         if (!mostrarAoClube) return false;
         if (emPrestacoes(nome)) return false;
@@ -2123,24 +2122,56 @@ function renderCalendario() {
 function renderClassificacao() {
     const el = document.getElementById('sub-classificacao');
     const lista = (typeof equipasGrupo !== 'undefined' && Array.isArray(equipasGrupo)) ? equipasGrupo : [];
+    const resultados = (typeof resultadosLiga !== 'undefined' && Array.isArray(resultadosLiga)) ? resultadosLiga : [];
+
+    const stats = {};
+    lista.forEach(t => {
+        stats[t] = { nome: t, j: 0, v: 0, e: 0, d: 0, gm: 0, gs: 0, dg: 0, pts: 0 };
+    });
+
+    resultados.forEach(r => {
+        if (!stats[r.casa] || !stats[r.fora]) return;
+
+        stats[r.casa].j++;
+        stats[r.casa].gm += r.golosCasa;
+        stats[r.casa].gs += r.golosFora;
+
+        stats[r.fora].j++;
+        stats[r.fora].gm += r.golosFora;
+        stats[r.fora].gs += r.golosCasa;
+
+        if (r.golosCasa > r.golosFora) {
+            stats[r.casa].v++; stats[r.casa].pts += 3;
+            stats[r.fora].d++;
+        } else if (r.golosCasa < r.golosFora) {
+            stats[r.fora].v++; stats[r.fora].pts += 3;
+            stats[r.casa].d++;
+        } else {
+            stats[r.casa].e++; stats[r.casa].pts += 1;
+            stats[r.fora].e++; stats[r.fora].pts += 1;
+        }
+    });
+
+    const tabela = Object.values(stats);
+    tabela.forEach(t => { t.dg = t.gm - t.gs; });
+    tabela.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gm !== a.gm) return b.gm - a.gm;
+        return a.nome.localeCompare(b.nome);
+    });
 
     let ch = '<div class="section-card"><h2 class="section-title">🏆 Classificação · 1.ª Fase (Liga Masters)</h2>';
     ch += '<div class="table-wrap"><table class="class-table"><thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead><tbody>';
-
-    const nossa = 'ADC Lobão';
-    const outras = lista.filter(e => e !== nossa);
-
-    let idx = 0;
-    for (let i = 1; i <= lista.length; i++) {
-        let nome, us;
-        if (i === 8) { nome = nossa; us = true; }
-        else { nome = outras[idx]; us = false; idx++; }
+    tabela.forEach((t, i) => {
+        const us = t.nome === 'ADC Lobão';
         const rc = us ? 'class-row-us' : '';
-        ch += `<tr class="${rc}"><td><span class="class-pos">${i}</span></td><td style="text-align:left;white-space:nowrap">${us ? '⚽ ' : ''}<strong>${nome}</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">0</td><td style="font-size:15px;font-weight:800;color:#0D3B66">0</td></tr>`;
-    }
+        const dgStr = t.dg > 0 ? '+' + t.dg : t.dg;
+        ch += `<tr class="${rc}"><td><span class="class-pos">${i + 1}</span></td><td style="text-align:left;white-space:nowrap">${us ? '⚽ ' : ''}<strong>${t.nome}</strong></td><td>${t.j}</td><td>${t.v}</td><td>${t.e}</td><td>${t.d}</td><td>${t.gm}</td><td>${t.gs}</td><td style="color:${t.dg > 0 ? '#16a34a' : (t.dg < 0 ? '#c1121f' : '#888')}">${dgStr}</td><td style="font-size:15px;font-weight:800;color:#0D3B66">${t.pts}</td></tr>`;
+    });
 
     ch += '</tbody></table></div>';
-    ch += '<p class="note" style="margin-top:12px">Classificação provisória — começa a contar a partir da Jornada 1 (17 Out 2026)</p>';
+    ch += '<p class="note" style="margin-top:12px">Liga Masters · 1.ª Fase · Atualizado com os resultados da Jornada 1</p>';
     ch += '</div>';
     el.innerHTML = ch;
 }
