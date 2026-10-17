@@ -1137,7 +1137,7 @@ const _prestNomesGlobal = Object.keys(_prestMapGlobal).filter(n => !sociosPagos.
 let sociosEmMaosFisico = 0;
 sociosPagosEmMaos.forEach(n => {
     if (_devem10Global.includes(n)) sociosEmMaosFisico += 40;
-    else sociosEmMaosFisico += valorSocio; // 50
+    else sociosEmMaosFisico += valorSocio;
 });
 
 let sociosDividaClube = sociosPagosEmMaos.length * valorSocio;
@@ -1732,7 +1732,20 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
     function estaPago(nome) { return pagos.includes(nome); }
     function pagoPelaCaixa(nome) { return caixaInscr.includes(nome); }
     function emPrestacoes(nome) { return prestacoes[nome] || null; }
-    function pagoTotal(nome) { return estaPago(nome) || pagoPelaCaixa(nome) || emPrestacoes(nome); }
+    // No contexto de sócios, quem deu 40€ em mãos e deve os 10€ NÃO conta como "pago"
+    function deveOsDez(nome) {
+        if (!mostrarAoClube) return false;
+        if (emPrestacoes(nome)) return false;
+        if (socioPagouAoClube(nome)) return false;
+        return _devem10Global.includes(nome);
+    }
+    function pagoTotal(nome) {
+        if (emPrestacoes(nome)) return true;
+        if (pagoPelaCaixa(nome)) return true;
+        if (mostrarAoClube && socioPagouAoClube(nome)) return true;
+        if (!estaPago(nome)) return false;
+        return !deveOsDez(nome);
+    }
 
     const numPagos = jogadores.filter(j => pagoTotal(j.nome)).length;
     const porPagar = jogadores.filter(j => !pagoTotal(j.nome)).length;
@@ -1744,7 +1757,7 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
         if (!pago && !prest && !cxPaid) return;
         if (mostrarAoClube && socioPagouAoClube(j.nome)) return;
         if (prest) recebido += prest.jaPago;
-        else if (pago) recebido += valor;
+        else if (pago) recebido += deveOsDez(j.nome) ? 40 : valor;
     });
     document.getElementById(cardsId).innerHTML =
         makeCard(labels.total, total, sublabelTotal || '', '#0D3B66') +
