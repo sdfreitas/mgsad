@@ -631,7 +631,7 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão · v3.2</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v3.3</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
         <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
@@ -1151,15 +1151,28 @@ const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotai
 const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
 
 const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
-let sociosEmMaos = sociosPagosEmMaos.length * valorSocio;
 const _prestMapGlobal = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
 const _prestNomesGlobal = Object.keys(_prestMapGlobal).filter(n => !sociosPagos.includes(n) && !socioPagouAoClube(n));
-_prestNomesGlobal.forEach(n => { sociosEmMaos += _prestMapGlobal[n].jaPago; });
 
-const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaos;
-const compromissosPorPagar = despesasPorPagar;
+// Dinheiro físico na gaveta (o que já entrou)
+let sociosEmMaosFisico = sociosPagosEmMaos.length * valorSocio;
+// Dívida real ao clube (o que tem de ser entregue por inteiro)
+let sociosDividaClube = sociosPagosEmMaos.length * valorSocio;
+
+_prestNomesGlobal.forEach(n => {
+    sociosEmMaosFisico += _prestMapGlobal[n].jaPago;
+    sociosDividaClube += _prestMapGlobal[n].total;
+});
+
+// O que o clube vai receber (mostrado no hero)
+const sociosEmMaos = sociosDividaClube;
+// O que falta na gaveta e a caixa tem de reservar
+const sociosEmFalta = sociosDividaClube - sociosEmMaosFisico;
+
+const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaosFisico;
+const compromissosPorPagar = despesasPorPagar + sociosEmFalta;
 const livreVeteranos = saldoEmMaosVeteranos - compromissosPorPagar;
-const aposTudo = totalEmMaos - compromissosPorPagar - sociosEmMaos;
+const aposTudo = totalEmMaos - compromissosPorPagar - sociosEmMaosFisico;
 
 const presencasPorJogador = (function() {
     const p = {};
@@ -1377,7 +1390,7 @@ function renderResumo() {
             <div class="saldo-hero-lines">
                 <div class="saldo-hero-line"><span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#4ade80"></span>Livre (veteranos)</span><span class="saldo-hero-line-value">${fmtEur(livreVeteranos)}</span></div>
                 <div class="saldo-hero-line"><span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#fbbf24"></span>Reservado (despesas por pagar)</span><span class="saldo-hero-line-value">${fmtEur(compromissosPorPagar)}</span></div>
-                <div class="saldo-hero-line"><span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#93c5fd"></span>Sócios (a entregar ao clube)</span><span class="saldo-hero-line-value">${fmtEur(sociosEmMaos)}</span></div>
+                <div class="saldo-hero-line"><span class="saldo-hero-line-label"><span class="saldo-hero-line-dot" style="background:#93c5fd"></span>Sócios (dívida ao clube)</span><span class="saldo-hero-line-value">${fmtEur(sociosEmMaos)}</span></div>
             </div>
         </div>`;
 
@@ -1438,16 +1451,17 @@ function renderResumo() {
     sd += `<tr><td>Árbitros de amigáveis — pago</td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(totalArbitroCusto)}</td></tr>`;
     sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(fixas + extra)</span></td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(despesasJaPagas)}</td></tr>`;
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo em mãos (físico + banco)</td><td class="center linha-total" style="font-size:14px">${fmtEur(saldoEmMaosVeteranos)}</td></tr>`;
-    if (despesasPorPagar > 0) {
+    if (despesasPorPagar > 0 || sociosEmFalta > 0) {
         if (!despesaPaga('campo')) sd += `<tr><td>Campo <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaCampo)}</td></tr>`;
         if (!despesaPaga('afa')) sd += `<tr><td>Inscrição AFA <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaAFA)}</td></tr>`;
         if (!despesaPaga('galhardetes')) sd += `<tr><td>Galhardetes <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaGalhardetes)}</td></tr>`;
         if (!despesaPaga('agua')) sd += `<tr><td>Água <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesaAgua)}</td></tr>`;
         if (despesasExtrasPorPagar > 0) sd += `<tr><td>Despesas extra <span style="color:#999;font-size:11px">(por pagar)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(despesasExtrasPorPagar)}</td></tr>`;
+        if (sociosEmFalta > 0) sd += `<tr><td>Sócios em prestações <span style="color:#999;font-size:11px">(falta na gaveta)</span></td><td class="center" style="color:#d97706;font-weight:600">−${fmtEur(sociosEmFalta)}</td></tr>`;
     }
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">${fmtEur(livreVeteranos)}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length + Object.keys(_prestMapGlobal).length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa). Em mãos: <strong>${fmtEur(sociosEmMaos)}</strong> (${sociosPagosEmMaos.length} × €40${_prestNomesGlobal.length > 0 ? ' + ' + _prestNomesGlobal.length + ' em prestações' : ''}).</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length + Object.keys(_prestMapGlobal).length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa). Em dívida ao clube: <strong>${fmtEur(sociosEmMaos)}</strong> (${sociosPagosEmMaos.length} × €40${_prestNomesGlobal.length > 0 ? ' + ' + _prestNomesGlobal.length + ' em prestações' : ''}). O valor de ${fmtEur(sociosEmFalta)} que falta na caixa já foi reservado no saldo livre.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1610,7 +1624,6 @@ function renderDespesas() {
             dh += `<tr><td><strong style="color:#0D3B66">${d.desc}</strong><br><span style="font-size:11px;color:#888">${d.data}${d.itens ? ' · ' + d.itens : ''}</span></td><td class="center" style="font-weight:700">${fmtEur(d.valor)}</td><td class="center">${badge}</td></tr>`;
         });
     }
-    // Massagista — €25 por jogo em casa, só se paga no dia do jogo (não é compromisso fixo)
     const _massagistaPorJogo = (typeof MASSA_AGISTA_POR_JOGO !== 'undefined') ? MASSA_AGISTA_POR_JOGO : 25;
     const _jogosCasa = (typeof calendario !== 'undefined') ? calendario.filter(j => j.casa && !j.folga).length : 0;
     const _massagistaValor = _jogosCasa * _massagistaPorJogo;
@@ -2417,7 +2430,7 @@ function buildSnapshot() {
         ['Total em mãos (físico + banco)', fmtEur(totalEmMaos)],
         ['  Livre (veteranos)', fmtEur(livreVeteranos)],
         ['  Reservado (despesas por pagar)', fmtEur(compromissosPorPagar)],
-        ['  Sócios (a entregar ao clube)', fmtEur(sociosEmMaos)]
+        ['  Sócios (dívida ao clube)', fmtEur(sociosEmMaos)]
     ];
     s.decomposicao = [
         ['Caixa inicial (transitada)', '+', fmtEur(SALDO_INICIAL)],
