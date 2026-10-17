@@ -2176,6 +2176,79 @@ function renderClassificacao() {
     el.innerHTML = ch;
 }
 
+function renderMarcadores() {
+    const el = document.getElementById('sub-marcadores');
+    const golos = {};
+
+    // 1. Liga (Calendário)
+    if (typeof calendario !== 'undefined') {
+        calendario.forEach(j => {
+            if (j.marcadores && j.marcadores.length) {
+                j.marcadores.forEach(m => { golos[m] = (golos[m] || 0) + 1; });
+            }
+        });
+    }
+
+    // 2. Amigáveis
+    if (typeof amigaveis !== 'undefined') {
+        amigaveis.forEach(a => {
+            if (a.marcadores && a.marcadores.length) {
+                a.marcadores.forEach(m => { golos[m] = (golos[m] || 0) + 1; });
+            }
+        });
+    }
+
+    // 3. Torneios
+    if (typeof torneios !== 'undefined') {
+        torneios.forEach(t => {
+            t.jogos.forEach(j => {
+                if (j.marcadores && j.marcadores.length) {
+                    j.marcadores.forEach(m => { golos[m] = (golos[m] || 0) + 1; });
+                }
+            });
+        });
+    }
+
+    // Canonizar nomes (ex: "Mário" -> "Mário Oliveira")
+    const golosCanonicos = {};
+    Object.keys(golos).forEach(nome => {
+        if (nome === 'Auto Golo') {
+            golosCanonicos['Auto Golo'] = (golosCanonicos['Auto Golo'] || 0) + golos[nome];
+        } else {
+            const j = encontrarJogador(nome);
+            const nomeFinal = j ? j.nome : nome;
+            golosCanonicos[nomeFinal] = (golosCanonicos[nomeFinal] || 0) + golos[nome];
+        }
+    });
+
+    const lista = Object.keys(golosCanonicos).map(nome => ({
+        nome: nome,
+        golos: golosCanonicos[nome],
+        inscrito: nome === 'Auto Golo' ? false : (todosJogadores.find(j => j.nome === nome)?.inscrito || false)
+    })).sort((a, b) => {
+        if (b.golos !== a.golos) return b.golos - a.golos;
+        return a.nome.localeCompare(b.nome);
+    });
+
+    let html = '<div class="section-card"><h2 class="section-title">⚽ Marcadores da Época</h2>';
+    if (lista.length === 0) {
+        html += '<div style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores registados</div><div style="font-size:13px;color:#999">Os golos aparecerão aqui assim que forem registados nos jogos.</div></div>';
+    } else {
+        html += '<div class="table-wrap"><table><thead><tr><th class="center" style="width:40px">#</th><th>Jogador</th><th class="center">Golos</th></tr></thead><tbody>';
+        lista.forEach((j, i) => {
+            const isClickable = j.nome !== 'Auto Golo';
+            const nomeHtml = isClickable ? `<span class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</span>` : `<span class="player-name" style="color:#888;font-style:italic">${j.nome}</span>`;
+            const pos = i + 1;
+            const posColor = pos === 1 ? '#d4a017' : (pos === 2 ? '#94a3b8' : (pos === 3 ? '#b45309' : '#64748b'));
+            html += `<tr><td class="center" style="font-weight:700;color:${posColor}">${pos}º</td><td>${nomeHtml}</td><td class="center" style="font-weight:700;color:#0D3B66;font-size:15px">${j.golos}</td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        html += '<p class="note" style="margin-top:12px">Golos registados em jogos oficiais (Liga Masters), amigáveis e torneios.</p>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+}
+
 function encontrarJogador(termo) {
     if (!termo) return null;
     const t = termo.toLowerCase();
@@ -2794,7 +2867,7 @@ function inicializarSite() {
 
     renderCalendario();
     renderClassificacao();
-    document.getElementById('sub-marcadores').innerHTML = '<div class="section-card" style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:12px">⚽</div><div style="font-size:16px;font-weight:600;color:#0D3B66;margin-bottom:6px">Sem marcadores</div><div style="font-size:13px;color:#999">A tabela será atualizada quando a época começar.</div></div>';
+    renderMarcadores();
 
     renderTorneios();
 
