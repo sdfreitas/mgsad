@@ -14,8 +14,9 @@ const ISENCOES = {
 // ─── QUOTAS REDUZIDAS ───
 const QUOTAS_REDUZIDAS = {
     "Amílcar André": { 0: 10 },
-    // Fábio: €24/mês (20 quota + 4 sócio) em todos os meses
-    "Fábio Gonçalves": { 0: 24, 1: 24, 2: 24, 3: 24, 4: 24, 5: 24, 6: 24, 7: 24, 8: 24, 9: 24 }
+    // Fábio: €25/mês (€20 quota + €5 sócio) de Out a Jun.
+    // Set ficou em €24 (€20 + €4) — já pago. Jun leva +€1 para fechar os €50 de sócio.
+    "Fábio Gonçalves": { 0: 24, 1: 25, 2: 25, 3: 25, 4: 25, 5: 25, 6: 25, 7: 25, 8: 25, 9: 26 }
 };
 
 // ─── INSCRIÇÕES PAGAS PELA CAIXA ───
@@ -24,14 +25,12 @@ const INSCRICOES_PAGAS_CAIXA = [
 ];
 
 // ─── SÓCIOS EM PRESTAÇÕES ───
-// O valor total subiu para 50. Fábio já pagou 4€. Faltam 46€.
+// Sócio total €50. Já pagou €4 em Set. Faltam €46, liquidados via quota mensal (€5/mês Out–Mai + €6 em Jun).
 const SOCIOS_EM_PRESTACOES = {
     "Fábio Gonçalves": { total: 50, jaPago: 4 }
 };
 
 // ─── SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ───
-// Pessoas que já entregaram os 40€ originais mas ainda não deram os 10€ da atualização.
-// (Mário e Cadete já pagaram, por isso não estão aqui).
 const SOCIOS_A_DEVER_10 = [
     "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
