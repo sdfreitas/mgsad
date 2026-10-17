@@ -631,7 +631,7 @@
 
 <div class="auth-gate" id="authGate">
     <div class="auth-box">
-        <div class="auth-logo">Veteranos ADC Lobão · v3.3</div>
+        <div class="auth-logo">Veteranos ADC Lobão · v3.4</div>
         <div class="auth-titulo">🔒 Acesso reservado</div>
         <p class="auth-sub">Introduz a password para entrar</p>
         <input type="password" id="authInput" class="auth-input" placeholder="Password" autocomplete="current-password">
@@ -753,7 +753,7 @@
     </div>
     <div id="tab-socios" class="tab-panel">
         <div class="cards-grid" id="socios-cards"></div>
-        <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>. Alguns sócios entregaram os €40 diretamente ao clube, sem passar pela caixa dos veteranos.</p></div>
+        <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>. <strong>Pago ao clube</strong> = entregue diretamente (não passa pela caixa). <strong>Pago 40€ · Falta 10€</strong> = já deu a base, mas falta a atualização.</p></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
     <div id="tab-aniversarios" class="tab-panel">
@@ -839,9 +839,6 @@
 </button>
 
 <script>
-// ═══════════════════════════════════════════
-// DIAGNÓSTICO — mostra erros no ecrã da password
-// ═══════════════════════════════════════════
 window.addEventListener('error', function (e) {
     var el = document.getElementById('authErro');
     if (el) el.textContent = '⚠️ Erro: ' + (e.message || 'desconhecido') + ' (' + (e.filename || '').split('/').pop() + ':' + e.lineno + ')';
@@ -856,9 +853,6 @@ window.addEventListener('unhandledrejection', function (e) {
 <script src="config.js"></script>
 
 <script>
-// ═══════════════════════════════════════════
-// VERIFICAÇÃO DE DEPENDÊNCIAS
-// ═══════════════════════════════════════════
 (function () {
     var problemas = [];
     if (typeof SENHA_HASH === 'undefined' || !SENHA_HASH) problemas.push('config.js (SENHA_HASH)');
@@ -872,9 +866,6 @@ window.addEventListener('unhandledrejection', function (e) {
     }
 })();
 
-// ═══════════════════════════════════════════
-// AUTENTICAÇÃO
-// ═══════════════════════════════════════════
 function siteAutenticado() {
     try { return localStorage.getItem('siteAuth') === 'ok'; } catch (e) { return false; }
 }
@@ -956,9 +947,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') tentarEntrar(); });
 });
 
-// ═══════════════════════════════════════════
-// MENU
-// ═══════════════════════════════════════════
 let menuOpen = false;
 function toggleMenu() {
     menuOpen = !menuOpen;
@@ -977,9 +965,6 @@ document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'l')) { e.preventDefault(); bloquearSite(); }
 });
 
-// ═══════════════════════════════════════════
-// TEMA
-// ═══════════════════════════════════════════
 const _mediaDark = window.matchMedia('(prefers-color-scheme: dark)');
 function _getTemaPreferido() { try { return localStorage.getItem('tema') || 'claro'; } catch (e) { return 'claro'; } }
 function _darkAtivo(t) { if (t === 'escuro') return true; if (t === 'claro') return false; return _mediaDark.matches; }
@@ -1009,9 +994,6 @@ function ciclarTema() {
 _mediaDark.addEventListener('change', () => { if (_getTemaPreferido() === 'auto') _aplicarTema(); });
 _aplicarTema();
 
-// ═══════════════════════════════════════════
-// DERIVADOS
-// ═══════════════════════════════════════════
 const todosJogadores = [
     ...inscritos.map(j => ({ ...j, inscrito: true })),
     ...naoInscritos.map(j => ({ ...j, inscrito: false }))
@@ -1047,8 +1029,6 @@ function fmtEur(v) {
 function isencoesDe(nome) { if (typeof ISENCOES === 'undefined') return []; return ISENCOES[nome] || []; }
 function quotasReduzidasDe(nome) { if (typeof QUOTAS_REDUZIDAS === 'undefined') return {}; return QUOTAS_REDUZIDAS[nome] || {}; }
 
-// ⚠️ mesesPagos — SÓ conta meses efetivamente pagos (pagamentos + isenções).
-// As QUOTAS_REDUZIDAS só alteram o VALOR de um mês, não indicam que foi pago.
 function mesesPagos(nome) {
     const pag = pagamentos[nome] || [];
     const isen = isencoesDe(nome);
@@ -1060,6 +1040,7 @@ function inscricaoPagaPelaCaixa(nome) { if (typeof INSCRICOES_PAGAS_CAIXA === 'u
 function sociosEmPrestacoes(nome) { if (typeof SOCIOS_EM_PRESTACOES === 'undefined') return null; return SOCIOS_EM_PRESTACOES[nome] || null; }
 function jaPagouInscricao(nome) { return inscricoesPagas.includes(nome) || inscricaoPagaPelaCaixa(nome); }
 function socioPagouAoClube(nome) { if (typeof sociosPagoAoClube === 'undefined') return false; return sociosPagoAoClube.includes(nome); }
+const _devem10Global = (typeof SOCIOS_A_DEVER_10 !== 'undefined') ? SOCIOS_A_DEVER_10 : [];
 
 function estatutoNoMes(nome, mIdx) {
     const jogador = todosJogadores.find(j => j.nome === nome);
@@ -1124,7 +1105,6 @@ function ultimoPagamentoHistorico(nome) {
     }
     return null;
 }
-// ⚠️ Só soma os meses que o jogador efetivamente pagou.
 const recebidoReal = todosJogadores.reduce((tot, j) => {
     return tot + mesesPagos(j.nome).reduce((s, mIdx) => s + valorQuotaMes(j.nome, mIdx), 0);
 }, 0);
@@ -1154,9 +1134,12 @@ const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
 const _prestMapGlobal = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
 const _prestNomesGlobal = Object.keys(_prestMapGlobal).filter(n => !sociosPagos.includes(n) && !socioPagouAoClube(n));
 
-// Dinheiro físico na gaveta (o que já entrou)
-let sociosEmMaosFisico = sociosPagosEmMaos.length * valorSocio;
-// Dívida real ao clube (o que tem de ser entregue por inteiro)
+let sociosEmMaosFisico = 0;
+sociosPagosEmMaos.forEach(n => {
+    if (_devem10Global.includes(n)) sociosEmMaosFisico += 40;
+    else sociosEmMaosFisico += valorSocio; // 50
+});
+
 let sociosDividaClube = sociosPagosEmMaos.length * valorSocio;
 
 _prestNomesGlobal.forEach(n => {
@@ -1164,9 +1147,7 @@ _prestNomesGlobal.forEach(n => {
     sociosDividaClube += _prestMapGlobal[n].total;
 });
 
-// O que o clube vai receber (mostrado no hero)
 const sociosEmMaos = sociosDividaClube;
-// O que falta na gaveta e a caixa tem de reservar
 const sociosEmFalta = sociosDividaClube - sociosEmMaosFisico;
 
 const totalEmMaos = saldoEmMaosVeteranos + sociosEmMaosFisico;
@@ -1200,9 +1181,6 @@ const aniversariantesMesAtual = porMes[mesAtualNum].length;
 let mesMaisAniversarios = 1, maxCount = 0;
 for (let m = 1; m <= 12; m++) { if (porMes[m].length > maxCount) { maxCount = porMes[m].length; mesMaisAniversarios = m; } }
 
-// ═══════════════════════════════════════════
-// INFO ÉPOCA (rodapé)
-// ═══════════════════════════════════════════
 function _infoEpoca() {
     const now = new Date();
     const m = now.getMonth() + 1;
@@ -1233,9 +1211,6 @@ function renderFooterUltimaAtualizacao() {
     if (nota && typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') nota.textContent = 'Última atualização: ' + DATA_ULTIMA_ATUALIZACAO;
 }
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
 function calcIdade(nasc) {
     if (!nasc) return '—';
     const p = nasc.split('/');
@@ -1272,9 +1247,6 @@ function tornarNomesClicaveis(texto) {
     });
 }
 
-// ═══════════════════════════════════════════
-// PARTILHA WHATSAPP (histórico)
-// ═══════════════════════════════════════════
 function partilharUltimaEntrada() {
     const ultima = historico[0];
     if (!ultima) return;
@@ -1293,9 +1265,6 @@ function partilharUltimaEntrada() {
     window.open(url, '_blank');
 }
 
-// ═══════════════════════════════════════════
-// CHARTS (infra)
-// ═══════════════════════════════════════════
 const chartInstances = {};
 function freshCanvas(id) {
     const o = document.getElementById(id);
@@ -1335,9 +1304,6 @@ function chartThemeColors() {
     };
 }
 
-// ═══════════════════════════════════════════
-// ESTADO
-// ═══════════════════════════════════════════
 let quotasFiltro = 'todos';
 let quotasOrdem = 'padrao';
 let histFiltro = 'todos';
@@ -1362,9 +1328,6 @@ const tipoInfo = {
     venda: { cor: '#0ea5e9', icon: '🛍️', label: 'Venda' }
 };
 
-// ═══════════════════════════════════════════
-// NOTÍCIAS + RESUMO
-// ═══════════════════════════════════════════
 function renderNoticias() {
     const lista = (typeof noticias !== 'undefined' && Array.isArray(noticias)) ? noticias : [];
     const el = document.getElementById('resumo-noticias');
@@ -1461,7 +1424,7 @@ function renderResumo() {
     }
     sd += `<tr class="linha-sep"><td class="linha-total">Saldo livre dos veteranos</td><td class="center linha-total" style="font-size:15px">${fmtEur(livreVeteranos)}</td></tr>`;
     sd += '</tbody></table></div>';
-    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco), depois do que já pagaste.<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar (campo, AFA, etc.).<br>ℹ️ Só entram no saldo as vendas <strong>já recebidas</strong> — ${fmtEur(totalVendasPendentes)} de vendas por receber ficam de fora até serem cobradas.<br>ℹ️ Dos ${sociosPagos.length + Object.keys(_prestMapGlobal).length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os €40 diretamente ao clube (não passaram pela caixa). Em dívida ao clube: <strong>${fmtEur(sociosEmMaos)}</strong> (${sociosPagosEmMaos.length} × €40${_prestNomesGlobal.length > 0 ? ' + ' + _prestNomesGlobal.length + ' em prestações' : ''}). O valor de ${fmtEur(sociosEmFalta)} que falta na caixa já foi reservado no saldo livre.</p>`;
+    sd += `<p style="font-size:11px;color:#888;margin-top:12px;line-height:1.6">ℹ️ <strong>Saldo em mãos</strong> é o dinheiro que tens agora (físico + banco).<br>ℹ️ <strong>Saldo livre</strong> é o que fica depois de reservares o que ainda tens de pagar.<br>ℹ️ Dos ${sociosPagos.length + Object.keys(_prestMapGlobal).length} sócios, <strong>${sociosPagoAoClube.length}</strong> entregaram os 50€ diretamente ao clube. Em dívida ao clube: <strong>${fmtEur(sociosEmMaos)}</strong>. O valor de ${fmtEur(sociosEmFalta)} que falta na caixa já foi reservado no saldo livre.</p>`;
     document.getElementById('saldo-decomposicao').innerHTML = sd;
 
     const ultimos = (typeof historico !== 'undefined' ? historico : []).slice(0, 5);
@@ -1471,9 +1434,6 @@ function renderResumo() {
     document.getElementById('resumo-movimentos').innerHTML = mvHtml;
 }
 
-// ═══════════════════════════════════════════
-// CHARTS (init)
-// ═══════════════════════════════════════════
 function initResumoCharts() {
     if (typeof Chart === 'undefined') return;
     const prevRec = MESES.map(() => receitaMensalEsperada);
@@ -1592,9 +1552,6 @@ function initTreinosCharts() {
     });
 }
 
-// ═══════════════════════════════════════════
-// DESPESAS
-// ═══════════════════════════════════════════
 function renderDespesas() {
     document.getElementById('despesas-cards').innerHTML =
         makeCard('Total Despesas', fmtEur(despesasTotais), 'fixas + extra', '#0D3B66') +
@@ -1632,9 +1589,6 @@ function renderDespesas() {
     document.getElementById('tabela-despesas').innerHTML = dh;
 }
 
-// ═══════════════════════════════════════════
-// QUOTAS
-// ═══════════════════════════════════════════
 function renderVerificacaoMensal() {
     const mesesFechados = [];
     for (let i = 0; i < MESES.length; i++) if (mesFechado(i)) mesesFechados.push(i);
@@ -1771,9 +1725,6 @@ function renderQuotas() {
 }
 function toggleMesAcc(i) { document.getElementById('mesacc-' + i).classList.toggle('open'); }
 
-// ═══════════════════════════════════════════
-// INSCRIÇÕES / SÓCIOS
-// ═══════════════════════════════════════════
 function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, labels, sublabelTotal, sublabelRecebido, sublabelPorPagar, nota, mostrarAoClube }) {
     const total = jogadores.length;
     const prestacoes = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
@@ -1809,8 +1760,14 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
         if (prest) badge = '<span class="badge badge-ok">Pago *</span>';
         else if (cxPaid) badge = '<span class="badge badge-clube">Paga pela caixa</span>';
         else if (!pago) badge = '<span class="badge badge-falta">Por pagar</span>';
-        else if (mostrarAoClube && socioPagouAoClube(j.nome)) badge = '<span class="badge badge-clube">Pago ao clube</span>';
-        else badge = '<span class="badge badge-ok">Pago</span>';
+        else if (mostrarAoClube && socioPagouAoClube(j.nome)) {
+            if (_devem10Global.includes(j.nome)) badge = '<span class="badge badge-clube">Pago 40€ (falta 10€)</span>';
+            else badge = '<span class="badge badge-clube">Pago ao clube</span>';
+        }
+        else {
+            if (mostrarAoClube && _devem10Global.includes(j.nome)) badge = '<span class="badge badge-falta">Pago 40€ · Falta 10€</span>';
+            else badge = '<span class="badge badge-ok">Pago</span>';
+        }
         html += `<tr><td class="player-name clickable" onclick="abrirPerfil('${escapeAttr(j.nome)}')">${j.nome}</td><td class="center">€${valor}</td><td class="center">${badge}</td></tr>`;
     });
     html += '</tbody></table></div>';
@@ -1818,9 +1775,6 @@ function renderEstadoPagamento({ cardsId, tabelaId, jogadores, pagos, valor, lab
     document.getElementById(tabelaId).innerHTML = html;
 }
 
-// ═══════════════════════════════════════════
-// ANIVERSÁRIOS
-// ═══════════════════════════════════════════
 function renderAniversarios() {
     document.getElementById('aniversarios-cards').innerHTML =
         makeCard('Total com Data', totalComData, 'de ' + todosJogadores.length + ' jogadores', '#0D3B66') +
@@ -1854,9 +1808,6 @@ function renderAniversarios() {
     document.getElementById('aniversarios-grid').innerHTML = bmHtml;
 }
 
-// ═══════════════════════════════════════════
-// TREINOS
-// ═══════════════════════════════════════════
 function renderBlocoPresencas(titulo, cor, lista) {
     let html = `<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px;color:${cor}">${titulo}</h3>`;
     html += '<div class="table-wrap"><table class="presence-table"><thead><tr><th>Jogador</th><th class="center">Presenças</th><th class="center">Percentagem</th></tr></thead><tbody>';
@@ -1915,9 +1866,6 @@ function renderTreinos() {
 }
 function togglePresAcc(i) { document.getElementById('presacc-' + i).classList.toggle('open'); }
 
-// ═══════════════════════════════════════════
-// VENDAS + ATAS
-// ═══════════════════════════════════════════
 function renderVendas() {
     document.getElementById('vendas-cards').innerHTML =
         makeCard('Itens Vendidos', totalItensVendidos, 'unidades', '#0D3B66') +
@@ -1942,7 +1890,7 @@ function renderAtas() {
     document.getElementById('atas-cards').innerHTML =
         makeCard('Total Reuniões', atas.length, 'nesta época', '#0D3B66') +
         makeCard('Última Reunião', atas[0].data, '', '#1A6FB5') +
-        makeCard('Decisões', 1, 'reunião com deliberações', '#64748b');
+        makeCard('Decisões', 2, 'reuniões com deliberações', '#64748b');
     let ah = '';
     atas.forEach(a => {
         const cls = a.destaque ? 'ata-card destaque' : 'ata-card';
@@ -1953,9 +1901,6 @@ function renderAtas() {
     document.getElementById('atas-lista').innerHTML = ah;
 }
 
-// ═══════════════════════════════════════════
-// HISTÓRICO
-// ═══════════════════════════════════════════
 function setHistFiltro(f) { histFiltro = f; renderHistorico(); }
 function setHistOrdem(o) { histOrdem = o; renderHistorico(); }
 function setHistPesquisa(v) {
@@ -2032,9 +1977,6 @@ function renderHistorico() {
     el.innerHTML = hh;
 }
 
-// ═══════════════════════════════════════════
-// SUB-TABS + TORNEIOS
-// ═══════════════════════════════════════════
 function showSubTab(id) {
     document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
@@ -2124,9 +2066,6 @@ function renderTorneios() {
     document.getElementById('sub-torneios').innerHTML = html;
 }
 
-// ═══════════════════════════════════════════
-// CALENDÁRIO + CLASSIFICAÇÃO DA LIGA
-// ═══════════════════════════════════════════
 function renderCalendario() {
     const el = document.getElementById('sub-calendario');
     const lista = (typeof calendario !== 'undefined' && Array.isArray(calendario)) ? calendario : [];
@@ -2193,9 +2132,6 @@ function renderClassificacao() {
     el.innerHTML = ch;
 }
 
-// ═══════════════════════════════════════════
-// PERFIL
-// ═══════════════════════════════════════════
 function encontrarJogador(termo) {
     if (!termo) return null;
     const t = termo.toLowerCase();
@@ -2220,6 +2156,7 @@ function calcularEstadoJogador(jogador) {
     if (jogador.inscrito && !jaPagouInscricao(nomeC)) itens.push({ tipo: 'inscricao', label: 'Inscrição AFA', valor: valorInscricao });
     const prest = sociosEmPrestacoes(nomeC);
     if (jogador.inscrito && !sociosPagos.includes(nomeC) && !prest) itens.push({ tipo: 'socio', label: 'Quota de sócio', valor: valorSocio });
+    if (_devem10Global.includes(nomeC)) itens.push({ tipo: 'socio', label: 'Atualização Sócio', valor: 10 });
     const compra = compras6Set.find(c => c.nome === nomeC);
     if (compra && !compra.pago) itens.push({ tipo: 'equipamento', label: `Equipamento (${compra.itens.length} ${compra.itens.length === 1 ? 'item' : 'itens'})`, valor: compra.total });
     amigaveis.forEach(a => {
@@ -2301,13 +2238,20 @@ function abrirPerfil(nome) {
         const socioPago = sociosPagos.includes(nomeCompleto);
         const aoClube = socioPagouAoClube(nomeCompleto);
         const prestSocio = sociosEmPrestacoes(nomeCompleto);
+        const deve10 = _devem10Global.includes(nomeCompleto);
         let socioBadge;
         if (prestSocio) socioBadge = '<span class="modal-badge badge-ok">Pago *</span>';
         else if (!socioPago) socioBadge = '<span class="modal-badge badge-falta">Por pagar</span>';
-        else if (aoClube) socioBadge = '<span class="modal-badge badge-clube">Pago ao clube</span>';
-        else socioBadge = '<span class="modal-badge badge-ok">Pago</span>';
+        else if (aoClube) {
+            if (deve10) socioBadge = '<span class="modal-badge badge-clube">Pago 40€ (falta 10€)</span>';
+            else socioBadge = '<span class="modal-badge badge-clube">Pago ao clube</span>';
+        }
+        else {
+            if (deve10) socioBadge = '<span class="modal-badge badge-falta">Pago 40€ · Falta 10€</span>';
+            else socioBadge = '<span class="modal-badge badge-ok">Pago</span>';
+        }
         conteudo += `<div class="modal-section"><h4>🤝 Sócio (€${valorSocio})</h4><div class="modal-row"><span>Estado</span>${socioBadge}</div>`;
-        if (prestSocio) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">* Caso especial — €40 diluídos na quota mensal (€4/mês)</span></div>`;
+        if (prestSocio) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">* Caso especial — €50 diluídos na quota mensal (€4/mês)</span></div>`;
         else if (socioPago && aoClube) conteudo += `<div class="modal-row"><span style="font-size:11px;color:#888">Entregue diretamente ao clube principal</span></div>`;
         conteudo += `</div>`;
     }
@@ -2324,9 +2268,6 @@ function abrirPerfil(nome) {
 function fecharPerfil() { document.getElementById('perfilModal').classList.remove('open'); document.body.style.overflow = ''; }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('perfilModal').classList.contains('open')) fecharPerfil(); });
 
-// ═══════════════════════════════════════════
-// PESQUISA
-// ═══════════════════════════════════════════
 function toggleSearch() {
     searchOpen = !searchOpen;
     const panel = document.getElementById('searchPanel');
@@ -2358,9 +2299,6 @@ function handleSearch(query) {
 function pesquisarAbrirPerfil(nome) { if (searchOpen) toggleSearch(); setTimeout(() => abrirPerfil(nome), 180); }
 function goToTab(tab) { if (searchOpen) toggleSearch(); setTimeout(() => { showTab(tab); marcarMenuAtivo(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 150); }
 
-// ═══════════════════════════════════════════
-// RECIBO
-// ═══════════════════════════════════════════
 function _anoDoMes(mIdx) {
     const anoInicio = parseInt((typeof EPOCA_ATUAL !== 'undefined' ? EPOCA_ATUAL.split('/')[0] : '2026'));
     return mIdx <= 3 ? anoInicio : anoInicio + 1;
@@ -2373,6 +2311,7 @@ function imprimirRecibo(nome) {
     const inscricaoPaga = jaPagouInscricao(j.nome);
     const socioPago = inscrito && sociosPagos.includes(j.nome);
     const socioAoClube = socioPago && socioPagouAoClube(j.nome);
+    const deve10 = _devem10Global.includes(j.nome);
     const compra = compras6Set.find(c => c.nome === j.nome);
     const linhas = [];
     let total = 0;
@@ -2384,9 +2323,10 @@ function imprimirRecibo(nome) {
     });
     if (inscricaoPaga && !inscricaoPagaPelaCaixa(j.nome)) { linhas.push(['Inscrição na AFA', `€${valorInscricao}`]); total += valorInscricao; }
     if (socioPago) {
-        if (socioAoClube) linhas.push(['Quota de sócio (entregue ao clube principal)', `€${valorSocio}`]);
-        else linhas.push(['Quota de sócio (entregue ao tesoureiro)', `€${valorSocio}`]);
-        total += valorSocio;
+        const vSocioPago = deve10 ? 40 : valorSocio;
+        if (socioAoClube) linhas.push([`Quota de sócio (entregue ao clube principal)`, `€${vSocioPago}`]);
+        else linhas.push([`Quota de sócio (entregue ao tesoureiro)`, `€${vSocioPago}`]);
+        total += vSocioPago;
     }
     amigaveis.forEach(a => { if (!a.arbitro) return; if (!a.arbitro.pagaram.includes(j.nome)) return; linhas.push([`Árbitro — amigável vs ${a.adversario} (${a.data})`, `€${a.arbitro.valorPorJogador}`]); total += a.arbitro.valorPorJogador; });
     if (compra && compra.pago) { linhas.push([`Equipamento — ${compra.itens.join(', ')}`, `€${compra.total}`]); total += compra.total; }
@@ -2402,10 +2342,6 @@ function imprimirRecibo(nome) {
         setTimeout(() => document.body.classList.remove('printing', 'printing-recibo'), 500);
     }, 60);
 }
-
-// ═══════════════════════════════════════════
-// SNAPSHOT FINANCEIRO (PDF + Excel + JSON)
-// ═══════════════════════════════════════════
 
 function carregarLib(url) {
     return new Promise((resolve, reject) => {
@@ -2468,10 +2404,11 @@ function buildSnapshot() {
         const pago = sociosPagos.includes(j.nome);
         const clube = socioPagouAoClube(j.nome);
         const prest = sociosEmPrestacoes(j.nome);
+        const deve10 = _devem10Global.includes(j.nome);
         let estado = 'Por pagar';
         if (prest) estado = 'Em prestações (€' + prest.jaPago + '/' + prest.total + ')';
-        else if (pago && clube) estado = 'Pago ao clube';
-        else if (pago) estado = 'Pago (em mãos)';
+        else if (pago && clube) estado = deve10 ? 'Pago 40€ ao clube (falta 10€)' : 'Pago ao clube';
+        else if (pago) estado = deve10 ? 'Pago 40€ (falta 10€)' : 'Pago (em mãos)';
         return { nome: j.nome, valor: valorSocio, estado };
     });
     s.vendas = compras6Set.map(v => ({
@@ -2535,7 +2472,7 @@ function exportPDFPrint() {
     h += '</tbody></table>';
     h += '<h2>6. Sócios</h2><table><thead><tr><th>Nome</th><th class="right" style="width:80px">Valor</th><th class="center" style="width:160px">Estado</th></tr></thead><tbody>';
     s.socios.forEach(x => {
-        const cls = x.estado === 'Por pagar' ? 'badge-falta' : (x.estado.indexOf('clube') >= 0 ? 'badge-clube' : 'badge-pago');
+        const cls = x.estado.includes('Por pagar') ? 'badge-falta' : (x.estado.indexOf('clube') >= 0 ? 'badge-clube' : 'badge-pago');
         h += '<tr><td>' + x.nome + '</td><td class="right">' + fmtEur(x.valor) + '</td><td class="center ' + cls + '">' + x.estado + '</td></tr>';
     });
     h += '</tbody></table>';
@@ -2661,7 +2598,7 @@ async function exportPDFjsPDF() {
     titulo('5. Inscrições');
     tabela(['Nome', 'Valor', 'Estado'], s.inscricoes.map(i => [i.nome, fmtEur(i.valor), i.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
     titulo('6. Sócios');
-    tabela(['Nome', 'Valor', 'Estado'], s.socios.map(x => [x.nome, fmtEur(x.valor), x.estado]), [CW * 0.5, CW * 0.15, CW * 0.35], ['left', 'right', 'center']);
+    tabela(['Nome', 'Valor', 'Estado'], s.socios.map(x => [x.nome, fmtEur(x.valor), x.estado]), [CW * 0.4, CW * 0.15, CW * 0.45], ['left', 'right', 'center']);
     titulo('7. Vendas de Equipamento');
     tabela(['Nome', 'Itens', 'Total', 'Estado'], s.vendas.map(v => [v.nome, v.itens, fmtEur(v.total), v.estado]), [CW * 0.2, CW * 0.45, CW * 0.15, CW * 0.2], ['left', 'left', 'right', 'center']);
     titulo('8. Movimentos Financeiros');
@@ -2693,7 +2630,7 @@ async function exportXLSX() {
     addSheet('Despesas', [['Descrição', 'Data', 'Valor', 'Estado'],...s.despesas.map(d => [d.desc, d.data || '—', d.valor, d.pago ? 'Pago' : 'Por pagar'])], { cols: [{ wch: 50 }, { wch: 14 }, { wch: 12 }, { wch: 12 }] });
     addSheet('Quotas', [['Nome', 'Tipo', ...MESES, 'Total Pagos'],...s.quotas.map(q => [q.nome, q.tipo, ...q.meses, q.numPagos])], { cols: [{ wch: 22 }, { wch: 10 }, ...MESES.map(() => ({ wch: 5 })), { wch: 12 }] });
     addSheet('Inscricoes', [['Nome', 'Valor', 'Estado'],...s.inscricoes.map(i => [i.nome, i.valor, i.estado])], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 18 }] });
-    addSheet('Socios', [['Nome', 'Valor', 'Estado'],...s.socios.map(x => [x.nome, x.valor, x.estado])], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 24 }] });
+    addSheet('Socios', [['Nome', 'Valor', 'Estado'],...s.socios.map(x => [x.nome, x.valor, x.estado])], { cols: [{ wch: 22 }, { wch: 10 }, { wch: 30 }] });
     addSheet('Vendas', [['Nome', 'Itens', 'Total', 'Estado'],...s.vendas.map(v => [v.nome, v.itens, v.total, v.estado])], { cols: [{ wch: 20 }, { wch: 45 }, { wch: 10 }, { wch: 14 }] });
     addSheet('Movimentos', [['Data', 'Tipo', 'Descrição'],...s.movimentos.map(m => [m.data, m.tipo, m.desc])], { cols: [{ wch: 14 }, { wch: 14 }, { wch: 100 }] });
     const fname = 'Veteranos_Lobao_Snapshot_' + new Date().toISOString().slice(0, 10) + '.xlsx';
@@ -2706,11 +2643,11 @@ function exportJSON() {
     const horaGer = hoje.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
     const infoEpoca = _infoEpoca();
     const backup = {
-        meta: { titulo: 'Veteranos A.D.C. Lobão — Backup de Dados', geradoEm: dataGer + ' · ' + horaGer, epoca: infoEpoca.epoca, versao: '1.1', descricao: 'Backup completo dos dados editáveis (dados.js + config.js). Pode ser usado para restaurar, arquivar ou migrar.' },
+        meta: { titulo: 'Veteranos A.D.C. Lobão — Backup de Dados', geradoEm: dataGer + ' · ' + horaGer, epoca: infoEpoca.epoca, versao: '1.1', descricao: 'Backup completo dos dados editáveis (dados.js + config.js).' },
         constantes: { MESES: MESES, mesesAno: mesesAno, QUOTA: QUOTA, QUOTA_NI: QUOTA_NI, SALDO_INICIAL: SALDO_INICIAL, valorInscricao: valorInscricao, valorSocio: valorSocio, EPOCA_ATUAL: (typeof EPOCA_ATUAL !== 'undefined') ? EPOCA_ATUAL : null, DATA_ULTIMA_ATUALIZACAO: (typeof DATA_ULTIMA_ATUALIZACAO !== 'undefined') ? DATA_ULTIMA_ATUALIZACAO : null, DIA_TREINO: (typeof DIA_TREINO !== 'undefined') ? DIA_TREINO : null, PROJECAO_DESPESAS_MENSAIS: (typeof PROJECAO_DESPESAS_MENSAIS !== 'undefined') ? PROJECAO_DESPESAS_MENSAIS : [] },
         plantel: { inscritos: inscritos, naoInscritos: naoInscritos },
         mudancasEstatuto: (typeof MUDANCAS_ESTATUTO !== 'undefined') ? MUDANCAS_ESTATUTO : {},
-        quotas: { pagamentos: pagamentos, ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {}, QUOTAS_REDUZIDAS: (typeof QUOTAS_REDUZIDAS !== 'undefined') ? QUOTAS_REDUZIDAS : {}, INSCRICOES_PAGAS_CAIXA: (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [], SOCIOS_EM_PRESTACOES: (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {} },
+        quotas: { pagamentos: pagamentos, ISENCOES: (typeof ISENCOES !== 'undefined') ? ISENCOES : {}, QUOTAS_REDUZIDAS: (typeof QUOTAS_REDUZIDAS !== 'undefined') ? QUOTAS_REDUZIDAS : {}, INSCRICOES_PAGAS_CAIXA: (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined') ? INSCRICOES_PAGAS_CAIXA : [], SOCIOS_EM_PRESTACOES: (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {}, SOCIOS_A_DEVER_10: (typeof SOCIOS_A_DEVER_10 !== 'undefined') ? SOCIOS_A_DEVER_10 : [] },
         inscricoesPagas: inscricoesPagas,
         socios: { sociosPagos: sociosPagos, sociosPagoAoClube: (typeof sociosPagoAoClube !== 'undefined') ? sociosPagoAoClube : [] },
         merendaPaga: (typeof merendaPaga !== 'undefined') ? merendaPaga : [],
@@ -2732,9 +2669,6 @@ function exportJSON() {
     setSnapStatus('✓ Descarregado: ' + fname);
 }
 
-// ═══════════════════════════════════════════
-// INICIALIZAÇÃO
-// ═══════════════════════════════════════════
 let _siteInicializado = false;
 function inicializarSite() {
     if (_siteInicializado) return;
@@ -2804,7 +2738,7 @@ function inicializarSite() {
         sublabelRecebido: 'na caixa (a entregar)',
         sublabelPorPagar: 'sócios pendentes',
         mostrarAoClube: true,
-        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os €40 diretamente ao clube principal (não passou pela caixa dos veteranos). <strong>Pago</strong> = o valor está contigo, para entregares ao clube. <strong>Pago *</strong> = caso especial, com €40 diluídos na quota mensal — só conta o que já entrou.'
+        nota: 'ℹ️ <strong>Pago ao clube</strong> = o jogador entregou os 50€ diretamente ao clube principal. <strong>Pago 40€ · Falta 10€</strong> = deu a base, mas falta a atualização. <strong>Pago *</strong> = caso especial, com os 50€ diluídos na quota mensal.'
     });
 
     renderAniversarios();
