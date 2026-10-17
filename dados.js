@@ -1,6 +1,5 @@
 /* =========================================================
    dados.js - Todos os dados editáveis do site dos Veteranos
-   Basta editar este ficheiro para atualizar o site inteiro.
    ========================================================= */
 
 // --- CONSTANTES GERAIS ---
@@ -78,7 +77,7 @@ const pagamentos = {
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1],
     "Marcelo": [0],
-    "Pedro Cadete": [0, 1], // Outubro adicionado
+    "Pedro Cadete": [0, 1],
     "António Oliveira": [0],
     "André Pinho": [0],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
@@ -361,8 +360,9 @@ const atas = [
         pontos: [
             "Fábio Gonçalves — caso especial aprovado pela direção.",
             "Inscrição AFA: a caixa paga os 50 EUR por inteiro.",
-            "Quota de sócio: os 50 EUR são diluídos em 4 EUR/mês (Set a Jun).",
-            "No total, o atleta paga 240 EUR até ao final da época (10 × 24 EUR).",
+            "Quota de sócio: os 50 EUR são diluídos em 5 EUR/mês (Out a Jun).",
+            "Setembro pagou €24 (€20 quota + €4 sócio). Junho leva €26 para fechar.",
+            "No total, o atleta paga 250 EUR até ao final da época (Set: 24€ · Out-Mai: 25€ · Jun: 26€).",
             "Válido de Setembro 2026 a Junho 2027."
         ],
         presentes: "Direção dos Veteranos A.D.C. Lobão"
@@ -386,6 +386,7 @@ const atas = [
 // --- HISTÓRICO ---
 const historico = [
     { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
     { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
     { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetra 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
     { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
