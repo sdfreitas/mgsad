@@ -210,6 +210,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "17 Out 2026", tipo: "jogo", titulo: "Jogo vs CD Loureiro (Liga Masters, J1)", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Mário Oliveira", "Joel Tavares", "Américo Oliveira", "Pedro Ferreira", "Jorge Azevedo", "André Pinho", "Rui Rocha", "Amílcar André", "António Oliveira", "Pedro Costa", "Sérgio Freitas", "António Rocha", "José Eduardo", "Américo Silva", "Sergio Rodrigues"],
+      extra: [] },
     { data: "14 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Hugo André", "Sergio Rodrigues", "Daniel Dias", "André Pinho"],
       extra: ["Luís Paiva", "António José Silva", "Marcelo", "Zé Buraca"] },
@@ -247,7 +250,7 @@ const treinosJogos = [
 
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
 const calendario = [
-    { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "derrota", golosNos: 2, golosEles: 4, marcadores: ["Pedro Costa", "José Eduardo"] },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
     { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
@@ -385,6 +388,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR)." },
     { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
     { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
@@ -452,15 +456,15 @@ const historico = [
 const noticias = [
     {
         data: "17 Out 2026",
-        tag: "info",
-        titulo: "🤝 Quota de sócio subiu para 50€",
-        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ ao tesoureiro deve entregar a diferença de 10€. Quem entregou ao clube já está regularizado. Mário Oliveira e Pedro Cadete já liquidaram."
+        tag: "jogo",
+        titulo: "⚽ Derrota 2-4 frente ao CD Loureiro (J1 Liga Masters)",
+        corpo: "Arranque do campeonato em casa com derrota. Golos de Pedro Costa e José Eduardo. A massagista presente não cobrou o serviço."
     },
     {
         data: "17 Out 2026",
-        tag: "jogo",
-        titulo: "🏆 Arranque da Liga Masters",
-        corpo: "Jogámos em casa contra o CD Loureiro. A massagista presente não cobrou o serviço neste jogo."
+        tag: "info",
+        titulo: "🤝 Quota de sócio subiu para 50€",
+        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ ao tesoureiro deve entregar a diferença de 10€. Quem entregou ao clube já está regularizado. Mário Oliveira e Pedro Cadete já liquidaram."
     },
     {
         data: "11 Out 2026",
