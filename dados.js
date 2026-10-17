@@ -9,7 +9,7 @@ const QUOTA = 20;
 const QUOTA_NI = 10;
 const SALDO_INICIAL = 2220;
 const valorInscricao = 30;
-const valorSocio = 40;
+const valorSocio = 50;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
@@ -20,7 +20,6 @@ const DIA_TREINO = "Quarta 21h";
 const PROJECAO_DESPESAS_MENSAIS = [1620, 270, 420, 200, 550, 380, 270, 440, 270, 200];
 
 // --- MASSAGISTA ---
-// Valor por jogo em casa. Pago no dia de cada jogo (não é compromisso fixo).
 const MASSA_AGISTA_POR_JOGO = 25;
 
 // --- PLANTEL ---
@@ -67,12 +66,9 @@ const naoInscritos = [
 ];
 
 // --- MUDANÇAS DE ESTATUTO (inscrito ↔ não inscrito) ---
-const MUDANCAS_ESTATUTO = {
-    // (vazio por agora — todas as mudanças da época 2026/27 valem desde Setembro)
-};
+const MUDANCAS_ESTATUTO = {};
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
-// ⚠️ Só entra aqui quem PAGOU. Para valores diferentes do padrão, ver QUOTAS_REDUZIDAS em config.js
 const pagamentos = {
     "Pedro Costa": [0, 1],
     "Telmo": [0, 1],
@@ -82,7 +78,7 @@ const pagamentos = {
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1],
     "Marcelo": [0],
-    "Pedro Cadete": [0],
+    "Pedro Cadete": [0, 1], // Outubro adicionado
     "António Oliveira": [0],
     "André Pinho": [0],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
@@ -349,12 +345,23 @@ const amigaveis = [
 // --- ATAS ---
 const atas = [
     {
+        data: "17 Out 2026", titulo: "Atualização da quota de sócio para €50",
+        tags: [["decisao", "Decisão"], ["urgente", "Urgente"]], destaque: true,
+        pontos: [
+            "A direção do clube aumentou a quota de sócio para 50 EUR.",
+            "Foram previamente cobrados 40 EUR a todos os sócios.",
+            "Está a ser cobrada a diferença de 10 EUR a cada um.",
+            "Mário Oliveira e Pedro Cadete já liquidaram a diferença."
+        ],
+        presentes: "Direção dos Veteranos A.D.C. Lobão"
+    },
+    {
         data: "2 Out 2026", titulo: "Caso especial — Fábio Gonçalves (época 2026/27)",
         tags: [["decisao", "Decisão"], ["urgente", "Urgente"]], destaque: false,
         pontos: [
             "Fábio Gonçalves — caso especial aprovado pela direção.",
-            "Inscrição AFA: a caixa paga os 50 EUR por inteiro (em vez dos 20 EUR habituais). Acresce 30 EUR à despesa AFA da época.",
-            "Quota de sócio: os 40 EUR são diluídos em 4 EUR/mês (Set a Jun), ficando a quota mensal em 24 EUR.",
+            "Inscrição AFA: a caixa paga os 50 EUR por inteiro.",
+            "Quota de sócio: os 50 EUR são diluídos em 4 EUR/mês (Set a Jun).",
             "No total, o atleta paga 240 EUR até ao final da época (10 × 24 EUR).",
             "Válido de Setembro 2026 a Junho 2027."
         ],
@@ -362,12 +369,11 @@ const atas = [
     },
     {
         data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
-        tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: true,
+        tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: false,
         pontos: [
             "Caixa transitada da época anterior: 2.220 EUR.",
             "Campo - custo anual de 1.000 EUR confirmado.",
             "Inscrição na AFA - custo de 50 EUR por atleta: o atleta paga 30 EUR e a caixa dos veteranos cobre 20 EUR.",
-            "Massagista - valor a definir em reunião futura.",
             "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
             "Mensalidade definida em 20 EUR/mês a começar em Setembro.",
             "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
@@ -379,10 +385,11 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
     { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetra 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
-    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Pedro Costa pagou a quota de sócio (40 EUR)." },
     { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
-    { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado (não entra no saldo livre até ser efetivamente pago)." },
+    { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado." },
     { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
     { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
     { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
@@ -443,34 +450,28 @@ const historico = [
 // --- NOTÍCIAS ---
 const noticias = [
     {
+        data: "17 Out 2026",
+        tag: "info",
+        titulo: "🤝 Quota de sócio subiu para 50€",
+        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ deve entregar a diferença de 10€. Mário Oliveira e Pedro Cadete já liquidaram."
+    },
+    {
+        data: "17 Out 2026",
+        tag: "jogo",
+        titulo: "🏆 Arranque da Liga Masters",
+        corpo: "Jogámos em casa contra o CD Loureiro. A massagista presente não cobrou o serviço neste jogo."
+    },
+    {
         data: "11 Out 2026",
         tag: "info",
         titulo: "💆 Massagista definido: €25 por jogo em casa",
-        corpo: "A partir do primeiro jogo da Liga Masters, temos massagista a €25 por jogo em casa, pago no dia. São 8 jogos em casa previstos."
+        corpo: "A partir do primeiro jogo da Liga Masters, temos massagista a €25 por jogo em casa, pago no dia."
     },
     {
         data: "10 Out 2026",
         tag: "jogo",
         titulo: "✅ Vitória 3-2 frente ao Bustelo (jogo de treino)",
-        corpo: "Golos de Zé Buraca, Pedro Costa e André Pinho. Bom teste antes do arranque do campeonato."
-    },
-    {
-        data: "7 Out 2026",
-        tag: "jogo",
-        titulo: "🏆 Calendário da Liga Masters já disponível",
-        corpo: "Já saiu o calendário oficial. Começamos a 17 Out em casa com o CD Loureiro. Vê todos os jogos no separador Competição."
-    },
-    {
-        data: "24 Set 2026",
-        tag: "jogo",
-        titulo: "⚽ Jogo com o Bustelo a 10 de Outubro em casa",
-        corpo: "No dia 10 de outubro temos jogo com o Bustelo no nosso estádio. Contamos com todos!"
-    },
-    {
-        data: "18 Set 2026",
-        tag: "treino",
-        titulo: "⚽ Jogo de treino a 3 de Outubro em casa com o Sandim",
-        corpo: "Mais um teste antes do campeonato. Contamos com todos."
+        corpo: "Golos de Zé Buraca, Pedro Costa e André Pinho."
     }
 ];
 
