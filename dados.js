@@ -13,7 +13,7 @@ const valorSocio = 40;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "15 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "17 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -122,7 +122,8 @@ const sociosPagos = [
     "Joel Tavares", "Amílcar André", "Hugo André", "Pedro Ferreira",
     "Mário Oliveira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
-    "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota"
+    "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota",
+    "Pedro Costa"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -371,6 +372,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Pedro Costa pagou a quota de sócio (40 EUR)." },
     { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
     { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado (não entra no saldo livre até ser efetivamente pago)." },
     { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
