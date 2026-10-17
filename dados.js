@@ -277,6 +277,18 @@ const equipasGrupo = [
     "ADC Lobão", "CD Loureiro", "Guisande FC", "GD Fajões", "ADC Sanguedo"
 ];
 
+// --- RESULTADOS DA LIGA MASTERS (Jornada 1) ---
+const resultadosLiga = [
+    { jornada: 1, casa: "UD Fermedo", fora: "Lusitânia Lourosa FC", golosCasa: 1, golosFora: 6 },
+    { jornada: 1, casa: "AF União Lamas Veteranos", fora: "Fiães SC", golosCasa: 1, golosFora: 1 },
+    { jornada: 1, casa: "Guisande FC", fora: "GD Fajões", golosCasa: 1, golosFora: 0 },
+    { jornada: 1, casa: "Sc S. João Ver", fora: "AD Sanjoanense", golosCasa: 4, golosFora: 0 },
+    { jornada: 1, casa: "CD Feirense", fora: "Juv. Desp. Carregosense", golosCasa: 2, golosFora: 3 },
+    { jornada: 1, casa: "ADC Lobão", fora: "CD Loureiro", golosCasa: 2, golosFora: 4 },
+    { jornada: 1, casa: "UD Oliveirense", fora: "A.C. Cucujães", golosCasa: 2, golosFora: 3 },
+    { jornada: 1, casa: "Romariz FC", fora: "ARC S. Vicente Pereira", golosCasa: 5, golosFora: 0 }
+];
+
 // --- COMPETIÇÃO ---
 const torneios = [
     {
