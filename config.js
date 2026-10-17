@@ -25,18 +25,19 @@ const INSCRICOES_PAGAS_CAIXA = [
 ];
 
 // ─── SÓCIOS EM PRESTAÇÕES ───
-// Sócio total €50. Já pagou €4 em Set. Faltam €46, liquidados via quota mensal (€5/mês Out–Mai + €6 em Jun).
+// Sócio total €50. Set €4 pagos. Faltam €46, liquidados via quota mensal.
 const SOCIOS_EM_PRESTACOES = {
     "Fábio Gonçalves": { total: 50, jaPago: 4 }
 };
 
 // ─── SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ───
+// Apenas quem pagou 40€ EM MÃOS (ao tesoureiro) e ainda não deu a diferença.
+// Quem pagou diretamente ao clube já deu 50€ — NÃO entra aqui.
+// Mário Oliveira e Pedro Cadete já liquidaram a diferença — NÃO entram aqui.
 const SOCIOS_A_DEVER_10 = [
     "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
-    "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota",
-    "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André", "José Eduardo",
-    "Joel Tavares", "Pedro Costa"
+    "Daniel Dias", "Sergio Rodrigues", "Inácio", "Pedro Costa"
 ];
 
 // ─── MÉTODOS DE PAGAMENTO ───
