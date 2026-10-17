@@ -155,6 +155,13 @@ const DESPESAS_PAGAS = {
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
     {
+        data: "17 Out 2026",
+        desc: "Merenda e águas - jogo vs CD Loureiro",
+        itens: "Merenda jogadores: Fruta (2,35kg) — €3,71 · 2x Água Nascente 6L — €2,10 · 2x Cuetra 420g — €10,60 · 50 Copos 200ml — €2,30 · Bolachas Maria Dourada — €2,10 | Árbitros: 3x Panike Misto — €3,60 · 3x Água Nascente 0,5L — €0,60 · Depósito garrafas — €0,30",
+        valor: 25.31,
+        pago: true
+    },
+    {
         data: "10 Out 2026",
         desc: "Merenda - jogo vs Bustelo (partilhada com Veteranos do Bustelo)",
         itens: "Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40",
@@ -372,6 +379,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetra 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
     { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Pedro Costa pagou a quota de sócio (40 EUR)." },
     { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
     { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado (não entra no saldo livre até ser efetivamente pago)." },
