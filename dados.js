@@ -129,7 +129,8 @@ const sociosPagoAoClube = [
 
 // --- MERENDAS / FARNEL PAGOS ---
 const merendaPaga = [
-    "Zé Buraca", "Américo Oliveira", "José Eduardo", "Joel Tavares", "Jorge Azevedo"
+    "Zé Buraca", "Américo Oliveira", "José Eduardo", "Joel Tavares", "Jorge Azevedo",
+    "Américo Silva"
 ];
 
 // --- DESPESAS CONFIRMADAS ---
