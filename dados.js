@@ -79,7 +79,7 @@ const pagamentos = {
     "Marcelo": [0],
     "Pedro Cadete": [0, 1],
     "António Oliveira": [0],
-    "André Pinho": [0],
+    "André Pinho": [0, 1],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0, 1],
@@ -401,7 +401,7 @@ const atas = [
 // --- HISTÓRICO ---
 const historico = [
     { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
-    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR) · André Pinho pagou Outubro (20 EUR)." },
     { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
     { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
     { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetra 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
