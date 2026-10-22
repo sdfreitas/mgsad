@@ -12,7 +12,7 @@ const valorSocio = 50;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "17 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "21 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -211,6 +211,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "21 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "André Pinho"],
+      extra: ["Marcelo"] },
     { data: "17 Out 2026", tipo: "jogo", titulo: "Jogo vs CD Loureiro (Liga Masters, J1)", estado: "registado",
       presentes: ["Fábio Gonçalves", "Mário Oliveira", "Joel Tavares", "Américo Oliveira", "Pedro Ferreira", "Jorge Azevedo", "André Pinho", "Rui Rocha", "Amílcar André", "António Oliveira", "Pedro Costa", "Sérgio Freitas", "António Rocha", "José Eduardo", "Américo Silva", "Sergio Rodrigues"],
       extra: [] },
@@ -401,6 +404,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "21 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 21 de Outubro - 13 atletas presentes + 1 extra (Marcelo)." },
     { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR) · André Pinho pagou Outubro (20 EUR)." },
     { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
