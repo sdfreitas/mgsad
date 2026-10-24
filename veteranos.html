@@ -2167,6 +2167,7 @@ function renderClassificacao() {
     tabela.forEach(t => { t.dg = t.gm - t.gs; });
     tabela.sort((a, b) => {
         if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.j !== a.j) return b.j - a.j;
         if (b.dg !== a.dg) return b.dg - a.dg;
         if (b.gm !== a.gm) return b.gm - a.gm;
         return a.nome.localeCompare(b.nome);
@@ -2182,7 +2183,7 @@ function renderClassificacao() {
     });
 
     ch += '</tbody></table></div>';
-    ch += '<p class="note" style="margin-top:12px">Liga Masters · 1.ª Fase · Atualizado com os resultados da Jornada 1</p>';
+    ch += '<p class="note" style="margin-top:12px">Liga Masters · 1.ª Fase · Atualizado com os resultados da Jornada 2</p>';
     ch += '</div>';
     el.innerHTML = ch;
 }
@@ -2861,7 +2862,7 @@ function inicializarSite() {
     initInscricoesChart();
     renderEstadoPagamento({
         cardsId: 'socios-cards', tabelaId: 'tabela-socios', jogadores: inscritos, pagos: sociosPagos, valor: valorSocio,
-        labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Em mãos', porPagar: 'Por pagar' },
+        labels: { total: 'Total Sócios', pagos: 'Pagos', recebido: 'Recebido parcial', porPagar: 'Por pagar' },
         sublabelTotal: 'jogadores inscritos',
         sublabelRecebido: 'na caixa (a entregar)',
         sublabelPorPagar: 'sócios pendentes',
