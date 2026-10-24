@@ -12,7 +12,7 @@ const valorSocio = 50;
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "23 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "24 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -83,7 +83,7 @@ const pagamentos = {
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0, 1],
-    "Pedro Ferreira": [0],
+    "Pedro Ferreira": [0, 1],
     "Sérgio Freitas": [0],
     "José Eduardo": [0, 1, 2, 3],
     "António José Silva": [0, 1],
@@ -411,6 +411,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
     { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
     { data: "21 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 21 de Outubro - 13 atletas presentes + 1 extra (Marcelo)." },
     { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
