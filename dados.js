@@ -218,6 +218,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "24 Out 2026", tipo: "jogo", titulo: "Jogo vs GD Fajões (Liga Masters, J2)", estado: "registado",
+      presentes: ["Fábio Gonçalves", "António Rocha", "Américo Oliveira", "Pedro Ferreira", "Rui Rocha", "José Eduardo", "André Pinho", "Amílcar André", "Sergio Rodrigues", "Pedro Costa", "Joel Tavares", "Sérgio Freitas", "Daniel Dias", "Pedro Cadete", "Mário Oliveira"],
+      extra: [] },
     { data: "21 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "Amílcar André", "António Oliveira", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "André Pinho"],
       extra: ["Marcelo"] },
@@ -262,7 +265,7 @@ const treinosJogos = [
 // --- CALENDÁRIO DA LIGA MASTERS (1.ª fase) ---
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "derrota", golosNos: 2, golosEles: 4, marcadores: ["Pedro Costa", "José Eduardo"] },
-    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "agendado" },
+    { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "derrota", golosNos: 0, golosEles: 3, marcadores: [] },
     { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
@@ -288,8 +291,9 @@ const equipasGrupo = [
     "ADC Lobão", "CD Loureiro", "Guisande FC", "GD Fajões", "ADC Sanguedo"
 ];
 
-// --- RESULTADOS DA LIGA MASTERS (Jornada 1) ---
+// --- RESULTADOS DA LIGA MASTERS ---
 const resultadosLiga = [
+    // Jornada 1
     { jornada: 1, casa: "UD Fermedo", fora: "Lusitânia Lourosa FC", golosCasa: 1, golosFora: 6 },
     { jornada: 1, casa: "AF União Lamas Veteranos", fora: "Fiães SC", golosCasa: 1, golosFora: 1 },
     { jornada: 1, casa: "Guisande FC", fora: "GD Fajões", golosCasa: 1, golosFora: 0 },
@@ -297,7 +301,16 @@ const resultadosLiga = [
     { jornada: 1, casa: "CD Feirense", fora: "Juv. Desp. Carregosense", golosCasa: 2, golosFora: 3 },
     { jornada: 1, casa: "ADC Lobão", fora: "CD Loureiro", golosCasa: 2, golosFora: 4 },
     { jornada: 1, casa: "UD Oliveirense", fora: "A.C. Cucujães", golosCasa: 2, golosFora: 3 },
-    { jornada: 1, casa: "Romariz FC", fora: "ARC S. Vicente Pereira", golosCasa: 5, golosFora: 0 }
+    { jornada: 1, casa: "Romariz FC", fora: "ARC S. Vicente Pereira", golosCasa: 5, golosFora: 0 },
+    // Jornada 2
+    { jornada: 2, casa: "GD Fajões", fora: "ADC Lobão", golosCasa: 3, golosFora: 0 },
+    { jornada: 2, casa: "Lusitânia Lourosa FC", fora: "CD Feirense", golosCasa: 2, golosFora: 0 },
+    { jornada: 2, casa: "CD Loureiro", fora: "Romariz FC", golosCasa: 1, golosFora: 1 },
+    { jornada: 2, casa: "Juv. Desp. Carregosense", fora: "Sc S. João Ver", golosCasa: 1, golosFora: 3 },
+    { jornada: 2, casa: "ADC Sanguedo", fora: "Guisande FC", golosCasa: 0, golosFora: 1 },
+    { jornada: 2, casa: "ARC S. Vicente Pereira", fora: "UD Oliveirense", golosCasa: 0, golosFora: 5 },
+    { jornada: 2, casa: "A.C. Cucujães", fora: "UD Fermedo", golosCasa: 4, golosFora: 1 },
+    { jornada: 2, casa: "AD Sanjoanense", fora: "AF União Lamas Veteranos", golosCasa: 2, golosFora: 0 }
 ];
 
 // --- COMPETIÇÃO ---
@@ -411,6 +424,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
     { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
     { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
     { data: "21 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 21 de Outubro - 13 atletas presentes + 1 extra (Marcelo)." },
@@ -480,6 +494,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "24 Out 2026",
+        tag: "jogo",
+        titulo: "⚽ Derrota 0-3 frente ao GD Fajões (J2 Liga Masters)",
+        corpo: "Jogo fora, sem golos marcados. 15 jogadores presentes."
+    },
     {
         data: "17 Out 2026",
         tag: "jogo",
