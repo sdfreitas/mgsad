@@ -1127,8 +1127,9 @@ amigaveis.forEach(a => {
     if (a.arbitro.custoPago) totalArbitroCusto += (a.arbitro.participantes || []).length * a.arbitro.valorPorJogador;
 });
 
-const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotais + totalVendasPagas + totalArbitroRecebido - totalArbitroCusto;
-const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido - despesasJaPagas - totalArbitroCusto;
+const _receitasExtras = (typeof RECEITAS_EXTRAS !== 'undefined') ? RECEITAS_EXTRAS : 0;
+const saldoEmMaosVeteranos = SALDO_INICIAL + recebidoReal + inscricoesRecebidas + totalVendasPagas + totalArbitroRecebido + _receitasExtras - despesasJaPagas - totalArbitroCusto;
+const saldo = SALDO_INICIAL + recebidoReal + inscricoesRecebidas - despesasTotais + totalVendasPagas + totalArbitroRecebido + _receitasExtras - totalArbitroCusto;
 
 const sociosPagosEmMaos = sociosPagos.filter(n => !socioPagouAoClube(n));
 const _prestMapGlobal = (typeof SOCIOS_EM_PRESTACOES !== 'undefined') ? SOCIOS_EM_PRESTACOES : {};
@@ -1361,7 +1362,6 @@ function renderResumo() {
     const inscPorPagar = inscritos.length - inscricoesPagas.length - (typeof INSCRICOES_PAGAS_CAIXA !== 'undefined' ? INSCRICOES_PAGAS_CAIXA.length : 0);
     const inscValor = inscPorPagar * valorInscricao;
 
-    // Cálculo de Sócios por Regularizar (para o novo cartão)
     const sociosPorPagar = inscritos.filter(j => {
         const pago = sociosPagos.includes(j.nome);
         const prest = sociosEmPrestacoes(j.nome);
@@ -1421,6 +1421,7 @@ function renderResumo() {
     sd += `<tr><td>Inscrições recebidas (${inscricoesPagas.length} × ${fmtEur(valorInscricao)})</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(inscricoesRecebidas)}</td></tr>`;
     sd += `<tr><td>Vendas de equipamento — recebidas</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(totalVendasPagas)}</td></tr>`;
     if (totalVendasPendentes > 0) sd += `<tr><td>Vendas de equipamento — por receber <span style="color:#999;font-size:11px">(não conta no saldo)</span></td><td class="center" style="color:#dc6843;font-weight:600">${fmtEur(totalVendasPendentes)}</td></tr>`;
+    if (_receitasExtras > 0) sd += `<tr><td>Receitas Extra (Merenda)</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(_receitasExtras)}</td></tr>`;
     sd += `<tr><td>Árbitros de amigáveis — recebido</td><td class="center" style="color:#16a34a;font-weight:600">+${fmtEur(totalArbitroRecebido)}</td></tr>`;
     sd += `<tr><td>Árbitros de amigáveis — pago</td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(totalArbitroCusto)}</td></tr>`;
     sd += `<tr><td>Despesas já pagas <span style="color:#999;font-size:11px">(fixas + extra)</span></td><td class="center" style="color:#c1121f;font-weight:600">−${fmtEur(despesasJaPagas)}</td></tr>`;
@@ -2503,6 +2504,7 @@ function buildSnapshot() {
         ['Inscrições recebidas (' + inscricoesPagas.length + ' × ' + fmtEur(valorInscricao) + ')', '+', fmtEur(inscricoesRecebidas)],
         ['Vendas de equipamento — recebidas', '+', fmtEur(totalVendasPagas)],
         ['Vendas de equipamento — por receber', '·', fmtEur(totalVendasPendentes)],
+        ['Receitas Extra (Merenda)', '+', fmtEur(_receitasExtras)],
         ['Árbitros de amigáveis — recebido', '+', fmtEur(totalArbitroRecebido)],
         ['Árbitros de amigáveis — pago', '−', fmtEur(totalArbitroCusto)],
         ['Despesas já pagas (fixas + extra)', '−', fmtEur(despesasJaPagas)],
