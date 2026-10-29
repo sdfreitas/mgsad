@@ -1261,6 +1261,8 @@ function partilharUltimaEntrada() {
         '💰 *Total em mãos:* ' + fmtEur(totalEmMaos) + '\n' +
         '🟢 *Após todas as despesas previstas:* ' + fmtEur(aposTudo) + '\n' +
         '\n' +
+        '🔗 *Link do Site:* ' + (typeof URL_SITE !== 'undefined' ? URL_SITE : '') + '\n' +
+        '\n' +
         '📅 ' + dataFmt;
     const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
     window.open(url, '_blank');
