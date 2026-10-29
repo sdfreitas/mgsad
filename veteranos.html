@@ -847,6 +847,8 @@ window.addEventListener('unhandledrejection', function (e) {
     var el = document.getElementById('authErro');
     if (el) el.textContent = '⚠️ Erro: ' + (e.reason && e.reason.message ? e.reason.message : 'promessa rejeitada');
 });
+
+var _siteInicializado = false;
 </script>
 
 <script src="dados.js"></script>
@@ -2802,7 +2804,6 @@ function exportJSON() {
     setSnapStatus('✓ Descarregado: ' + fname);
 }
 
-let _siteInicializado = false;
 function inicializarSite() {
     if (_siteInicializado) return;
     _siteInicializado = true;
