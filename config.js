@@ -7,9 +7,8 @@
 const SENHA_HASH = "db7c0fb81878ea0030e618a3e5c6fe30fcdd8b002ccc152581e4c509cac8d5a7";
 
 // ─── ISENÇÕES ───
-const ISENCOES = {
-    "Zé Buraca": [0]
-};
+// Zé Buraca já pagou Set e Out, por isso não tem isenções.
+const ISENCOES = {};
 
 // ─── QUOTAS REDUZIDAS ───
 const QUOTAS_REDUZIDAS = {
@@ -29,16 +28,6 @@ const INSCRICOES_PAGAS_CAIXA = [
 const SOCIOS_EM_PRESTACOES = {
     "Fábio Gonçalves": { total: 50, jaPago: 4 }
 };
-
-// ─── SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ───
-// Apenas quem pagou 40€ EM MÃOS (ao tesoureiro) e ainda não deu a diferença.
-// Quem pagou diretamente ao clube já deu 50€ — NÃO entra aqui.
-// Mário Oliveira e Pedro Cadete já liquidaram a diferença — NÃO entram aqui.
-const SOCIOS_A_DEVER_10 = [
-    "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
-    "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
-    "Daniel Dias", "Sergio Rodrigues", "Inácio", "Pedro Costa"
-];
 
 // ─── MÉTODOS DE PAGAMENTO ───
 const METODOS_PAGAMENTO = [
