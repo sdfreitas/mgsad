@@ -39,10 +39,4 @@ const METODOS_PAGAMENTO = [
 const REDES_SOCIAIS = [
     { nome: "Instagram", url: "https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" },
     { nome: "Facebook",  url: "https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" }
-];];
-
-// ─── REDES SOCIAIS ───
-const REDES_SOCIAIS = [
-    { nome: "Instagram", url: "https://www.instagram.com/veteranos_adc_lobao?igsi=azR2ZXhjOHoyMzc0" },
-    { nome: "Facebook",  url: "https://www.facebook.com/share/19fspGtMEr/?mibextid=wwXIfr" }
 ];
