@@ -69,6 +69,7 @@ const naoInscritos = [
 const MUDANCAS_ESTATUTO = {};
 
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
+// (Rui Rocha e António Rocha já pagaram e foram removidos)
 const SOCIOS_A_DEVER_10 = [
     "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", 
