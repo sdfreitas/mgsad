@@ -6,8 +6,7 @@
 const SENHA_HASH = "db7c0fb81878ea0030e618a3e5c6fe30fcdd8b002ccc152581e4c509cac8d5a7";
 
 // ─── LINK DO SITE (Para a partilha do WhatsApp) ───
-// ALTERA AQUI para o link verdadeiro do teu site no GitHub Pages!
-const URL_SITE = "https://veteranosadclobao.github.io/";
+const URL_SITE = "https://www.mgsad.pt/veteranos.html";
 
 // ─── ISENÇÕES ───
 const ISENCOES = {};
