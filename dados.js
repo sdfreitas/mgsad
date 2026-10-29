@@ -9,11 +9,11 @@ const QUOTA_NI = 10;
 const SALDO_INICIAL = 2220;
 const valorInscricao = 30;
 const valorSocio = 50;
-const RECEITAS_EXTRAS = 20; // Acerto da merenda (29 Out 2026)
+const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "29 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "28 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -433,9 +433,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Acerto de merenda (29 Out) — Todos os jogadores pagaram a merenda de hoje (20 EUR recebidos)." },
-    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (29 Out) — Zé Buraca pagou as quotas de Setembro e Outubro (20 EUR)." },
-    { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Outubro e Novembro (20 EUR)." },
+    { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Out e Nov (20 EUR). Zé Buraca pagou quotas de Set e Out (20 EUR). Acerto da merenda (20 EUR recebidos)." },
     { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
     { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
     { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
