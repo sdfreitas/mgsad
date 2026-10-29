@@ -234,6 +234,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "28 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "Daniel Dias", "André Pinho", "José Eduardo", "Sérgio Freitas"],
+      extra: ["Marcelo", "Zé Buraca", "Telmo", "António José Silva"] },
     { data: "24 Out 2026", tipo: "jogo", titulo: "Jogo vs GD Fajões (Liga Masters, J2)", estado: "registado",
       presentes: ["Fábio Gonçalves", "António Rocha", "Américo Oliveira", "Pedro Ferreira", "Rui Rocha", "José Eduardo", "André Pinho", "Amílcar André", "Sergio Rodrigues", "Pedro Costa", "Joel Tavares", "Sérgio Freitas", "Daniel Dias", "Pedro Cadete", "Mário Oliveira"],
       extra: [] },
@@ -440,6 +443,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
     { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Out e Nov (20 EUR). Zé Buraca pagou quotas de Set e Out (20 EUR). Acerto da merenda (20 EUR recebidos)." },
     { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
