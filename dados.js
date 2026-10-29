@@ -69,7 +69,6 @@ const naoInscritos = [
 const MUDANCAS_ESTATUTO = {};
 
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
-// (Rui Rocha e António Rocha já pagaram e foram removidos)
 const SOCIOS_A_DEVER_10 = [
     "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", 
@@ -160,6 +159,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "28 Out 2026",
+        desc: "Tábua de finos - treino",
+        itens: "Tábua de finos",
+        valor: 10,
+        pago: true
+    },
     {
         data: "23 Out 2026",
         desc: "Merenda - jogo vs GD Fajões",
@@ -434,6 +440,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Out e Nov (20 EUR). Zé Buraca pagou quotas de Set e Out (20 EUR). Acerto da merenda (20 EUR recebidos)." },
     { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
     { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
