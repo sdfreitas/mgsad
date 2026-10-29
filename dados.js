@@ -9,10 +9,11 @@ const QUOTA_NI = 10;
 const SALDO_INICIAL = 2220;
 const valorInscricao = 30;
 const valorSocio = 50;
+const RECEITAS_EXTRAS = 20; // Acerto da merenda (29 Out 2026)
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "24 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "29 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -67,6 +68,13 @@ const naoInscritos = [
 // --- MUDANÇAS DE ESTATUTO (inscrito ↔ não inscrito) ---
 const MUDANCAS_ESTATUTO = {};
 
+// --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
+const SOCIOS_A_DEVER_10 = [
+    "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
+    "Sérgio Freitas", "António José Silva", 
+    "Daniel Dias", "Sergio Rodrigues", "Inácio", "Pedro Costa"
+];
+
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
 const pagamentos = {
     "Pedro Costa": [0, 1],
@@ -76,7 +84,7 @@ const pagamentos = {
     "Sergio Rodrigues": [0],
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1],
-    "Marcelo": [0],
+    "Marcelo": [0, 1, 2],
     "Pedro Cadete": [0, 1],
     "António Oliveira": [0],
     "André Pinho": [0, 1],
@@ -93,7 +101,8 @@ const pagamentos = {
     "Inácio": [0],
     "Tiago Mota": [0],
     "Amílcar André": [0, 1],
-    "Fábio Gonçalves": [0]
+    "Fábio Gonçalves": [0],
+    "Zé Buraca": [0, 1]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -124,7 +133,7 @@ const sociosPagos = [
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
 const sociosPagoAoClube = [
     "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André",
-    "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota"
+    "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota", "Rui Rocha"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -424,6 +433,9 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Acerto de merenda (29 Out) — Todos os jogadores pagaram a merenda de hoje (20 EUR recebidos)." },
+    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (29 Out) — Zé Buraca pagou as quotas de Setembro e Outubro (20 EUR)." },
+    { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Outubro e Novembro (20 EUR)." },
     { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
     { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
     { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
