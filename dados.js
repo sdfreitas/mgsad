@@ -92,7 +92,7 @@ const pagamentos = {
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0, 1],
     "Pedro Ferreira": [0, 1],
-    "Sérgio Freitas": [0],
+    "Sérgio Freitas": [0, 1],
     "José Eduardo": [0, 1, 2, 3],
     "António José Silva": [0, 1],
     "Hugo André": [0],
@@ -443,7 +443,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas completou a quota de sócio (10 EUR restantes). Total entregue ao tesoureiro: 50 EUR, ainda por entregar ao clube principal." },
+    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro, ainda por entregar ao clube principal)." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
     { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
