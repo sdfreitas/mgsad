@@ -71,7 +71,7 @@ const MUDANCAS_ESTATUTO = {};
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
 const SOCIOS_A_DEVER_10 = [
     "Pedro Ferreira", "Américo Oliveira", "António Oliveira", "Américo Silva",
-    "Sérgio Freitas", "António José Silva", 
+    "António José Silva", 
     "Daniel Dias", "Sergio Rodrigues", "Inácio", "Pedro Costa"
 ];
 
@@ -443,6 +443,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (29 Out) — Sérgio Freitas completou a quota de sócio (10 EUR restantes). Total entregue ao tesoureiro: 50 EUR, ainda por entregar ao clube principal." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
     { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
