@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "29 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "31 Out 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -443,7 +443,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "29 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (29 Out) — Sérgio Freitas completou a quota de sócio (10 EUR restantes). Total entregue ao tesoureiro: 50 EUR, ainda por entregar ao clube principal." },
+    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas completou a quota de sócio (10 EUR restantes). Total entregue ao tesoureiro: 50 EUR, ainda por entregar ao clube principal." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
     { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
