@@ -289,7 +289,7 @@ const treinosJogos = [
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "derrota", golosNos: 2, golosEles: 4, marcadores: ["Pedro Costa", "José Eduardo"] },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "derrota", golosNos: 0, golosEles: 3, marcadores: [] },
-    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 3, golosEles: 2, marcadores: [] }, // Marcadores em falta
+    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 3, golosEles: 2, marcadores: ["Jorge Azevedo", "José Eduardo", "Sergio Rodrigues"] },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
@@ -456,7 +456,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Presenças e marcadores ainda por registar." },
+    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. Presenças ainda por registar." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
     { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
@@ -537,7 +537,7 @@ const noticias = [
         data: "31 Out 2026",
         tag: "jogo",
         titulo: "✅ Vitória 3-2 frente ao ADC Sanguedo (J3 Liga Masters)",
-        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Presenças e marcadores por registar."
+        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues."
     },
     {
         data: "24 Out 2026",
