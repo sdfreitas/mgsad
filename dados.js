@@ -236,7 +236,7 @@ const compras6Set = [
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
     { data: "31 Out 2026", tipo: "jogo", titulo: "Jogo vs ADC Sanguedo (Liga Masters, J3)", estado: "registado",
-      presentes: [],
+      presentes: ["Fábio Gonçalves", "Mário Oliveira", "Joel Tavares", "Américo Oliveira", "Pedro Ferreira", "Jorge Azevedo", "Rui Rocha", "André Pinho", "António Oliveira", "Sérgio Freitas", "Sergio Rodrigues", "José Eduardo", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha"],
       extra: [] },
     { data: "28 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "Daniel Dias", "André Pinho", "José Eduardo", "Sérgio Freitas"],
@@ -456,7 +456,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. Presenças ainda por registar." },
+    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
     { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
@@ -537,7 +537,7 @@ const noticias = [
         data: "31 Out 2026",
         tag: "jogo",
         titulo: "✅ Vitória 3-2 frente ao ADC Sanguedo (J3 Liga Masters)",
-        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues."
+        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 jogadores presentes."
     },
     {
         data: "24 Out 2026",
