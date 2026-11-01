@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "31 Out 2026";
+const DATA_ULTIMA_ATUALIZACAO = "1 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -83,7 +83,7 @@ const pagamentos = {
     "Américo Silva": [0],
     "Sergio Rodrigues": [0],
     "Américo Oliveira": [0, 1, 2],
-    "Joel Tavares": [0, 1],
+    "Joel Tavares": [0, 1, 2],
     "Marcelo": [0, 1, 2],
     "Pedro Cadete": [0, 1],
     "António Oliveira": [0],
@@ -133,7 +133,8 @@ const sociosPagos = [
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
 const sociosPagoAoClube = [
     "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André",
-    "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota", "Rui Rocha"
+    "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota", "Rui Rocha",
+    "Sérgio Freitas", "Pedro Cadete", "António Rocha"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -234,6 +235,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "31 Out 2026", tipo: "jogo", titulo: "Jogo vs ADC Sanguedo (Liga Masters, J3)", estado: "registado",
+      presentes: [],
+      extra: [] },
     { data: "28 Out 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sergio Rodrigues", "Daniel Dias", "André Pinho", "José Eduardo", "Sérgio Freitas"],
       extra: ["Marcelo", "Zé Buraca", "Telmo", "António José Silva"] },
@@ -285,7 +289,7 @@ const treinosJogos = [
 const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "derrota", golosNos: 2, golosEles: 4, marcadores: ["Pedro Costa", "José Eduardo"] },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "derrota", golosNos: 0, golosEles: 3, marcadores: [] },
-    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 3, golosEles: 2, marcadores: [] }, // Marcadores em falta
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
@@ -329,7 +333,16 @@ const resultadosLiga = [
     { jornada: 2, casa: "ADC Sanguedo", fora: "Guisande FC", golosCasa: 0, golosFora: 1 },
     { jornada: 2, casa: "ARC S. Vicente Pereira", fora: "UD Oliveirense", golosCasa: 0, golosFora: 5 },
     { jornada: 2, casa: "A.C. Cucujães", fora: "UD Fermedo", golosCasa: 4, golosFora: 1 },
-    { jornada: 2, casa: "AD Sanjoanense", fora: "AF União Lamas Veteranos", golosCasa: 2, golosFora: 0 }
+    { jornada: 2, casa: "AD Sanjoanense", fora: "AF União Lamas Veteranos", golosCasa: 2, golosFora: 0 },
+    // Jornada 3
+    { jornada: 3, casa: "Fiães SC", fora: "AD Sanjoanense", golosCasa: 0, golosFora: 2 },
+    { jornada: 3, casa: "UD Oliveirense", fora: "CD Loureiro", golosCasa: 1, golosFora: 0 },
+    { jornada: 3, casa: "Sc S. João Ver", fora: "Lusitânia Lourosa FC", golosCasa: 1, golosFora: 0 },
+    { jornada: 3, casa: "CD Feirense", fora: "A.C. Cucujães", golosCasa: 0, golosFora: 2 },
+    { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosFora: 2 },
+    { jornada: 3, casa: "UD Fermedo", fora: "ARC S. Vicente Pereira", golosCasa: 2, golosFora: 1 },
+    { jornada: 3, casa: "Romariz FC", fora: "GD Fajões", golosCasa: 3, golosFora: 5 },
+    { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 }
 ];
 
 // --- COMPETIÇÃO ---
@@ -443,7 +456,9 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro, ainda por entregar ao clube principal)." },
+    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Presenças e marcadores ainda por registar." },
+    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
+    { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
     { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
     { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
     { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
@@ -518,6 +533,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "31 Out 2026",
+        tag: "jogo",
+        titulo: "✅ Vitória 3-2 frente ao ADC Sanguedo (J3 Liga Masters)",
+        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Presenças e marcadores por registar."
+    },
     {
         data: "24 Out 2026",
         tag: "jogo",
