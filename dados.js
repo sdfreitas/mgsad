@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "1 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "2 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -160,6 +160,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "31 Out 2026",
+        desc: "Merenda - jogo vs ADC Sanguedo",
+        itens: "Cuetara Maria Oro 800g — €2,75 · Cuetra sortido 420g — €5,30 · Copos 200ml (50 un) — €2,30 · Água Duvale 6L — €1,00 · Fruta (2 un) — €2,60",
+        valor: 13.95,
+        pago: true
+    },
     {
         data: "28 Out 2026",
         desc: "Tábua de finos - treino",
@@ -456,6 +463,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetra sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
     { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
     { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
