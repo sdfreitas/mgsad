@@ -79,7 +79,7 @@ const pagamentos = {
     "Pedro Costa": [0, 1, 2],
     "Telmo": [0, 1],
     "Mário Oliveira": [0, 1, 2, 3],
-    "Américo Silva": [0, 1, 2],
+    "Américo Silva": [0, 1, 2, 3],
     "Sergio Rodrigues": [0],
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1, 2],
@@ -462,7 +462,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro e Novembro (40 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR)." },
+    { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR)." },
     { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetra sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
     { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
