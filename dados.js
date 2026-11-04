@@ -77,7 +77,7 @@ const SOCIOS_A_DEVER_10 = [
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
 const pagamentos = {
     "Pedro Costa": [0, 1, 2],
-    "Telmo": [0, 1],
+    "Telmo": [0, 1, 2],
     "Mário Oliveira": [0, 1, 2, 3],
     "Américo Silva": [0, 1, 2, 3],
     "Sergio Rodrigues": [0],
@@ -89,7 +89,7 @@ const pagamentos = {
     "André Pinho": [0, 1],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
-    "Jorge Azevedo": [0, 1],
+    "Jorge Azevedo": [0, 1, 2],
     "Pedro Ferreira": [0, 1],
     "Sérgio Freitas": [0, 1],
     "José Eduardo": [0, 1, 2, 3],
@@ -159,6 +159,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "3 Nov 2026",
+        desc: "Massagista - jogo vs ADC Sanguedo",
+        itens: "Serviço de massagista",
+        valor: 25,
+        pago: true
+    },
     {
         data: "31 Out 2026",
         desc: "Merenda - jogo vs ADC Sanguedo",
@@ -232,7 +239,7 @@ const listaPrecos = {
 };
 
 const compras6Set = [
-    { nome: "Telmo", itens: ["Calções saída", "Boné"], pago: false },
+    { nome: "Telmo", itens: ["Calções saída", "Boné"], pago: true },
     { nome: "Mário Oliveira", itens: ["Boné"], pago: true },
     { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: true },
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
@@ -241,6 +248,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "3 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sérgio Freitas", "Amílcar André"],
+      extra: ["Marcelo"] },
     { data: "31 Out 2026", tipo: "jogo", titulo: "Jogo vs ADC Sanguedo (Liga Masters, J3)", estado: "registado",
       presentes: ["Fábio Gonçalves", "Mário Oliveira", "Joel Tavares", "Américo Oliveira", "Pedro Ferreira", "Jorge Azevedo", "Rui Rocha", "André Pinho", "António Oliveira", "Sérgio Freitas", "Sergio Rodrigues", "José Eduardo", "Amílcar André", "Pedro Cadete", "Daniel Dias", "António Rocha"],
       extra: [] },
@@ -462,7 +472,9 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR)." },
+    { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR). Telmo pagou Novembro (10 EUR) e o equipamento (20 EUR). Jorge Azevedo pagou Novembro (20 EUR)." },
+    { data: "3 Nov 2026", tipo: "despesa", desc: "🧾 Pagamento do serviço de massagista referente ao jogo vs ADC Sanguedo (31 Out) - 25 EUR (pago pela caixa)." },
+    { data: "3 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 3 de Novembro - 14 atletas presentes + 1 extra (Marcelo)." },
     { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetra sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
     { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
