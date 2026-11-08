@@ -255,6 +255,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "7 Nov 2026", tipo: "jogo", titulo: "Jogo vs Guisande FC (Liga Masters, J4)", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Jorge Azevedo", "Rui Rocha", "José Eduardo", "Amílcar André", "Pedro Costa", "António Oliveira", "Américo Silva", "André Pinho", "António Rocha", "Mário Oliveira", "Pedro Cadete"],
+      extra: [] },
     { data: "3 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "António Oliveira", "Rui Rocha", "Pedro Costa", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Pedro Ferreira", "Américo Silva", "Joel Tavares", "António Rocha", "Sérgio Freitas", "Amílcar André"],
       extra: ["Marcelo"] },
@@ -313,7 +316,7 @@ const calendario = [
     { jornada: 1,  data: "17 Out 2026", casa: true,  adversario: "CD Loureiro",              hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "derrota", golosNos: 2, golosEles: 4, marcadores: ["Pedro Costa", "José Eduardo"] },
     { jornada: 2,  data: "24 Out 2026", casa: false, adversario: "GD Fajões",                hora: "16:00", local: "Campo das Cruzes (Fajões)",   estado: "derrota", golosNos: 0, golosEles: 3, marcadores: [] },
     { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 3, golosEles: 2, marcadores: ["Jorge Azevedo", "José Eduardo", "Sergio Rodrigues"] },
-    { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "agendado" },
+    { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "derrota", golosNos: 1, golosEles: 3, marcadores: ["José Eduardo"] },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
     { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
@@ -365,7 +368,9 @@ const resultadosLiga = [
     { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosFora: 2 },
     { jornada: 3, casa: "UD Fermedo", fora: "ARC S. Vicente Pereira", golosCasa: 2, golosFora: 1 },
     { jornada: 3, casa: "Romariz FC", fora: "GD Fajões", golosCasa: 3, golosFora: 5 },
-    { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 }
+    { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 },
+    // Jornada 4
+    { jornada: 4, casa: "Guisande FC", fora: "ADC Lobão", golosCasa: 3, golosFora: 1 }
 ];
 
 // --- COMPETIÇÃO ---
@@ -479,6 +484,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "7 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Guisande FC (Jornada 4 da Liga Masters, fora) - derrota 1-3. Golo de José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "7 Nov 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs Guisande FC (J4) - Cuetara sortido 420g (5,30 EUR) · Fruta (3 un) (3,90 EUR) · Água Duvale 6L (1,00 EUR) · Chá preto (10 saq) (1,30 EUR) - Total 11,50 EUR (pago pela caixa)." },
     { data: "4 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Nov) — Amílcar André pagou Novembro (20 EUR) e a diferença do sócio (10 EUR)." },
     { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR). Telmo pagou Novembro (10 EUR) e o equipamento (20 EUR). Jorge Azevedo pagou Novembro (20 EUR)." },
@@ -562,6 +568,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "7 Nov 2026",
+        tag: "jogo",
+        titulo: "⚽ Derrota 1-3 frente ao Guisande FC (J4 Liga Masters)",
+        corpo: "Jogo fora. Golo de José Eduardo. 16 jogadores presentes."
+    },
     {
         data: "31 Out 2026",
         tag: "jogo",
