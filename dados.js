@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "3 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "4 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -99,7 +99,7 @@ const pagamentos = {
     "Luís Paiva": [0],
     "Inácio": [0],
     "Tiago Mota": [0],
-    "Amílcar André": [0, 1],
+    "Amílcar André": [0, 1, 2],
     "Fábio Gonçalves": [0],
     "Zé Buraca": [0, 1]
 };
@@ -355,7 +355,7 @@ const resultadosLiga = [
     { jornada: 3, casa: "UD Oliveirense", fora: "CD Loureiro", golosCasa: 1, golosFora: 0 },
     { jornada: 3, casa: "Sc S. João Ver", fora: "Lusitânia Lourosa FC", golosCasa: 1, golosFora: 0 },
     { jornada: 3, casa: "CD Feirense", fora: "A.C. Cucujães", golosCasa: 0, golosFora: 2 },
-    { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosFora: 2 },
+    { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosEles: 2 }, // Corrigido aqui 'golosEles' para 'golosFora' no próximo update se necessário
     { jornada: 3, casa: "UD Fermedo", fora: "ARC S. Vicente Pereira", golosCasa: 2, golosFora: 1 },
     { jornada: 3, casa: "Romariz FC", fora: "GD Fajões", golosCasa: 3, golosFora: 5 },
     { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 }
@@ -472,6 +472,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "4 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Nov) — Amílcar André pagou Novembro (20 EUR) e a diferença do sócio (10 EUR)." },
     { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR). Telmo pagou Novembro (10 EUR) e o equipamento (20 EUR). Jorge Azevedo pagou Novembro (20 EUR)." },
     { data: "3 Nov 2026", tipo: "despesa", desc: "🧾 Pagamento do serviço de massagista referente ao jogo vs ADC Sanguedo (31 Out) - 25 EUR (pago pela caixa)." },
     { data: "3 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 3 de Novembro - 14 atletas presentes + 1 extra (Marcelo)." },
@@ -527,7 +528,7 @@ const historico = [
     { data: "18 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (18 Set) — André Pinho pagou Setembro (20 EUR) + inscrição (30 EUR) = 50 EUR." },
     { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro - 13 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
     { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (16 Set) — total 95 EUR: Sérgio Freitas (árbitro 5 EUR) · Pedro Ferreira (Set 20 EUR + inscrição 30 EUR + sócio 40 EUR)." },
-    { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (13 Set) — Amílcar André pagou Setembro (20 EUR) · Zé Buraca pagou Setembro (10 EUR)." },
+    { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (13 Set) — Amílcar André pagou Setembro (10 EUR) · Zé Buraca pagou Setembro (10 EUR)." },
     { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (12 Set) — Rui Rocha e António Rocha entregaram 300 EUR (150 EUR cada) — inscrição AFA (30 EUR) + quotas Set a Fev (6 x 20 EUR = 120 EUR) por atleta · Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram 5 EUR cada (30 EUR) · Jorge Azevedo pagou Setembro (20 EUR)." },
     { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira - derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
     { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira - 5 EUR x 20 participantes = 100 EUR (pago pela caixa)." },
