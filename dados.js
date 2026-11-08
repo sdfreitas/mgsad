@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "4 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "8 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -160,6 +160,13 @@ const DESPESAS_PAGAS = {
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
     {
+        data: "7 Nov 2026",
+        desc: "Merenda - jogo vs Guisande FC",
+        itens: "Cuetara sortido 420g — €5,30 · Fruta (3 un) — €3,90 · Água Duvale 6L — €1,00 · Chá preto (10 saq) — €1,30",
+        valor: 11.50,
+        pago: true
+    },
+    {
         data: "3 Nov 2026",
         desc: "Massagista - jogo vs ADC Sanguedo",
         itens: "Serviço de massagista",
@@ -169,7 +176,7 @@ const despesasExtras = [
     {
         data: "31 Out 2026",
         desc: "Merenda - jogo vs ADC Sanguedo",
-        itens: "Cuetara Maria Oro 800g — €2,75 · Cuetra sortido 420g — €5,30 · Copos 200ml (50 un) — €2,30 · Água Duvale 6L — €1,00 · Fruta (2 un) — €2,60",
+        itens: "Cuetara Maria Oro 800g — €2,75 · Cuetara sortido 420g — €5,30 · Copos 200ml (50 un) — €2,30 · Água Duvale 6L — €1,00 · Fruta (2 un) — €2,60",
         valor: 13.95,
         pago: true
     },
@@ -183,21 +190,21 @@ const despesasExtras = [
     {
         data: "23 Out 2026",
         desc: "Merenda - jogo vs GD Fajões",
-        itens: "Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05",
+        itens: "Fruta (2,65 kg) — €3,45 · Cuetara sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05",
         valor: 10.80,
         pago: true
     },
     {
         data: "17 Out 2026",
         desc: "Merenda e águas - jogo vs CD Loureiro",
-        itens: "Merenda jogadores: Fruta (2,35kg) — €3,71 · 2x Água Nascente 6L — €2,10 · 2x Cuetra 420g — €10,60 · 50 Copos 200ml — €2,30 · Bolachas Maria Dourada — €2,10 | Árbitros: 3x Panike Misto — €3,60 · 3x Água Nascente 0,5L — €0,60 · Depósito garrafas — €0,30",
+        itens: "Merenda jogadores: Fruta (2,35kg) — €3,71 · 2x Água Nascente 6L — €2,10 · 2x Cuetara 420g — €10,60 · 50 Copos 200ml — €2,30 · Bolachas Maria Dourada — €2,10 | Árbitros: 3x Panike Misto — €3,60 · 3x Água Nascente 0,5L — €0,60 · Depósito garrafas — €0,30",
         valor: 25.31,
         pago: true
     },
     {
         data: "10 Out 2026",
         desc: "Merenda - jogo vs Bustelo (partilhada com Veteranos do Bustelo)",
-        itens: "Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40",
+        itens: "Cuetara surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40",
         valor: 37.12,
         pago: true
     },
@@ -211,7 +218,7 @@ const despesasExtras = [
     {
         data: "3 Out 2026",
         desc: "Merenda do intervalo - jogo de treino vs Sandim",
-        itens: "2x Lipton c/ limão (20 saq) — €5,90 · Cuetra surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25",
+        itens: "2x Lipton c/ limão (20 saq) — €5,90 · Cuetara surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25",
         valor: 17,
         pago: true
     },
@@ -355,7 +362,7 @@ const resultadosLiga = [
     { jornada: 3, casa: "UD Oliveirense", fora: "CD Loureiro", golosCasa: 1, golosFora: 0 },
     { jornada: 3, casa: "Sc S. João Ver", fora: "Lusitânia Lourosa FC", golosCasa: 1, golosFora: 0 },
     { jornada: 3, casa: "CD Feirense", fora: "A.C. Cucujães", golosCasa: 0, golosFora: 2 },
-    { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosEles: 2 }, // Corrigido aqui 'golosEles' para 'golosFora' no próximo update se necessário
+    { jornada: 3, casa: "ADC Lobão", fora: "ADC Sanguedo", golosCasa: 3, golosFora: 2 },
     { jornada: 3, casa: "UD Fermedo", fora: "ARC S. Vicente Pereira", golosCasa: 2, golosFora: 1 },
     { jornada: 3, casa: "Romariz FC", fora: "GD Fajões", golosCasa: 3, golosFora: 5 },
     { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 }
@@ -472,11 +479,12 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "7 Nov 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs Guisande FC (J4) - Cuetara sortido 420g (5,30 EUR) · Fruta (3 un) (3,90 EUR) · Água Duvale 6L (1,00 EUR) · Chá preto (10 saq) (1,30 EUR) - Total 11,50 EUR (pago pela caixa)." },
     { data: "4 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Nov) — Amílcar André pagou Novembro (20 EUR) e a diferença do sócio (10 EUR)." },
     { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR). Telmo pagou Novembro (10 EUR) e o equipamento (20 EUR). Jorge Azevedo pagou Novembro (20 EUR)." },
     { data: "3 Nov 2026", tipo: "despesa", desc: "🧾 Pagamento do serviço de massagista referente ao jogo vs ADC Sanguedo (31 Out) - 25 EUR (pago pela caixa)." },
     { data: "3 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 3 de Novembro - 14 atletas presentes + 1 extra (Marcelo)." },
-    { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetra sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
+    { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetara sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
     { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
     { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
     { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
@@ -486,17 +494,17 @@ const historico = [
     { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Out e Nov (20 EUR). Zé Buraca pagou quotas de Set e Out (20 EUR). Acerto da merenda (20 EUR recebidos)." },
     { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
     { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
-    { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetra sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
+    { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetara sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
     { data: "21 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 21 de Outubro - 13 atletas presentes + 1 extra (Marcelo)." },
     { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR) · André Pinho pagou Outubro (20 EUR)." },
     { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
     { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
-    { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetra 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
+    { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetara 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
     { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
     { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado." },
     { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
-    { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetra surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
+    { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetara surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
     { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
     { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
     { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 15 atletas presentes + 6 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, António José Silva)." },
@@ -505,7 +513,7 @@ const historico = [
     { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (6 Out) — Vitor Leite pagou o equipamento (Calções saída + Polo) 32 EUR · Jorge Azevedo pagou Outubro 20 EUR." },
     { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 11 inscritos + 3 extra (Marcelo, Telmo, Luís Paiva)." },
     { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
-    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 2x Lipton c/ limão (20 saq) — €5,90 · Cuetra surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25 — total 17 EUR." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 2x Lipton c/ limão (20 saq) — €5,90 · Cuetara surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25 — total 17 EUR." },
     { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 20 atletas (€430)." },
     { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
     { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (1 Out) — Tiago Mota pagou Setembro (20 EUR) + inscrição AFA (30 EUR) + quota de sócio ao clube (40 EUR) = 90 EUR · Inácio pagou Setembro NI (10 EUR) + quota de sócio ao tesoureiro (40 EUR) = 50 EUR · Sergio Rodrigues pagou árbitro do amigável (5 EUR) + quota de sócio ao tesoureiro (40 EUR) = 45 EUR." },
