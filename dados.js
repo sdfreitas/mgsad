@@ -250,7 +250,9 @@ const compras6Set = [
     { nome: "Mário Oliveira", itens: ["Boné"], pago: true },
     { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: true },
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
-    { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
+    { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true },
+    { nome: "André Pinho", itens: ["Equipamento treino"], pago: true },
+    { nome: "Américo Oliveira", itens: ["Boné"], pago: true }
 ];
 
 // --- TREINOS E JOGOS (presenças) ---
@@ -484,6 +486,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "10 Nov 2026", tipo: "venda", desc: "🛍️ Venda de equipamento (10 Nov) — André Pinho comprou Equipamento de treino (20 EUR) e Américo Oliveira comprou um Boné (5 EUR). Total 25 EUR (entra na caixa)." },
     { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — André Pinho pagou Novembro e Dezembro (40 EUR). Pedro Ferreira pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). António José Silva 'Tozé' pagou Nov+Dez+Jan (30 EUR) e a diferença do sócio (10 EUR)." },
     { data: "7 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Guisande FC (Jornada 4 da Liga Masters, fora) - derrota 1-3. Golo de José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "7 Nov 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs Guisande FC (J4) - Cuetara sortido 420g (5,30 EUR) · Fruta (3 un) (3,90 EUR) · Água Duvale 6L (1,00 EUR) · Chá preto (10 saq) (1,30 EUR) - Total 11,50 EUR (pago pela caixa)." },
