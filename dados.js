@@ -458,3 +458,160 @@ const atas = [
         tags: [["decisao", "Decisão"], ["urgente", "Urgente"]], destaque: false,
         pontos: [
             "Fábio Gonçalves — caso especial aprovado pela direção.",
+            "Inscrição AFA: a caixa paga os 50 EUR por inteiro.",
+            "Quota de sócio: os 50 EUR são diluídos em 5 EUR/mês (Out a Jun).",
+            "Setembro pagou €24 (€20 quota + €4 sócio). Junho leva €26 para fechar.",
+            "No total, o atleta paga 250 EUR até ao final da época (Set: 24€ · Out-Mai: 25€ · Jun: 26€).",
+            "Válido de Setembro 2026 a Junho 2027."
+        ],
+        presentes: "Direção dos Veteranos A.D.C. Lobão"
+    },
+    {
+        data: "5 Ago 2026", titulo: "Reunião de Preparação da Época 2026/27",
+        tags: [["decisao", "Decisão"], ["info", "Info"]], destaque: false,
+        pontos: [
+            "Caixa transitada da época anterior: 2.220 EUR.",
+            "Campo - custo anual de 1.000 EUR confirmado.",
+            "Inscrição na AFA - custo de 50 EUR por atleta: o atleta paga 30 EUR e a caixa dos veteranos cobre 20 EUR.",
+            "Treinos todas as quartas-feiras às 21h00 e jogos ao sábado.",
+            "Mensalidade definida em 20 EUR/mês a começar em Setembro.",
+            "Atleta que não compareça a nenhum treino nem jogo num mês, não paga esse mês.",
+            "Atletas não inscritos pagam 10 EUR/mês."
+        ],
+        presentes: "Pedro Melo (Presidente), Treinador Cadete, Pedro Costa, Rocha, André Pinho, Inácio, Romeu, Sérgio Freitas"
+    }
+];
+
+// --- HISTÓRICO ---
+const historico = [
+    { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — André Pinho pagou Novembro e Dezembro (40 EUR). Pedro Ferreira pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). António José Silva 'Tozé' pagou Nov+Dez+Jan (30 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "7 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Guisande FC (Jornada 4 da Liga Masters, fora) - derrota 1-3. Golo de José Eduardo. 16 inscritos presentes, 0 extra." },
+    { data: "7 Nov 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs Guisande FC (J4) - Cuetara sortido 420g (5,30 EUR) · Fruta (3 un) (3,90 EUR) · Água Duvale 6L (1,00 EUR) · Chá preto (10 saq) (1,30 EUR) - Total 11,50 EUR (pago pela caixa)." },
+    { data: "4 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Nov) — Amílcar André pagou Novembro (20 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "3 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (3 Nov) — Pedro Costa pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). Américo Silva pagou Outubro, Novembro e Dezembro (60 EUR) e a diferença do sócio (10 EUR). Mário Oliveira pagou Novembro e Dezembro (40 EUR). Telmo pagou Novembro (10 EUR) e o equipamento (20 EUR). Jorge Azevedo pagou Novembro (20 EUR)." },
+    { data: "3 Nov 2026", tipo: "despesa", desc: "🧾 Pagamento do serviço de massagista referente ao jogo vs ADC Sanguedo (31 Out) - 25 EUR (pago pela caixa)." },
+    { data: "3 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 3 de Novembro - 14 atletas presentes + 1 extra (Marcelo)." },
+    { data: "31 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs ADC Sanguedo (J3) - Cuetara Maria Oro 800g (2,75 EUR) · Cuetara sortido 420g (5,30 EUR) · Copos 200ml (2,30 EUR) · Água Duvale 6L (1,00 EUR) · Fruta (2,60 EUR) - Total 13,95 EUR (pago pela caixa)." },
+    { data: "31 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs ADC Sanguedo (Jornada 3 da Liga Masters, casa) - vitória 3-2. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 inscritos presentes, 0 extra." },
+    { data: "31 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (31 Out) — Sérgio Freitas pagou Outubro (20 EUR) e completou a quota de sócio (10 EUR restantes, 50 EUR entregues ao tesoureiro). Joel Tavares pagou Novembro (20 EUR)." },
+    { data: "31 Out 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Sérgio Freitas, Pedro Cadete e António Rocha (150 EUR entregues ao clube)." },
+    { data: "29 Out 2026", tipo: "despesa", desc: "🧾 Pagamento da inscrição na AFA (19 atletas) - 950 EUR entregues ao clube (pago pela caixa)." },
+    { data: "28 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 28 de Outubro - 17 atletas presentes + 4 extra (Marcelo, Zé Buraca, Telmo, António José Silva)." },
+    { data: "28 Out 2026", tipo: "despesa", desc: "🧾 Tábua de finos no treino - 10 EUR (pago pela caixa)." },
+    { data: "28 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (28 Out) — Rui Rocha e António Rocha pagaram a diferença do sócio (10 EUR cada). Rui Rocha liquidado ao clube principal (50 EUR entregues). Marcelo pagou quotas de Out e Nov (20 EUR). Zé Buraca pagou quotas de Set e Out (20 EUR). Acerto da merenda (20 EUR recebidos)." },
+    { data: "24 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs GD Fajões (Jornada 2 da Liga Masters, fora) - derrota 0-3. 15 inscritos presentes, 0 extra." },
+    { data: "24 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (24 Out) — Pedro Ferreira pagou Outubro (20 EUR)." },
+    { data: "23 Out 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs GD Fajões (J2) - Fruta (2,65 kg) — €3,45 · Cuetara sortido 420g — €5,30 · Água Duvale 6L — €1,00 · Água Nascente 6L — €1,05 — total 10,80 EUR (pago pela caixa)." },
+    { data: "21 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 21 de Outubro - 13 atletas presentes + 1 extra (Marcelo)." },
+    { data: "17 Out 2026", tipo: "presenca", desc: "⚽ Jogo vs CD Loureiro (Jornada 1 da Liga Masters, casa) - derrota 2-4. Golos de Pedro Costa e José Eduardo. 16 inscritos presentes, 0 extra." },
+    { data: "17 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (17 Out) — Mário Oliveira pagou a diferença do sócio (10 EUR) · Pedro Cadete pagou Outubro (20 EUR) e a diferença do sócio (10 EUR) · André Pinho pagou Outubro (20 EUR)." },
+    { data: "17 Out 2026", tipo: "aviso", desc: "⚠️ Fábio Gonçalves — quota mensal ajustada para €25 (€20 quota + €5 sócio) a partir de Outubro. Setembro ficou em €24. Junho leva €26 para fechar os €50 de sócio." },
+    { data: "17 Out 2026", tipo: "aviso", desc: "💆 Massagista: a profissional presente no jogo vs CD Loureiro não cobrou. A previsão de €200 (8 jogos) mantém-se como estimativa máxima." },
+    { data: "17 Out 2026", tipo: "despesa", desc: "🧾 Merenda e águas do jogo vs CD Loureiro - Merenda jogadores: fruta (3,71 EUR), 2x água 6L (2,10 EUR), 2x Cuetara 420g (10,60 EUR), 50 copos (2,30 EUR), bolachas Maria (2,10 EUR) · Árbitros: 3x Panike Misto (3,60 EUR), 3x água 0,5L (0,60 EUR), depósito (0,30 EUR) - Total 25,31 EUR." },
+    { data: "15 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 14 de Outubro - 17 atletas presentes + 4 extra (Luís Paiva, António José Silva, Marcelo, Zé Buraca)." },
+    { data: "11 Out 2026", tipo: "aviso", desc: "💆 Massagista definido: €25 por jogo em casa, pago no dia do jogo. 8 jogos em casa previstos na Liga Masters = €200 estimado." },
+    { data: "10 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Bustelo (casa) - vitória 3-2. Golos de Zé Buraca, Pedro Costa e André Pinho. 17 inscritos + 2 extra (Marcelo, Zé Buraca)." },
+    { data: "10 Out 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Bustelo (partilhada com Veteranos do Bustelo) - Cuetara surtido 420g — €5,85 · fruta 2,60 kg — €2,86 · fruta 5,20 kg — €6,76 · água Serra da Penha 5L — €0,95 · chocolates 3 unid. — €13,50 · água São Martinho 0,5L 24 unid. — €4,80 · depósito/volta garrafas 24 unid. — €2,40 — total 37,12 EUR." },
+    { data: "10 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Out) — Hugo André pagou a inscrição AFA (30 EUR) · Joel Tavares pagou Outubro (20 EUR)." },
+    { data: "10 Out 2026", tipo: "aviso", desc: "⚠️ Hugo André mantém-se como inscrito (reversão da mudança para não inscrito a 3 Out). Inscrição AFA: 20 atletas (€430). Quota de Setembro €20 (paga) · Outubro por pagar (€20)." },
+    { data: "7 Out 2026", tipo: "presenca", desc: "🏃 Treino registado a 7 de Outubro - 15 atletas presentes + 6 extra (Marcelo, Zé Buraca, Telmo, Inácio, Luís Paiva, António José Silva)." },
+    { data: "7 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (7 Out) — Amílcar André pagou Outubro (20 EUR)." },
+    { data: "7 Out 2026", tipo: "aviso", desc: "📅 Calendário oficial da Liga Masters disponível. O campeonato começa a 17 Out em casa contra o CD Loureiro." },
+    { data: "6 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (6 Out) — Vitor Leite pagou o equipamento (Calções saída + Polo) 32 EUR · Jorge Azevedo pagou Outubro 20 EUR." },
+    { data: "3 Out 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Sandim (casa) - derrota 3-4. Golos de Jorge Azevedo (2) e Américo Oliveira. 11 inscritos + 3 extra (Marcelo, Telmo, Luís Paiva)." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Regueifas para o jogo de treino vs Sandim - 42 EUR." },
+    { data: "3 Out 2026", tipo: "despesa", desc: "🧾 Merenda do intervalo no jogo de treino vs Sandim - 2x Lipton c/ limão (20 saq) — €5,90 · Cuetara surtido 420g — €5,85 · 2x água Duvale 6L — €2,00 · fruta (2,50 kg) — €3,25 — total 17 EUR." },
+    { data: "3 Out 2026", tipo: "aviso", desc: "⚠️ Mendes, Miguel Almeida e Sergio Silva passaram de inscritos para não inscritos (€20/mês -> €10/mês). Inscrição AFA ajustada para 20 atletas (€430)." },
+    { data: "2 Out 2026", tipo: "pagamento", desc: "✅ Fábio Gonçalves pagou Setembro (24 EUR)." },
+    { data: "1 Out 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (1 Out) — Tiago Mota pagou Setembro (20 EUR) + inscrição AFA (30 EUR) + quota de sócio ao clube (40 EUR) = 90 EUR · Inácio pagou Setembro NI (10 EUR) + quota de sócio ao tesoureiro (40 EUR) = 50 EUR · Sergio Rodrigues pagou árbitro do amigável (5 EUR) + quota de sócio ao tesoureiro (40 EUR) = 45 EUR." },
+    { data: "30 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 30 de Setembro - 17 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
+    { data: "30 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (30 Set) — total 575 EUR: Marcelo (árbitro 5 EUR) · Sérgio Freitas (Set + inscrição + sócio ao tesoureiro) 90 EUR · José Eduardo (Set + inscrição + árbitro + Out/Nov/Dez) 115 EUR · Daniel Dias (Set + inscrição + árbitro + sócio ao tesoureiro) 95 EUR · António José Silva 'Tozé' (Set+Out + sócio ao tesoureiro) 60 EUR · Américo Oliveira (árbitro + Out + Nov) 45 EUR · Rui Rocha (sócio ao tesoureiro) 40 EUR · António Rocha (sócio ao tesoureiro) 40 EUR · Hugo André (Set + árbitro) 25 EUR · Pedro Costa (árbitro + Out) 25 EUR · Mário Oliveira (Out) 20 EUR · Luís Paiva (Set como não inscrito) 10 EUR · Fábio Gonçalves (árbitro) 5 EUR." },
+    { data: "30 Set 2026", tipo: "aviso", desc: "⚠️ Sérgio Tavares passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 24 atletas (480 EUR)." },
+    { data: "30 Set 2026", tipo: "aviso", desc: "⚠️ Luís Paiva passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 23 atletas (460 EUR)." },
+    { data: "30 Set 2026", tipo: "aviso", desc: "🍽️ Joel Tavares e Jorge Azevedo vão pagar o farnel dos seus aniversários (Setembro). Marcados na grelha de Aniversários com 🍽️." },
+    { data: "26 Set 2026", tipo: "presenca", desc: "⚽ Jogo amigável vs Paços de Ferreira (fora) - derrota 2-4. Golos de José Eduardo e Marcelo. 15 inscritos + 2 extra (Marcelo, Zé Buraca)." },
+    { data: "26 Set 2026", tipo: "aviso", desc: "⚠️ Armando passou de inscrito para não inscrito (20 EUR/mês -> 10 EUR/mês). Inscrição AFA ajustada para 25 atletas (500 EUR)." },
+    { data: "26 Set 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo amigável vs Paços de Ferreira - fruta, 2x água 5L, bolachas Maria, chá e 50 copos 200ml - 15,19 EUR (pago pela caixa)." },
+    { data: "26 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (26 Set) — Amílcar André pagou a inscrição AFA (30 EUR) + árbitro do amigável (5 EUR) = 35 EUR." },
+    { data: "26 Set 2026", tipo: "aviso", desc: "🤝 Américo Silva pagou a quota de sócio (40 EUR) ao tesoureiro." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "🤝 António Oliveira pagou a quota de sócio (40 EUR) ao tesoureiro." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ Correção de registo: o Joel Tavares também entregou a quota de sócio (40 EUR) diretamente ao clube principal - não tinha sido contabilizado. Com ele, são 6 os sócios que já pagaram ao clube (André Pinho, Jorge Azevedo, Hugo André, Amílcar André, José Eduardo e Joel Tavares)." },
+    { data: "24 Set 2026", tipo: "aviso", desc: "⚠️ André Lopes não vai participar esta época - retirado do plantel. Inscrição AFA ajustada para 26 atletas (520 EUR)." },
+    { data: "23 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 23 de Setembro - 14 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
+    { data: "23 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (23 Set) — total 113 EUR: Américo Silva (árbitro 5 EUR) · Pedro Ferreira (árbitro 5 EUR) · Joel Tavares (árbitro 5 EUR) · Zé Buraca (árbitro 5 EUR) · Mário Oliveira (boné 5 EUR) · Pedro Costa (inscrição 30 EUR) · Jorge Azevedo (inscrição 30 EUR) · Pedro Cadete (inscrição 30 EUR)." },
+    { data: "23 Set 2026", tipo: "aviso", desc: "🤝 Mário Oliveira e Américo Oliveira pagaram a quota de sócio (40 EUR cada)." },
+    { data: "18 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (18 Set) — André Pinho pagou Setembro (20 EUR) + inscrição (30 EUR) = 50 EUR." },
+    { data: "16 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 16 de Setembro - 13 atletas presentes + 3 extra (Marcelo, Zé Buraca, Telmo)." },
+    { data: "16 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (16 Set) — total 95 EUR: Sérgio Freitas (árbitro 5 EUR) · Pedro Ferreira (Set 20 EUR + inscrição 30 EUR + sócio 40 EUR)." },
+    { data: "13 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (13 Set) — Amílcar André pagou Setembro (10 EUR) · Zé Buraca pagou Setembro (10 EUR)." },
+    { data: "12 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (12 Set) — Rui Rocha e António Rocha entregaram 300 EUR (150 EUR cada) — inscrição AFA (30 EUR) + quotas Set a Fev (6 x 20 EUR = 120 EUR) por atleta · Árbitro do amigável vs Paços de Ferreira — André Pinho, Pedro Cadete, Jorge Azevedo, Rui Rocha, António Rocha e Mário Oliveira pagaram 5 EUR cada (30 EUR) · Jorge Azevedo pagou Setembro (20 EUR)." },
+    { data: "12 Set 2026", tipo: "presenca", desc: "⚽ Jogo de treino vs Paços de Ferreira - derrota 2-3. Golos de Pedro Costa e José Eduardo. 18 inscritos + 2 extra (Zé Buraca, Marcelo)." },
+    { data: "12 Set 2026", tipo: "despesa", desc: "👤 Árbitro do amigável vs Paços de Ferreira - 5 EUR x 20 participantes = 100 EUR (pago pela caixa)." },
+    { data: "12 Set 2026", tipo: "aviso", desc: "🤝 Joel Tavares, Amílcar André e Hugo André pagaram a quota de sócio (40 EUR cada) diretamente ao clube principal." },
+    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 José Eduardo e Jorge Azevedo pagaram a quota de sócio (40 EUR cada) diretamente ao clube principal." },
+    { data: "10 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Set) — António Oliveira pagou Setembro (20 EUR) + inscrição (30 EUR) = 50 EUR." },
+    { data: "10 Set 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: inclui vendas de equipamento (134 EUR), quotas mensais (190 EUR) e inscrições recebidas (180 EUR). Sócios entregues ao clube principal (não contam)." },
+    { data: "10 Set 2026", tipo: "aviso", desc: "🤝 André Pinho pagou a quota de sócio (40 EUR) diretamente ao clube principal." },
+    { data: "9 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 9 de Setembro - 12 atletas presentes + 3 extra (Marcelo, Zé Buraca, Inácio)." },
+    { data: "9 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (9 Set) — Mário Oliveira (Set+Insc 50 EUR) · Américo Silva (Set+Insc 50 EUR) · Sérgio Rodrigues (Set+Insc 50 EUR) · Américo Oliveira (Set+Insc 50 EUR) · Joel Tavares (Set+Insc 50 EUR) · Pedro Cadete (Set 20 EUR) · Marcelo (Set 10 EUR + equip 47 EUR) · Zé Buraca (equip 30 EUR)." },
+    { data: "6 Set 2026", tipo: "venda", desc: "🛍️ Venda de equipamento: Telmo (Calções saída, Boné), Mário Oliveira (Boné), Vitor Leite (Calções saída, Polo), Marcelo (Calções saída, Polo, Boné, T-shirt), Zé Buraca (Calções saída, T-shirt, Boné) - Total 134 EUR (entra na caixa)" },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Galhardetes do clube (20 unidades) - 200 EUR no total (10 EUR cada)." },
+    { data: "5 Set 2026", tipo: "despesa", desc: "Garrafões de água (4 x 6L) para torneio - 4 EUR no total (1 EUR cada)." },
+    { data: "4 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Set) — Pedro Costa pagou Setembro (20 EUR)." },
+    { data: "2 Set 2026", tipo: "presenca", desc: "🏃 Treino registado a 2 de Setembro - 18 atletas presentes + 4 extra (Telmo, Marcelo, Daniel Dias, Zé Buraca)." },
+    { data: "2 Set 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (2 Set) — Telmo pagou Setembro e Outubro (10 EUR/mês, 20 EUR no total)." },
+    { data: "2 Set 2026", tipo: "aviso", desc: "Daniel Dias passou de não inscrito para inscrito (20 EUR/mês); António José Silva passou de inscrito para não inscrito (10 EUR/mês)." },
+    { data: "5 Ago 2026", tipo: "ata", desc: "Reunião de preparação da época 2026/27 - definidas as quotas (20 EUR inscritos / 10 EUR não inscritos), custo do campo (1.000 EUR/ano) e inscrição na AFA (50 EUR/atleta, 30 EUR atleta + 20 EUR caixa)." },
+    { data: "5 Ago 2026", tipo: "caixa", desc: "Caixa transita da época 2025/26: 2.220 EUR." },
+    { data: "-", tipo: "despesa", desc: "Campo (época 2026/27) - 1.000 EUR, a pagar em Setembro." },
+    { data: "-", tipo: "despesa", desc: "Inscrição na AFA (calculada automaticamente: nº inscritos × €20 + €30 extra do caso especial Fábio Gonçalves)." }
+];
+
+// --- NOTÍCIAS ---
+const noticias = [
+    {
+        data: "7 Nov 2026",
+        tag: "jogo",
+        titulo: "⚽ Derrota 1-3 frente ao Guisande FC (J4 Liga Masters)",
+        corpo: "Jogo fora. Golo de José Eduardo. 16 jogadores presentes."
+    },
+    {
+        data: "31 Out 2026",
+        tag: "jogo",
+        titulo: "✅ Vitória 3-2 frente ao ADC Sanguedo (J3 Liga Masters)",
+        corpo: "Primeira vitória na Liga Masters! Jogo em casa. Golos de Jorge Azevedo, José Eduardo e Sergio Rodrigues. 16 jogadores presentes."
+    },
+    {
+        data: "24 Out 2026",
+        tag: "jogo",
+        titulo: "⚽ Derrota 0-3 frente ao GD Fajões (J2 Liga Masters)",
+        corpo: "Jogo fora, sem golos marcados. 15 jogadores presentes."
+    },
+    {
+        data: "17 Out 2026",
+        tag: "jogo",
+        titulo: "⚽ Derrota 2-4 frente ao CD Loureiro (J1 Liga Masters)",
+        corpo: "Arranque do campeonato em casa com derrota. Golos de Pedro Costa e José Eduardo. A massagista presente não cobrou o serviço."
+    },
+    {
+        data: "17 Out 2026",
+        tag: "info",
+        titulo: "🤝 Quota de sócio subiu para 50€",
+        corpo: "A direção do clube atualizou a quota. Quem já pagou os 40€ ao tesoureiro deve entregar a diferença de 10€. Quem entregou ao clube já está regularizado. Mário Oliveira e Pedro Cadete já liquidaram."
+    },
+    {
+        data: "11 Out 2026",
+        tag: "info",
+        titulo: "💆 Massagista definido: €25 por jogo em casa",
+        corpo: "A partir do primeiro jogo da Liga Masters, temos massagista a €25 por jogo em casa, pago no dia."
+    },
+    {
+        data: "10 Out 2026",
+        tag: "jogo",
+        titulo: "✅ Vitória 3-2 frente ao Bustelo (jogo de treino)",
+        corpo: "Golos de Zé Buraca, Pedro Costa e André Pinho."
+    }
+];
+
+// --- MAPAS AUXILIARES ---
+const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
