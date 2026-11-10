@@ -798,7 +798,7 @@
             <h2 class="section-title">📋 Tabela de Preços</h2>
             <div class="table-wrap"><table><thead><tr><th>Produto</th><th>Preço</th></tr></thead><tbody id="tabela-precos-body"></tbody></table></div>
         </div>
-        <div class="section-card"><h2 class="section-title">🧾 Compras de 6 Set 2026</h2><div id="vendas-lista"></div></div>
+        <div class="section-card"><h2 class="section-title">🧾 Compras de Equipamento</h2><div id="vendas-lista"></div></div>
     </div>
     <div id="tab-atas" class="tab-panel">
         <div class="cards-grid" id="atas-cards"></div>
@@ -2197,7 +2197,6 @@ function renderMarcadores() {
     const el = document.getElementById('sub-marcadores');
     const golos = {};
 
-    // 1. Liga (Calendário)
     if (typeof calendario !== 'undefined') {
         calendario.forEach(j => {
             if (j.marcadores && j.marcadores.length) {
@@ -2206,7 +2205,6 @@ function renderMarcadores() {
         });
     }
 
-    // 2. Amigáveis
     if (typeof amigaveis !== 'undefined') {
         amigaveis.forEach(a => {
             if (a.marcadores && a.marcadores.length) {
@@ -2215,7 +2213,6 @@ function renderMarcadores() {
         });
     }
 
-    // 3. Torneios
     if (typeof torneios !== 'undefined') {
         torneios.forEach(t => {
             t.jogos.forEach(j => {
@@ -2226,7 +2223,6 @@ function renderMarcadores() {
         });
     }
 
-    // Canonizar nomes (ex: "Mário" -> "Mário Oliveira")
     const golosCanonicos = {};
     Object.keys(golos).forEach(nome => {
         if (nome === 'Auto Golo') {
