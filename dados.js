@@ -70,8 +70,7 @@ const MUDANCAS_ESTATUTO = {};
 
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
 const SOCIOS_A_DEVER_10 = [
-    "Américo Oliveira", "António Oliveira", 
-    "Daniel Dias", "Sergio Rodrigues", "Inácio"
+    "António Oliveira", "Daniel Dias", "Inácio"
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
@@ -80,7 +79,7 @@ const pagamentos = {
     "Telmo": [0, 1, 2],
     "Mário Oliveira": [0, 1, 2, 3],
     "Américo Silva": [0, 1, 2, 3],
-    "Sergio Rodrigues": [0],
+    "Sergio Rodrigues": [0, 1],
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1, 2],
     "Marcelo": [0, 1, 2],
@@ -486,6 +485,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — Sergio Rodrigues pagou Outubro (20 EUR) e a diferença do sócio (10 EUR). Américo Oliveira pagou a diferença do sócio (10 EUR)." },
     { data: "10 Nov 2026", tipo: "venda", desc: "🛍️ Venda de equipamento (10 Nov) — André Pinho comprou Equipamento de treino (20 EUR) e Américo Oliveira comprou um Boné (5 EUR). Total 25 EUR (entra na caixa)." },
     { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — André Pinho pagou Novembro e Dezembro (40 EUR). Pedro Ferreira pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). António José Silva 'Tozé' pagou Nov+Dez+Jan (30 EUR) e a diferença do sócio (10 EUR)." },
     { data: "7 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Guisande FC (Jornada 4 da Liga Masters, fora) - derrota 1-3. Golo de José Eduardo. 16 inscritos presentes, 0 extra." },
