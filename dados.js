@@ -70,7 +70,8 @@ const MUDANCAS_ESTATUTO = {};
 
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
 const SOCIOS_A_DEVER_10 = [
-    "António Oliveira", "Daniel Dias", "Inácio"
+    "Pedro Ferreira", "Américo Oliveira", "António Oliveira", 
+    "António José Silva", "Daniel Dias", "Sergio Rodrigues", "Inácio"
 ];
 
 // --- PAGAMENTOS DE QUOTAS (índices = posição em MESES) ---
@@ -79,20 +80,20 @@ const pagamentos = {
     "Telmo": [0, 1, 2],
     "Mário Oliveira": [0, 1, 2, 3],
     "Américo Silva": [0, 1, 2, 3],
-    "Sergio Rodrigues": [0, 1],
+    "Sergio Rodrigues": [0],
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1, 2],
     "Marcelo": [0, 1, 2],
     "Pedro Cadete": [0, 1],
     "António Oliveira": [0],
-    "André Pinho": [0, 1, 2, 3],
+    "André Pinho": [0, 1],
     "Rui Rocha": [0, 1, 2, 3, 4, 5],
     "António Rocha": [0, 1, 2, 3, 4, 5],
     "Jorge Azevedo": [0, 1, 2],
-    "Pedro Ferreira": [0, 1, 2],
+    "Pedro Ferreira": [0, 1],
     "Sérgio Freitas": [0, 1],
     "José Eduardo": [0, 1, 2, 3],
-    "António José Silva": [0, 1, 2, 3, 4],
+    "António José Silva": [0, 1],
     "Hugo André": [0],
     "Daniel Dias": [0],
     "Luís Paiva": [0],
@@ -138,7 +139,7 @@ const sociosPagoAoClube = [
 // --- MERENDAS / FARNEL PAGOS ---
 const merendaPaga = [
     "Zé Buraca", "Américo Oliveira", "José Eduardo", "Joel Tavares", "Jorge Azevedo",
-    "Américo Silva"
+    "Américo Silva", "Sergio Rodrigues", "Sérgio Freitas"
 ];
 
 // --- DESPESAS CONFIRMADAS ---
@@ -151,7 +152,7 @@ const despesaGalhardetes = 200;
 // --- ESTADO DAS DESPESAS ---
 const DESPESAS_PAGAS = {
     campo: false,
-    afa: true,
+    afa: true, // Pago (950 EUR entregues)
     galhardetes: true,
     agua: true
 };
@@ -249,13 +250,14 @@ const compras6Set = [
     { nome: "Mário Oliveira", itens: ["Boné"], pago: true },
     { nome: "Vitor Leite", itens: ["Calções saída", "Polo"], pago: true },
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
-    { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true },
-    { nome: "André Pinho", itens: ["Equipamento treino"], pago: true },
-    { nome: "Américo Oliveira", itens: ["Boné"], pago: true }
+    { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true }
 ];
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "10 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "José Eduardo", "Sergio Rodrigues", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Américo Silva", "António Rocha", "Sérgio Freitas", "Amílcar André", "André Pinho"],
+      extra: ["Marcelo", "Telmo", "António José Silva"] },
     { data: "7 Nov 2026", tipo: "jogo", titulo: "Jogo vs Guisande FC (Liga Masters, J4)", estado: "registado",
       presentes: ["Fábio Gonçalves", "Américo Oliveira", "Joel Tavares", "Pedro Ferreira", "Sérgio Freitas", "Jorge Azevedo", "Rui Rocha", "José Eduardo", "Amílcar André", "Pedro Costa", "António Oliveira", "Américo Silva", "André Pinho", "António Rocha", "Mário Oliveira", "Pedro Cadete"],
       extra: [] },
@@ -485,9 +487,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — Sergio Rodrigues pagou Outubro (20 EUR) e a diferença do sócio (10 EUR). Américo Oliveira pagou a diferença do sócio (10 EUR)." },
-    { data: "10 Nov 2026", tipo: "venda", desc: "🛍️ Venda de equipamento (10 Nov) — André Pinho comprou Equipamento de treino (20 EUR) e Américo Oliveira comprou um Boné (5 EUR). Total 25 EUR (entra na caixa)." },
-    { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — André Pinho pagou Novembro e Dezembro (40 EUR). Pedro Ferreira pagou Novembro (20 EUR) e a diferença do sócio (10 EUR). António José Silva 'Tozé' pagou Nov+Dez+Jan (30 EUR) e a diferença do sócio (10 EUR)." },
+    { data: "10 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 10 de Novembro - 13 atletas presentes + 3 extra (Marcelo, Telmo, António José Silva)." },
     { data: "7 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Guisande FC (Jornada 4 da Liga Masters, fora) - derrota 1-3. Golo de José Eduardo. 16 inscritos presentes, 0 extra." },
     { data: "7 Nov 2026", tipo: "despesa", desc: "🧾 Merenda para o jogo vs Guisande FC (J4) - Cuetara sortido 420g (5,30 EUR) · Fruta (3 un) (3,90 EUR) · Água Duvale 6L (1,00 EUR) · Chá preto (10 saq) (1,30 EUR) - Total 11,50 EUR (pago pela caixa)." },
     { data: "4 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (4 Nov) — Amílcar André pagou Novembro (20 EUR) e a diferença do sócio (10 EUR)." },
