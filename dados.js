@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "10 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "14 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -158,6 +158,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "14 Nov 2026",
+        desc: "Termo VEVOR — depósito de bebidas quente e frio",
+        itens: "VEVOR Insulated Beverage Dispenser · inox · 7,6L · não elétrico",
+        valor: 38.52,
+        pago: true
+    },
     {
         data: "7 Nov 2026",
         desc: "Merenda - jogo vs Guisande FC",
@@ -488,6 +495,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "14 Nov 2026", tipo: "despesa", desc: "🧾 Compra de termo VEVOR (depósito de bebidas quente e frio) — inox, 7,6L, não elétrico — 38,52 EUR (pago pela caixa)." },
     { data: "10 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 10 de Novembro - 13 atletas presentes + 3 extra (Marcelo, Telmo, António José Silva)." },
     { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — Sergio Rodrigues pagou Outubro (20 EUR) e a diferença do sócio (10 EUR). Américo Oliveira pagou a diferença do sócio (10 EUR)." },
     { data: "10 Nov 2026", tipo: "venda", desc: "🛍️ Venda de equipamento (10 Nov) — André Pinho comprou Equipamento de treino (20 EUR) e Américo Oliveira comprou um Boné (5 EUR). Total 25 EUR (entra na caixa)." },
