@@ -19,7 +19,8 @@ const QUOTAS_REDUZIDAS = {
 
 // ─── INSCRIÇÕES PAGAS PELA CAIXA ───
 const INSCRICOES_PAGAS_CAIXA = [
-    "Fábio Gonçalves"
+    "Fábio Gonçalves",
+    "André Gomes"
 ];
 
 // ─── SÓCIOS EM PRESTAÇÕES ───
