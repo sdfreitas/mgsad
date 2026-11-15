@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "14 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "15 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -43,7 +43,8 @@ const inscritos = [
     { nome: "Joel Tavares", apelido: "JOEL", num: 3, nasc: "27/09/1981" },
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
     { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" },
-    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" }
+    { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
+    { nome: "André Gomes", apelido: "ANDRÉ GOMES", num: null, nasc: "05/08/1991" }
 ];
 
 const naoInscritos = [
@@ -100,7 +101,8 @@ const pagamentos = {
     "Tiago Mota": [0],
     "Amílcar André": [0, 1, 2],
     "Fábio Gonçalves": [0],
-    "Zé Buraca": [0, 1]
+    "Zé Buraca": [0, 1],
+    "André Gomes": [2]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -125,7 +127,7 @@ const sociosPagos = [
     "Mário Oliveira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
     "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota",
-    "Pedro Costa"
+    "Pedro Costa", "André Gomes"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
@@ -158,6 +160,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "15 Nov 2026",
+        desc: "Inscrição AFA — André Gomes (guarda-redes)",
+        itens: "Caso especial — inscrição oferecida pela caixa (tal como o Fábio Gonçalves). Valor ainda em mãos, pendente de entrega à federação.",
+        valor: 50,
+        pago: false
+    },
     {
         data: "14 Nov 2026",
         desc: "Termo VEVOR — depósito de bebidas quente e frio",
@@ -495,6 +504,9 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "15 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (15 Nov) — André Gomes: quota de Novembro (20 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
+    { data: "15 Nov 2026", tipo: "aviso", desc: "🆕 Novo jogador inscrito — André Gomes (guarda-redes, nasc. 05/08/1991, sem número). Sócio pago ao tesoureiro. Setembro e Outubro isentos por falta de presença (não compareceu a nenhum treino nem jogo)." },
+    { data: "15 Nov 2026", tipo: "aviso", desc: "⚠️ André Gomes — inscrição AFA de 50 EUR oferecida pela caixa (tal como o Fábio Gonçalves). Valor ainda em mãos, pendente de entrega à federação — registado como despesa por pagar." },
     { data: "14 Nov 2026", tipo: "despesa", desc: "🧾 Compra de termo VEVOR (depósito de bebidas quente e frio) — inox, 7,6L, não elétrico — 38,52 EUR (pago pela caixa)." },
     { data: "10 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 10 de Novembro - 13 atletas presentes + 3 extra (Marcelo, Telmo, António José Silva)." },
     { data: "10 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (10 Nov) — Sergio Rodrigues pagou Outubro (20 EUR) e a diferença do sócio (10 EUR). Américo Oliveira pagou a diferença do sócio (10 EUR)." },
@@ -584,6 +596,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "15 Nov 2026",
+        tag: "info",
+        titulo: "🆕 Novo jogador: André Gomes",
+        corpo: "Guarda-redes, nascido a 05/08/1991. Sócio pago ao tesoureiro. Inscrição AFA oferecida pela caixa (50 EUR, tal como o Fábio Gonçalves). Setembro e Outubro isentos por falta de presença."
+    },
     {
         data: "7 Nov 2026",
         tag: "jogo",
