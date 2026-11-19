@@ -718,11 +718,20 @@
         </div>
         <p class="note" id="notaUltimaAtualizacao">Última atualização: —</p>
     </div>
+
     <div id="tab-despesas" class="tab-panel">
         <div class="cards-grid" id="despesas-cards"></div>
         <div class="section-card"><h2 class="section-title">Distribuição de Despesas</h2><div class="chart-container" style="max-height:300px"><canvas id="chartPie"></canvas></div></div>
         <div class="section-card"><h2 class="section-title">Detalhe de Despesas</h2><div class="table-wrap" id="tabela-despesas"></div></div>
+        <div class="section-card" style="border-left:4px solid #0D3B66">
+            <h2 class="section-title">🖨️ Recibos de Despesas</h2>
+            <p class="snap-desc">Emite um recibo em PDF para despesas já pagas pela caixa.</p>
+            <div class="snapshot-bar">
+                <button class="snap-pdf" onclick="imprimirReciboAFA()">🖨️ Recibo AFA — €950</button>
+            </div>
+        </div>
     </div>
+
     <div id="tab-quotas" class="tab-panel">
         <div class="cards-grid" id="quotas-cards"></div>
         <div class="section-card">
@@ -742,6 +751,7 @@
         <div class="section-card"><h2 class="section-title">Quotas por Mês</h2><div id="quotas-por-mes"></div></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas por Jogador</h2><div id="tabela-quotas"></div></div>
     </div>
+
     <div id="tab-inscricoes" class="tab-panel">
         <div class="cards-grid" id="inscricoes-cards"></div>
         <div class="section-card">
@@ -751,15 +761,18 @@
         </div>
         <div class="section-card"><h2 class="section-title">Estado das Inscrições (€30 por atleta)</h2><div class="table-wrap" id="tabela-inscricoes"></div></div>
     </div>
+
     <div id="tab-socios" class="tab-panel">
         <div class="cards-grid" id="socios-cards"></div>
         <div class="section-card" style="background:#fff7ed;border-left:4px solid #dc6843"><p style="font-size:12px;color:#9a3412;margin:0;line-height:1.6">ℹ️ As quotas de sócio são entregues ao clube principal — <strong>não afetam o saldo dos veteranos</strong>. <strong>Pago ao clube</strong> = entregue diretamente (não passa pela caixa). <strong>Pago 40€ · Falta 10€</strong> = já deu a base, mas falta a atualização.</p></div>
         <div class="section-card"><h2 class="section-title">Estado das Quotas de Sócio</h2><div class="table-wrap" id="tabela-socios"></div></div>
     </div>
+
     <div id="tab-aniversarios" class="tab-panel">
         <div class="cards-grid" id="aniversarios-cards"></div>
         <div id="aniversarios-grid"></div>
     </div>
+
     <div id="tab-treinos" class="tab-panel">
         <div class="cards-grid" id="treinos-cards"></div>
         <div class="section-card">
@@ -780,6 +793,7 @@
         <div class="section-card"><h2 class="section-title">📊 Estatísticas de Treinos</h2><div id="treinos-stats"></div></div>
         <div id="treinos-lista"></div>
     </div>
+
     <div id="tab-competicao" class="tab-panel">
         <div class="sub-tabs">
             <button class="sub-tab active" onclick="showSubTab('calendario')">📅 Calendário</button>
@@ -792,6 +806,7 @@
         <div id="sub-marcadores" class="sub-panel"></div>
         <div id="sub-torneios" class="sub-panel"></div>
     </div>
+
     <div id="tab-vendas" class="tab-panel">
         <div class="cards-grid" id="vendas-cards"></div>
         <div class="section-card" style="border-left:4px solid #1A6FB5">
@@ -800,10 +815,12 @@
         </div>
         <div class="section-card"><h2 class="section-title">🧾 Compras de Equipamento</h2><div id="vendas-lista"></div></div>
     </div>
+
     <div id="tab-atas" class="tab-panel">
         <div class="cards-grid" id="atas-cards"></div>
         <div id="atas-lista"></div>
     </div>
+
     <div id="tab-historico" class="tab-panel">
         <div class="section-card" style="margin-bottom:16px"><p style="font-size:12px;color:#888;line-height:1.6;margin:0">Linha do tempo de quotas, despesas, caixa, treinos, atas e vendas. Podes pesquisar por jogador, valor ou palavra-chave.</p></div>
         <div id="historico-filtros"></div>
@@ -2472,6 +2489,42 @@ function imprimirRecibo(nome) {
         setTimeout(() => document.body.classList.remove('printing', 'printing-recibo'), 500);
     }, 60);
 }
+
+// ===== NOVO: Recibos de Despesas =====
+function imprimirReciboDespesa(opcoes) {
+    let html = `<div class="recibo-header">
+        <h1>Veteranos A.D.C. Lobão</h1>
+        <p>Lobão, Santa Maria da Feira</p>
+        <p style="margin-top:10px;font-size:14px;color:#0D3B66;font-weight:700;letter-spacing:2px">RECIBO DE PAGAMENTO</p>
+    </div>
+    <div class="recibo-body">
+        <p><strong>Beneficiário:</strong> ${opcoes.beneficiario}</p>
+        <p><strong>Data de pagamento:</strong> ${opcoes.data}</p>
+        <table class="recibo-table">
+            <thead><tr><th>Descrição</th><th style="text-align:right;width:30%">Valor</th></tr></thead>
+            <tbody><tr><td>${opcoes.descricao}</td><td style="text-align:right">${opcoes.valorFmt}</td></tr></tbody>
+        </table>
+        <div class="recibo-total">Total: ${opcoes.valorFmt}</div>
+        <p style="font-size:11px;color:#666;margin-top:24px;text-align:center;line-height:1.5">Pagamento efetuado pela caixa dos Veteranos A.D.C. Lobão.</p>
+        <div style="margin-top:70px;display:flex;justify-content:space-around;gap:40px">
+            <div style="flex:1;text-align:center"><div style="border-top:1px solid #000;padding-top:6px;font-size:11px">O Tesoureiro</div><div style="font-size:10px;color:#666;margin-top:2px">Veteranos A.D.C. Lobão</div></div>
+            <div style="flex:1;text-align:center"><div style="border-top:1px solid #000;padding-top:6px;font-size:11px">A Direção</div><div style="font-size:10px;color:#666;margin-top:2px">AFA</div></div>
+        </div>
+    </div>`;
+    document.getElementById('reciboContainer').innerHTML = html;
+    document.body.classList.add('printing', 'printing-recibo');
+    setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove('printing', 'printing-recibo'), 500); }, 60);
+}
+
+function imprimirReciboAFA() {
+    imprimirReciboDespesa({
+        beneficiario: 'AFA — Associação de Futebol de Aveiro',
+        descricao: 'Inscrição de atletas dos Veteranos A.D.C. Lobão na época 2026/27 (Liga Masters)',
+        valorFmt: fmtEur(despesaAFA),
+        data: '29 de outubro de 2026'
+    });
+}
+// ===== FIM NOVO =====
 
 function carregarLib(url) {
     return new Promise((resolve, reject) => {
