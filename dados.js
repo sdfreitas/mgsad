@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "19 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "21 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -150,7 +150,7 @@ const merendaPaga = [
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
 const AFA_EXTRA_FABIO = 30;
-const despesaAFA = 950;
+const despesaAFA = 1050; // 21 atletas × €50 (19 à AFA a 29/10 + 2 ao A.D.C. Lobão a 21/11)
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -164,20 +164,6 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
-    {
-        data: "18 Nov 2026",
-        desc: "Inscrição AFA — Mendes",
-        itens: "Inscrição de novo inscrito (passou de NI a inscrito a Nov). Valor ainda em mãos, pendente de entrega à federação. O atleta deve à caixa os €30 habituais.",
-        valor: 50,
-        pago: false
-    },
-    {
-        data: "15 Nov 2026",
-        desc: "Inscrição AFA — André Gomes (guarda-redes)",
-        itens: "Caso especial — inscrição oferecida pela caixa (tal como o Fábio Gonçalves). Valor ainda em mãos, pendente de entrega à federação.",
-        valor: 50,
-        pago: false
-    },
     {
         data: "14 Nov 2026",
         desc: "Termo VEVOR — depósito de bebidas quente e frio",
@@ -518,6 +504,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Inscrição de 2 atletas — André Gomes e Mendes (50 EUR cada) — 100 EUR entregues ao A.D.C. Lobão (não diretamente à AFA). Despesa AFA atualizada de 950 EUR para 1.050 EUR (21 atletas no total)." },
+    { data: "21 Nov 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: −100 EUR referentes à entrega das inscrições de André Gomes e Mendes ao A.D.C. Lobão." },
     { data: "18 Nov 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Mário Oliveira (50 EUR) e Pedro Costa (50 EUR)." },
     { data: "18 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (18 Nov) — António Rocha e Rui Rocha pagaram mais um mês de quota (20 EUR cada) · Pedro Cadete pagou Novembro (20 EUR) · Luís Paiva pagou Outubro e Novembro (20 EUR) · Mendes pagou Novembro (20 EUR) + inscrição (30 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
     { data: "18 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 18 de Novembro - 20 atletas presentes + 4 extra (Marcelo, Telmo, António José Silva, Luís Paiva)." },
