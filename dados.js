@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "18 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "19 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -86,11 +86,11 @@ const pagamentos = {
     "Américo Oliveira": [0, 1, 2],
     "Joel Tavares": [0, 1, 2],
     "Marcelo": [0, 1, 2],
-    "Pedro Cadete": [0, 1],
+    "Pedro Cadete": [0, 1, 2],
     "António Oliveira": [0],
     "André Pinho": [0, 1, 2, 3],
-    "Rui Rocha": [0, 1, 2, 3, 4, 5],
-    "António Rocha": [0, 1, 2, 3, 4, 5],
+    "Rui Rocha": [0, 1, 2, 3, 4, 5, 6],
+    "António Rocha": [0, 1, 2, 3, 4, 5, 6],
     "Jorge Azevedo": [0, 1, 2],
     "Pedro Ferreira": [0, 1, 2],
     "Sérgio Freitas": [0, 1],
@@ -98,13 +98,14 @@ const pagamentos = {
     "António José Silva": [0, 1, 2, 3, 4],
     "Hugo André": [0],
     "Daniel Dias": [0],
-    "Luís Paiva": [0],
+    "Luís Paiva": [0, 1, 2],
     "Inácio": [0],
     "Tiago Mota": [0],
     "Amílcar André": [0, 1, 2],
     "Fábio Gonçalves": [0],
     "Zé Buraca": [0, 1],
-    "André Gomes": [2]
+    "André Gomes": [2],
+    "Mendes": [2]
 };
 
 // --- INSCRIÇÕES PAGAS ---
@@ -119,7 +120,8 @@ const inscricoesPagas = [
     "José Eduardo",
     "Daniel Dias",
     "Tiago Mota",
-    "Hugo André"
+    "Hugo André",
+    "Mendes"
 ];
 
 // --- SÓCIOS PAGOS ---
@@ -129,14 +131,14 @@ const sociosPagos = [
     "Mário Oliveira", "Américo Oliveira", "António Oliveira", "Américo Silva",
     "Sérgio Freitas", "António José Silva", "Rui Rocha", "António Rocha",
     "Daniel Dias", "Luís Paiva", "Sergio Rodrigues", "Inácio", "Tiago Mota",
-    "Pedro Costa", "André Gomes"
+    "Pedro Costa", "André Gomes", "Mendes"
 ];
 
 // --- SÓCIOS QUE PAGARAM DIRETAMENTE AO CLUBE PRINCIPAL ---
 const sociosPagoAoClube = [
     "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André",
     "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota", "Rui Rocha",
-    "Sérgio Freitas", "Pedro Cadete", "António Rocha"
+    "Sérgio Freitas", "Pedro Cadete", "António Rocha", "Pedro Costa"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -148,7 +150,7 @@ const merendaPaga = [
 // --- DESPESAS CONFIRMADAS ---
 const despesaCampo = 1000;
 const AFA_EXTRA_FABIO = 30;
-const despesaAFA = 950; 
+const despesaAFA = 950;
 const despesaAgua = 4;
 const despesaGalhardetes = 200;
 
@@ -516,6 +518,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "18 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (18 Nov) — António Rocha e Rui Rocha pagaram mais um mês de quota (20 EUR cada) · Pedro Cadete pagou Novembro (20 EUR) · Luís Paiva pagou Outubro e Novembro (20 EUR) · Mendes pagou Novembro (20 EUR) + inscrição (30 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
+    { data: "18 Nov 2026", tipo: "aviso", desc: "🤝 Quota de sócio de Pedro Costa entregue ao clube principal (50 EUR retirados da gaveta dos sócios)." },
     { data: "18 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 18 de Novembro - 20 atletas presentes + 4 extra (Marcelo, Telmo, António José Silva, Luís Paiva)." },
     { data: "18 Nov 2026", tipo: "aviso", desc: "🆕 Mendes passou de não inscrito a inscrito (nº 21). Setembro e Outubro isentos por falta de presença. Novembro em dívida (20 EUR), inscrição (30 EUR) e sócio (50 EUR) por pagar. Inscrição AFA de 50 EUR registada como despesa por pagar (Modelo A)." },
     { data: "15 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (15 Nov) — André Gomes: quota de Novembro (20 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
