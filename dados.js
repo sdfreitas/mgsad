@@ -138,7 +138,7 @@ const sociosPagos = [
 const sociosPagoAoClube = [
     "André Pinho", "Jorge Azevedo", "Hugo André", "Amílcar André",
     "José Eduardo", "Joel Tavares", "Luís Paiva", "Tiago Mota", "Rui Rocha",
-    "Sérgio Freitas", "Pedro Cadete", "António Rocha", "Pedro Costa"
+    "Sérgio Freitas", "Pedro Cadete", "António Rocha", "Pedro Costa", "Mário Oliveira"
 ];
 
 // --- MERENDAS / FARNEL PAGOS ---
@@ -518,8 +518,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "18 Nov 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Mário Oliveira (50 EUR) e Pedro Costa (50 EUR)." },
     { data: "18 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (18 Nov) — António Rocha e Rui Rocha pagaram mais um mês de quota (20 EUR cada) · Pedro Cadete pagou Novembro (20 EUR) · Luís Paiva pagou Outubro e Novembro (20 EUR) · Mendes pagou Novembro (20 EUR) + inscrição (30 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
-    { data: "18 Nov 2026", tipo: "aviso", desc: "🤝 Quota de sócio de Pedro Costa entregue ao clube principal (50 EUR retirados da gaveta dos sócios)." },
     { data: "18 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 18 de Novembro - 20 atletas presentes + 4 extra (Marcelo, Telmo, António José Silva, Luís Paiva)." },
     { data: "18 Nov 2026", tipo: "aviso", desc: "🆕 Mendes passou de não inscrito a inscrito (nº 21). Setembro e Outubro isentos por falta de presença. Novembro em dívida (20 EUR), inscrição (30 EUR) e sócio (50 EUR) por pagar. Inscrição AFA de 50 EUR registada como despesa por pagar (Modelo A)." },
     { data: "15 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (15 Nov) — André Gomes: quota de Novembro (20 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
