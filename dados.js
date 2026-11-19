@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "17 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "18 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -44,7 +44,8 @@ const inscritos = [
     { nome: "Fábio Gonçalves", apelido: "FÁBIO", num: null, nasc: "13/07/1990" },
     { nome: "Daniel Dias", apelido: "DANIEL", num: null, nasc: "10/03/1982" },
     { nome: "Hugo André", apelido: "H. ANDRÉ", num: 6, nasc: "10/05/1986" },
-    { nome: "André Gomes", apelido: "ANDRÉ GOMES", num: null, nasc: "05/08/1991" }
+    { nome: "André Gomes", apelido: "ANDRÉ GOMES", num: null, nasc: "05/08/1991" },
+    { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" }
 ];
 
 const naoInscritos = [
@@ -61,13 +62,14 @@ const naoInscritos = [
     { nome: "Armando", apelido: "ARMANDO", num: 7, nasc: "19/03/1973" },
     { nome: "Luís Paiva", apelido: "LUÍS", num: 26, nasc: "21/11/1982" },
     { nome: "Sérgio Tavares", apelido: "TAVARES", num: 27, nasc: "10/10/1984" },
-    { nome: "Mendes", apelido: "MENDES", num: 21, nasc: "28/05/1986" },
     { nome: "Miguel Almeida", apelido: "MIGUEL", num: 19, nasc: "10/05/1974" },
     { nome: "Sergio Silva", apelido: "SERGINHO", num: 4, nasc: "01/01/1988" }
 ];
 
 // --- MUDANÇAS DE ESTATUTO (inscrito ↔ não inscrito) ---
-const MUDANCAS_ESTATUTO = {};
+const MUDANCAS_ESTATUTO = {
+    "Mendes": { desde: 2, estatutoAnterior: false }
+};
 
 // --- SÓCIOS QUE AINDA DEVEM 10€ AO CLUBE ---
 const SOCIOS_A_DEVER_10 = [
@@ -160,6 +162,13 @@ const DESPESAS_PAGAS = {
 
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
+    {
+        data: "18 Nov 2026",
+        desc: "Inscrição AFA — Mendes",
+        itens: "Inscrição de novo inscrito (passou de NI a inscrito a Nov). Valor ainda em mãos, pendente de entrega à federação. O atleta deve à caixa os €30 habituais.",
+        valor: 50,
+        pago: false
+    },
     {
         data: "15 Nov 2026",
         desc: "Inscrição AFA — André Gomes (guarda-redes)",
@@ -272,6 +281,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "18 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "José Eduardo", "Sergio Rodrigues", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Américo Silva", "António Rocha", "Sérgio Freitas", "Amílcar André", "André Pinho", "Mendes", "António Oliveira", "André Gomes", "Pedro Ferreira", "Pedro Costa", "Joel Tavares", "Hugo André"],
+      extra: ["Marcelo", "Telmo", "António José Silva", "Luís Paiva"] },
     { data: "10 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "José Eduardo", "Sergio Rodrigues", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Américo Silva", "António Rocha", "Sérgio Freitas", "Amílcar André", "André Pinho"],
       extra: ["Marcelo", "Telmo", "António José Silva"] },
@@ -504,6 +516,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "18 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 18 de Novembro - 20 atletas presentes + 4 extra (Marcelo, Telmo, António José Silva, Luís Paiva)." },
+    { data: "18 Nov 2026", tipo: "aviso", desc: "🆕 Mendes passou de não inscrito a inscrito (nº 21). Setembro e Outubro isentos por falta de presença. Novembro em dívida (20 EUR), inscrição (30 EUR) e sócio (50 EUR) por pagar. Inscrição AFA de 50 EUR registada como despesa por pagar (Modelo A)." },
     { data: "15 Nov 2026", tipo: "pagamento", desc: "✅ Pagamentos recebidos (15 Nov) — André Gomes: quota de Novembro (20 EUR) + quota de sócio ao tesoureiro (50 EUR)." },
     { data: "15 Nov 2026", tipo: "aviso", desc: "🆕 Novo jogador inscrito — André Gomes (guarda-redes, nasc. 05/08/1991, sem número). Sócio pago ao tesoureiro. Setembro e Outubro isentos por falta de presença (não compareceu a nenhum treino nem jogo)." },
     { data: "15 Nov 2026", tipo: "aviso", desc: "⚠️ André Gomes — inscrição AFA de 50 EUR oferecida pela caixa (tal como o Fábio Gonçalves). Valor ainda em mãos, pendente de entrega à federação — registado como despesa por pagar." },
@@ -596,6 +610,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "18 Nov 2026",
+        tag: "info",
+        titulo: "🆕 Mendes passa a inscrito (nº 21)",
+        corpo: "Mendes passou de não inscrito a inscrito em Novembro. Setembro e Outubro isentos por falta de presença (sem dívida retroativa). Novembro em dívida (€20), inscrição (€30) e sócio (€50) por pagar."
+    },
     {
         data: "15 Nov 2026",
         tag: "info",
