@@ -727,7 +727,7 @@
             <h2 class="section-title">🖨️ Recibos de Despesas</h2>
             <p class="snap-desc">Emite um recibo em PDF para despesas já pagas pela caixa.</p>
             <div class="snapshot-bar">
-                <button class="snap-pdf" id="btnReciboAFA" onclick="imprimirReciboAFA()">🖨️ Recibo AFA</button>
+                <button class="snap-pdf" id="btnReciboAFA" onclick="imprimirReciboAFA()">🖨️ Recibo Inscrições</button>
             </div>
         </div>
     </div>
@@ -2502,6 +2502,7 @@ function imprimirReciboDespesa(opcoes) {
         linhasHtml = `<tr><td>${opcoes.descricao || ''}</td><td style="text-align:right">${opcoes.valorFmt || ''}</td></tr>`;
         totalStr = opcoes.valorFmt || '';
     }
+    const signatario2 = opcoes.signatario2 || 'A.D.C. Lobão';
     let html = `<div class="recibo-header">
         <h1>Veteranos A.D.C. Lobão</h1>
         <p>Lobão, Santa Maria da Feira</p>
@@ -2518,7 +2519,7 @@ function imprimirReciboDespesa(opcoes) {
         <p style="font-size:11px;color:#666;margin-top:24px;text-align:center;line-height:1.5">Pagamento efetuado pela caixa dos Veteranos A.D.C. Lobão.</p>
         <div style="margin-top:70px;display:flex;justify-content:space-around;gap:40px">
             <div style="flex:1;text-align:center"><div style="border-top:1px solid #000;padding-top:6px;font-size:11px">O Tesoureiro</div><div style="font-size:10px;color:#666;margin-top:2px">Veteranos A.D.C. Lobão</div></div>
-            <div style="flex:1;text-align:center"><div style="border-top:1px solid #000;padding-top:6px;font-size:11px">A Direção</div><div style="font-size:10px;color:#666;margin-top:2px">AFA</div></div>
+            <div style="flex:1;text-align:center"><div style="border-top:1px solid #000;padding-top:6px;font-size:11px">A Direção</div><div style="font-size:10px;color:#666;margin-top:2px">${signatario2}</div></div>
         </div>
     </div>`;
     document.getElementById('reciboContainer').innerHTML = html;
@@ -2528,10 +2529,11 @@ function imprimirReciboDespesa(opcoes) {
 
 function imprimirReciboAFA() {
     imprimirReciboDespesa({
-        beneficiario: 'AFA — Associação de Futebol de Aveiro (via A.D.C. Lobão)',
+        beneficiario: 'A.D.C. Lobão — clube principal',
         data: '21 de novembro de 2026',
+        signatario2: 'A.D.C. Lobão',
         linhas: [
-            { descricao: 'Inscrição de 19 atletas na Liga Masters 2026/27 — entregue à AFA a 29/10/2026', valorFmt: '€950' },
+            { descricao: 'Inscrição de 19 atletas na Liga Masters 2026/27 — entregue ao A.D.C. Lobão a 29/10/2026', valorFmt: '€950' },
             { descricao: 'Inscrição de 2 atletas (André Gomes e Mendes) — entregue ao A.D.C. Lobão a 21/11/2026', valorFmt: '€100' }
         ],
         totalFmt: fmtEur(despesaAFA)
@@ -2950,9 +2952,9 @@ function inicializarSite() {
 
     renderTorneios();
 
-    // Botão do recibo AFA — atualiza o valor dinamicamente
+    // Botão do recibo de inscrições — texto dinâmico
     const btnRec = document.getElementById('btnReciboAFA');
-    if (btnRec) btnRec.textContent = '🖨️ Recibo AFA — ' + fmtEur(despesaAFA);
+    if (btnRec) btnRec.textContent = '🖨️ Recibo Inscrições — ' + fmtEur(despesaAFA);
 
     setTimeout(initQuotasCharts, 50);
     setTimeout(initDespesasChart, 50);
