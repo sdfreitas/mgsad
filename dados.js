@@ -269,6 +269,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "21 Nov 2026", tipo: "jogo", titulo: "Jogo vs Romariz FC (Liga Masters, J6)", estado: "registado",
+      presentes: ["Fábio Gonçalves", "Mário Oliveira", "Sérgio Freitas", "Américo Oliveira", "Jorge Azevedo", "André Pinho", "Amílcar André", "José Eduardo", "António Oliveira", "Rui Rocha", "Sergio Rodrigues", "André Gomes", "Pedro Ferreira", "António Rocha", "Joel Tavares", "Américo Silva", "Pedro Costa", "Mendes"],
+      extra: [] },
     { data: "18 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
       presentes: ["Fábio Gonçalves", "José Eduardo", "Sergio Rodrigues", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Américo Silva", "António Rocha", "Sérgio Freitas", "Amílcar André", "André Pinho", "Mendes", "António Oliveira", "André Gomes", "Pedro Ferreira", "Pedro Costa", "Joel Tavares", "Hugo André"],
       extra: ["Marcelo", "Telmo", "António José Silva", "Luís Paiva"] },
@@ -338,7 +341,7 @@ const calendario = [
     { jornada: 3,  data: "31 Out 2026", casa: true,  adversario: "ADC Sanguedo",             hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 3, golosEles: 2, marcadores: ["Jorge Azevedo", "José Eduardo", "Sergio Rodrigues"] },
     { jornada: 4,  data: "7 Nov 2026",  casa: false, adversario: "Guisande FC",              hora: "15:30", local: "Estádio Oliveira Santos",     estado: "derrota", golosNos: 1, golosEles: 3, marcadores: ["José Eduardo"] },
     { jornada: 5,  data: "14 Nov 2026", folga: true },
-    { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
+    { jornada: 6,  data: "21 Nov 2026", casa: true,  adversario: "Romariz FC",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "vitoria", golosNos: 4, golosEles: 2, marcadores: ["António Oliveira", "António Oliveira", "Auto Golo", "Sergio Rodrigues"] },
     { jornada: 7,  data: "28 Nov 2026", casa: false, adversario: "UD Oliveirense",           hora: "15:30", local: "Oliveira de Azeméis",         estado: "agendado" },
     { jornada: 8,  data: "5 Dez 2026",  casa: true,  adversario: "UD Fermedo",               hora: "15:30", local: "Campo S. Tiago de Lobão",     estado: "agendado" },
     { jornada: 9,  data: "12 Dez 2026", casa: false, adversario: "CD Feirense",              hora: "15:30", local: "Sanfins",                     estado: "agendado" },
@@ -390,7 +393,9 @@ const resultadosLiga = [
     { jornada: 3, casa: "Romariz FC", fora: "GD Fajões", golosCasa: 3, golosFora: 5 },
     { jornada: 3, casa: "AF União Lamas Veteranos", fora: "Juv. Desp. Carregosense", golosCasa: 1, golosFora: 5 },
     // Jornada 4
-    { jornada: 4, casa: "Guisande FC", fora: "ADC Lobão", golosCasa: 3, golosFora: 1 }
+    { jornada: 4, casa: "Guisande FC", fora: "ADC Lobão", golosCasa: 3, golosFora: 1 },
+    // Jornada 6
+    { jornada: 6, casa: "ADC Lobão", fora: "Romariz FC", golosCasa: 4, golosFora: 2 }
 ];
 
 // --- COMPETIÇÃO ---
@@ -504,6 +509,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "21 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Romariz FC (Jornada 6 da Liga Masters, casa) — vitória 4-2. Golos de António Oliveira (2), Auto Golo e Sergio Rodrigues. 18 inscritos presentes, 0 extra." },
     { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Inscrição de 2 atletas — André Gomes e Mendes (50 EUR cada) — 100 EUR entregues ao A.D.C. Lobão (não diretamente à AFA). Despesa AFA atualizada de 950 EUR para 1.050 EUR (21 atletas no total)." },
     { data: "21 Nov 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: −100 EUR referentes à entrega das inscrições de André Gomes e Mendes ao A.D.C. Lobão." },
     { data: "18 Nov 2026", tipo: "aviso", desc: "🤝 Quotas de sócio entregues ao clube principal — Mário Oliveira (50 EUR) e Pedro Costa (50 EUR)." },
@@ -602,6 +608,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "21 Nov 2026",
+        tag: "jogo",
+        titulo: "✅ Vitória 4-2 frente ao Romariz FC (J6 Liga Masters)",
+        corpo: "Jogo em casa. Golos de António Oliveira (2), Auto Golo e Sergio Rodrigues. 18 jogadores presentes."
+    },
     {
         data: "18 Nov 2026",
         tag: "info",
