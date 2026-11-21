@@ -165,6 +165,20 @@ const DESPESAS_PAGAS = {
 // --- DESPESAS EXTRA (variáveis, ao longo da época) ---
 const despesasExtras = [
     {
+        data: "21 Nov 2026",
+        desc: "Massagista - jogo vs Romariz FC",
+        itens: "Serviço de massagista",
+        valor: 25,
+        pago: true
+    },
+    {
+        data: "21 Nov 2026",
+        desc: "Merenda - jogo vs Romariz FC",
+        itens: "Bananas (3,650 kg × €1,30/kg) — €4,75 · Bolacha Maria dourada — €2,60 · Água mineral 5L — €0,75 · Cuetara sortido 420g — €5,30 · Lipton 20 saquetas — €2,95 · 50 copos 200ml — €2,30",
+        valor: 18.65,
+        pago: true
+    },
+    {
         data: "14 Nov 2026",
         desc: "Termo VEVOR — depósito de bebidas quente e frio",
         itens: "VEVOR Insulated Beverage Dispenser · inox · 7,6L · não elétrico",
@@ -509,6 +523,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Massagista do jogo vs Romariz FC (J6) - 25 EUR (pago pela caixa)." },
+    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Romariz FC (J6) - Bananas 3,650 kg a 1,30 €/kg (4,75 EUR) · Bolacha Maria dourada (2,60 EUR) · Água mineral 5L (0,75 EUR) · Cuetara sortido (5,30 EUR) · Lipton 20 saquetas (2,95 EUR) · 50 copos 200ml (2,30 EUR) — total 18,65 EUR (pago pela caixa)." },
     { data: "21 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Romariz FC (Jornada 6 da Liga Masters, casa) — vitória 4-2. Golos de António Oliveira (2), Auto Golo e Sergio Rodrigues. 18 inscritos presentes, 0 extra." },
     { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Inscrição de 2 atletas — André Gomes e Mendes (50 EUR cada) — 100 EUR entregues ao A.D.C. Lobão (não diretamente à AFA). Despesa AFA atualizada de 950 EUR para 1.050 EUR (21 atletas no total)." },
     { data: "21 Nov 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: −100 EUR referentes à entrega das inscrições de André Gomes e Mendes ao A.D.C. Lobão." },
