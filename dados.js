@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "21 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "25 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -166,16 +166,9 @@ const DESPESAS_PAGAS = {
 const despesasExtras = [
     {
         data: "21 Nov 2026",
-        desc: "Massagista - jogo vs Romariz FC",
-        itens: "Serviço de massagista",
-        valor: 25,
-        pago: true
-    },
-    {
-        data: "21 Nov 2026",
-        desc: "Merenda - jogo vs Romariz FC",
-        itens: "Bananas (3,650 kg × €1,30/kg) — €4,75 · Bolacha Maria dourada — €2,60 · Água mineral 5L — €0,75 · Cuetara sortido 420g — €5,30 · Lipton 20 saquetas — €2,95 · 50 copos 200ml — €2,30",
-        valor: 18.65,
+        desc: "Despesas do jogo vs Romariz FC (J6) — merenda + massagista",
+        itens: "Merenda: Bananas (3,650 kg × €1,30/kg) — €4,75 · Bolacha Maria dourada — €2,60 · Água mineral 5L — €0,75 · Cuetara sortido 420g — €5,30 · Lipton 20 saquetas — €2,95 · 50 copos 200ml — €2,30 (subtotal €18,65) | Massagista — €25,00",
+        valor: 43.65,
         pago: true
     },
     {
@@ -283,6 +276,9 @@ const compras6Set = [
 
 // --- TREINOS E JOGOS (presenças) ---
 const treinosJogos = [
+    { data: "25 Nov 2026", tipo: "treino", titulo: "Treino", estado: "registado",
+      presentes: ["Fábio Gonçalves", "José Eduardo", "Sergio Rodrigues", "Rui Rocha", "Américo Oliveira", "Pedro Cadete", "Mário Oliveira", "Jorge Azevedo", "Américo Silva", "António Rocha", "Sérgio Freitas", "Amílcar André", "Mendes", "António Oliveira", "Pedro Ferreira", "Pedro Costa", "Joel Tavares", "Daniel Dias", "Hugo André"],
+      extra: ["Marcelo", "Telmo", "António José Silva"] },
     { data: "21 Nov 2026", tipo: "jogo", titulo: "Jogo vs Romariz FC (Liga Masters, J6)", estado: "registado",
       presentes: ["Fábio Gonçalves", "Mário Oliveira", "Sérgio Freitas", "Américo Oliveira", "Jorge Azevedo", "André Pinho", "Amílcar André", "José Eduardo", "António Oliveira", "Rui Rocha", "Sergio Rodrigues", "André Gomes", "Pedro Ferreira", "António Rocha", "Joel Tavares", "Américo Silva", "Pedro Costa", "Mendes"],
       extra: [] },
@@ -523,8 +519,8 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
-    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Massagista do jogo vs Romariz FC (J6) - 25 EUR (pago pela caixa)." },
-    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Merenda do jogo vs Romariz FC (J6) - Bananas 3,650 kg a 1,30 €/kg (4,75 EUR) · Bolacha Maria dourada (2,60 EUR) · Água mineral 5L (0,75 EUR) · Cuetara sortido (5,30 EUR) · Lipton 20 saquetas (2,95 EUR) · 50 copos 200ml (2,30 EUR) — total 18,65 EUR (pago pela caixa)." },
+    { data: "25 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 25 de Novembro - 19 atletas presentes + 3 extra (Marcelo, Telmo, António José Silva)." },
+    { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Despesas do jogo vs Romariz FC (J6) — Merenda: Bananas 3,650 kg a 1,30 €/kg (4,75 EUR) · Bolacha Maria dourada (2,60 EUR) · Água mineral 5L (0,75 EUR) · Cuetara sortido (5,30 EUR) · Lipton 20 saquetas (2,95 EUR) · 50 copos 200ml (2,30 EUR) — Subtotal €18,65 · Massagista €25,00 — Total €43,65 (pago pela caixa)." },
     { data: "21 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Romariz FC (Jornada 6 da Liga Masters, casa) — vitória 4-2. Golos de António Oliveira (2), Auto Golo e Sergio Rodrigues. 18 inscritos presentes, 0 extra." },
     { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Inscrição de 2 atletas — André Gomes e Mendes (50 EUR cada) — 100 EUR entregues ao A.D.C. Lobão (não diretamente à AFA). Despesa AFA atualizada de 950 EUR para 1.050 EUR (21 atletas no total)." },
     { data: "21 Nov 2026", tipo: "caixa", desc: "🧮 Saldo atualizado: −100 EUR referentes à entrega das inscrições de André Gomes e Mendes ao A.D.C. Lobão." },
@@ -624,6 +620,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "25 Nov 2026",
+        tag: "treino",
+        titulo: "🏃 Treino de 25 de Novembro — 19 inscritos + 3 extra",
+        corpo: "Boa adesão ao treino desta quarta-feira. 19 inscritos presentes e 3 não inscritos (Marcelo, Telmo, António José Silva)."
+    },
     {
         data: "21 Nov 2026",
         tag: "jogo",
