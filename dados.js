@@ -13,7 +13,7 @@ const RECEITAS_EXTRAS = 20; // Acerto da merenda
 
 // --- CONFIGURAÇÃO DA ÉPOCA ---
 const EPOCA_ATUAL = "2026/27";
-const DATA_ULTIMA_ATUALIZACAO = "25 Nov 2026";
+const DATA_ULTIMA_ATUALIZACAO = "26 Nov 2026";
 const DIA_TREINO = "Quarta 21h";
 
 // --- PROJEÇÃO DE DESPESAS MENSAIS (gráfico do Resumo) ---
@@ -271,7 +271,8 @@ const compras6Set = [
     { nome: "Marcelo", itens: ["Calções saída", "Polo", "Boné", "T-shirt"], pago: true },
     { nome: "Zé Buraca", itens: ["Calções saída", "T-shirt", "Boné"], pago: true },
     { nome: "André Pinho", itens: ["Equipamento treino"], pago: true },
-    { nome: "Américo Oliveira", itens: ["Boné"], pago: true }
+    { nome: "Américo Oliveira", itens: ["Boné"], pago: true },
+    { nome: "Jorge Azevedo", itens: ["Kispo"], pago: true }
 ];
 
 // --- TREINOS E JOGOS (presenças) ---
@@ -519,6 +520,7 @@ const atas = [
 
 // --- HISTÓRICO ---
 const historico = [
+    { data: "26 Nov 2026", tipo: "venda", desc: "🛍️ Venda de equipamento (26 Nov) — Jorge Azevedo comprou um Kispo (45 EUR). Total 45 EUR (entra na caixa)." },
     { data: "25 Nov 2026", tipo: "presenca", desc: "🏃 Treino registado a 25 de Novembro - 19 atletas presentes + 3 extra (Marcelo, Telmo, António José Silva)." },
     { data: "21 Nov 2026", tipo: "despesa", desc: "🧾 Despesas do jogo vs Romariz FC (J6) — Merenda: Bananas 3,650 kg a 1,30 €/kg (4,75 EUR) · Bolacha Maria dourada (2,60 EUR) · Água mineral 5L (0,75 EUR) · Cuetara sortido (5,30 EUR) · Lipton 20 saquetas (2,95 EUR) · 50 copos 200ml (2,30 EUR) — Subtotal €18,65 · Massagista €25,00 — Total €43,65 (pago pela caixa)." },
     { data: "21 Nov 2026", tipo: "presenca", desc: "⚽ Jogo vs Romariz FC (Jornada 6 da Liga Masters, casa) — vitória 4-2. Golos de António Oliveira (2), Auto Golo e Sergio Rodrigues. 18 inscritos presentes, 0 extra." },
@@ -620,6 +622,12 @@ const historico = [
 
 // --- NOTÍCIAS ---
 const noticias = [
+    {
+        data: "26 Nov 2026",
+        tag: "info",
+        titulo: "🛍️ Jorge Azevedo comprou um Kispo (€45)",
+        corpo: "Venda de equipamento — Kispo (45 EUR) — dinheiro entrou na caixa."
+    },
     {
         data: "25 Nov 2026",
         tag: "treino",
